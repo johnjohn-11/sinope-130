@@ -163,60 +163,20 @@ Quatre composants personnalisés permettent de gérer les appareils Sinopé, par
 Ils peuvent tous être utilisés en même temps. Les appareils Zigbee gérés directement par ZHA doivent être retirés de Neviweb, car un appareil ne peut pas être sur deux réseaux Zigbee en même temps.
 
 ## Installation
-### Composant personnalisé Neviweb130 pour gérer votre appareil via le portail Neviweb
-Il existe deux méthodes pour installer ce composant personnalisé :
-- **Via le composant HACS** (Home Assistant Community Store):
-  - Neviweb130 est compatible avec [HACS](https://community.home-assistant.io/t/custom-component-hacs/121727).
-  - Après avoir installé HACS, installez « Sinope neviweb-130 » (neviweb130) depuis le magasin et utilisez l'exemple configuration.yaml
-    ci-dessous.
-    
-- **Manuellement via téléchargement direct**:
-  - Téléchargez le fichier zip de ce référentiel en utilisant le bouton de téléchargement vert en haut à droite.
-  - Extrayez le fichier zip sur votre ordinateur, puis copiez l'intégralité du dossier « custom_components » dans votre Home Assistant 
-    Répertoire `config` (où vous pouvez trouver votre fichier `configuration.yaml`).
-  - Votre répertoire de configuration devrait ressembler à ceci :
- 
-   ```
-    config/
-      configuration.yaml
-      custom_components/
-        neviweb130/
-          translations/
-            en.json
-            fr.json
-          __init__.py
-          climate.py
-          const.py
-          helpers.py
-          light.py
-          manifest.json
-          schema.py
-          sensor.py
-          services.yaml
-          strings.json
-          switch.py
-          update.py
-          valve.py
+Il y a deux façons d’installer cette intégration :
+- Avec HACS :
+  - Ce dépôt est compatible avec le Home Assistant Community Store ([HACS](https://community.home-assistant.io/t/custom-component-hacs/121727)).
+  - Une fois HACS installé, installez « Sinope Neviweb130 » depuis le magasin, redémarrez Home Assistant et ajoutez l’intégration (voir [Configuration](#configuration)).
+- Manuellement :
+  - Téléchargez le fichier zip de ce dépôt avec le bouton vert Code.
+  - Décompressez-le sur votre ordinateur, puis copiez tout le dossier `custom_components` dans le répertoire `config` de Home Assistant (celui qui contient `configuration.yaml`).
+  - Votre répertoire de configuration devrait ressembler à ceci :
+
     ```
-
-- **Installation Neviweb130-V2**
-  La version V2 sera installé via une simple mise à jour de Neviweb130 vers la version v5.0.0.  Il faut faire un backup avant car V2
-  change complètement la méthode de fonctionnement de Neviweb130. Le module de mise à jour de Neviweb130 permet de faire un backup avant
-  la mise à jour.
-
-  Pour ceux qui veulent tester la nouvelle version V2, il est possible de copier les fichiers de la version V2 de la branche
-  **Neviweb130-V2**. Il y a beaucoup plus de fichiers car le fonctionnement de Neviweb130-V2 est complètement différent de la version V1.
-  Vous pouvez copier tous les fichiers V2  dans le répertoire V1 ou les installer sur un machine de test indépendante.
-
-  Votre repertoire V2 ressemblera a ceci:
-  ```
     config/
       configuration.yaml
       custom_components/
         neviweb130/
-          translations/
-            en.json
-            fr.json
           __init__.py
           binary_sensor.py
           button.py
@@ -225,6 +185,7 @@ Il existe deux méthodes pour installer ce composant personnalisé :
           const.py
           coordinator.py
           devices.py
+          exceptions.py
           helpers.py
           light.py
           manifest.json
@@ -238,6 +199,14 @@ Il existe deux méthodes pour installer ce composant personnalisé :
           switch.py
           update.py
           valve.py
+          translations/en.json
+          translations/fr.json
+      www/
+        neviweb130/
+          heat-0.png ... (icônes d’appareils, voir Noms des fichiers d’icônes)
+          weather/
+            Sun.png ... (icônes météo)
+      ...
     ```
 
 ## Configuration
@@ -490,13 +459,11 @@ Les paramètres sont en anglais. Il ne faut pas les traduire.
 </details>
 
 ## Valve Sedna
-Pour les valves Sedna, il existe deux façons de les connecter à Neviweb :
-- Via connexion Wi-Fi directe. De cette façon, les capteurs de fuite sont connectés directement à la valve Sedna qui se fermera en cas de fuite. 
-- via GT130 en mode Zigbee. De cette façon, les capteurs de fuite sont également connectés au GT130 mais lors de la détection de fuite,
-  rien transmis à la valve. Vous devrez définir une règle d'automatisation dans Neviweb ou HA, pour que la valve Sedna se ferme en cas de fuite 
-  détecté par le capteur.
+Une valve Sedna peut être connectée à Neviweb de deux façons :
+- En Wi-Fi direct. Les détecteurs de fuite sont alors connectés directement à la valve, qui se ferme quand une fuite est détectée.
+- Par le GT130 en mode Zigbee. Les détecteurs de fuite sont aussi connectés au GT130, mais une détection de fuite n’est pas transmise à la valve. Il faut une automatisation dans Neviweb ou HA pour fermer la valve quand un détecteur signale une fuite.
 
-Les deux modes sont pris en charge par ce composant personnalisé.
+Les deux modes sont pris en charge par cette intégration.
 
 ## Passerelle GT130
 Le capteur binaire `gateway_status` du GT130 indique s’il est en ligne ou hors ligne dans Neviweb.
@@ -533,102 +500,79 @@ Neviweb limite chaque compte à 30000 requêtes par jour. Au-delà, vous êtes d
 Neviweb130 compte ses requêtes quotidiennes (mises à jour, statistiques, vérifications d’erreurs, etc.) dans le capteur `sensor.neviweb130_daily_requests`. Le compte survit aux redémarrages de HA et revient à 0 à minuit. Il aide à choisir un scan_interval plus court sans dépasser la limite. Une notification est envoyée quand le compte dépasse l’option request_limit (défaut 25000).
 
 ## Services personnalisés (actions)
-
-Les automatisations nécessitent que les services (actions) puissent envoyer des commandes. Ex. `light.turn_on`. Pour les appareils Sinopé 
-connectés via neviweb130, il est possible d'utiliser des services personnalisés pour envoyer des informations spécifiques aux appareils 
-ou pour changer certains paramètres des appareils. Ces services personnalisés sont accessibles via des `outils de développement` ou peuvent 
-être utilisés dans les automatisations suivantes:
-- neviweb130.set_second_display, permet de modifier le réglage du deuxième affichage du thermostat de la température de consigne à 
-  température extérieure. Celui-ci ne doit être envoyé qu’une seule fois à chaque appareil.
-- neviweb130.set_climate_keypad_lock, permet de verrouiller le clavier de l'appareil.
-- neviweb130.set_light_keypad_lock, permet de verrouiller le clavier du dispositif d'éclairage.
-- neviweb130.set_switch_keypad_lock, permet de verrouiller le clavier de l'appareil switch.
-- neviweb130.set_light_timer, ceci est utilisé pour régler une minuterie en secondes (0 à 10800) pour que les appareils d'éclairage s'éteignent après 
-  ce délais.
-- neviweb130.set_switch_timer, ceci est utilisé pour régler une minuterie en secondes (0 à 10800) pour les appareils switch et multi 
-  contrôleur pour s'éteindre après ce délai.
-- neviweb130.set_switch_timer2, ceci est utilisé pour régler le timer2 en secondes (0 à 10800) sur le switch multi contrôleur 
-  l'appareil doit s'éteindre après ce délai.
-- neviweb130.set_led_indicator, cela permet de changer la couleur et l'intensité du voyant LED sur les appareils lumineux pour « on » et 
-  état « éteint ». vous pouvez envoyer n'importe quelle couleur de la liste RVB via les trois paramètres de couleur rouge, vert et bleu, et vous pouvez 
-  régler l'intensité de l'indicateur LED.
-- neviweb130.set_time_format, pour afficher l'heure en format 12h ou 24h sur les thermostats.
-- neviweb130.set_temperature_format, pour afficher la température au format Celsius ou Fahrenheit sur les thermostats.
-- neviweb130.set_backlight, pour régler l'intensité du rétroéclairage en état « on » ou « off » pour les thermostats.
-- neviweb130.set_wattage, pour définir wattageOverload pour les appareils d'éclairage.
-- neviweb130.set_auxiliary_load, pour définir l'état et la charge du chauffage d'appoint.
-- neviweb130.set_setpoint_min, pour définir la température de consigne minimale pour les thermostats.
-- neviweb130.set_setpoint_max, pour définir la température de consigne maximale pour les thermostats.
-- neviweb130.set_cool_setpoint_min, pour définir le point de consigne de refroidissement minimum pour le TH1134ZB-HC.
-- neviweb130.set_cool_setpoint_max, pour définir le point de consigne de refroidissement maximum pour le TH1134ZB-HC.
-- neviweb130.set_floor_limit_low, pour définir la température de consigne minimale pour les thermostats de sol. (5 à 34°C), (0 = éteint)
-- neviweb130.set_floor_limit_high, pour définir la température de consigne maximale pour les thermostats de sol. (7 à 36°C), (0 = éteint)
+Les automatisations utilisent des actions (services) pour envoyer des commandes, par exemple `light.turn_on`. Pour les appareils Sinopé connectés par neviweb130, des actions personnalisées envoient des informations précises aux appareils ou changent leurs paramètres. Elles sont disponibles dans Outils de développement → Actions et dans les automatisations :
+- neviweb130.set_second_display, pour faire afficher la température extérieure au lieu de la consigne sur le deuxième affichage du thermostat. À envoyer une seule fois par appareil.
+- neviweb130.set_climate_keypad_lock, pour verrouiller le clavier d’un thermostat.
+- neviweb130.set_light_keypad_lock, pour verrouiller le clavier d’un interrupteur ou gradateur.
+- neviweb130.set_switch_keypad_lock, pour verrouiller le clavier d’un appareil switch.
+- neviweb130.set_light_timer, pour régler une minuterie en secondes (0 à 10800) après laquelle la lumière s’éteint.
+- neviweb130.set_switch_timer, pour régler une minuterie en secondes (0 à 10800) après laquelle le switch ou le multicontrôleur s’éteint.
+- neviweb130.set_switch_timer2, pour régler la minuterie 2 en secondes (0 à 10800) après laquelle le multicontrôleur s’éteint.
+- neviweb130.set_led_indicator, pour changer la couleur et l’intensité du voyant des appareils d’éclairage pour les états «on» et «off». N’importe quelle couleur RGB peut être envoyée avec les paramètres red, green et blue.
+- neviweb130.set_time_format, pour afficher l’heure en 12h ou 24h sur les thermostats.
+- neviweb130.set_temperature_format, pour afficher la température en Celsius ou en Fahrenheit sur les thermostats.
+- neviweb130.set_backlight, pour régler l’intensité du rétroéclairage des thermostats à l’état «on» ou «off».
+- neviweb130.set_wattage, pour régler wattageOverload des appareils d’éclairage.
+- neviweb130.set_auxiliary_load, pour régler l’état et la charge du chauffage d’appoint.
+- neviweb130.set_setpoint_min, pour régler la consigne minimale des thermostats.
+- neviweb130.set_setpoint_max, pour régler la consigne maximale des thermostats.
+- neviweb130.set_cool_setpoint_min, pour régler la consigne minimale de climatisation du TH1134ZB-HC.
+- neviweb130.set_cool_setpoint_max, pour régler la consigne maximale de climatisation du TH1134ZB-HC.
+- neviweb130.set_floor_limit_low, pour régler la consigne minimale des thermostats de plancher (5 à 34°C, 0 = off).
+- neviweb130.set_floor_limit_high, pour régler la consigne maximale des thermostats de plancher (7 à 36°C, 0 = off).
 - neviweb130.set_sensor_leak_alert, pour régler l’alerte de fuite du détecteur de fuite.
 - neviweb130.set_sensor_temp_alert, pour régler l’alerte de basse température du détecteur de fuite.
 - neviweb130.set_sensor_closure_action, pour régler l’action de fermeture de la valve en cas de fuite, seulement pour les détecteurs connectés directement à la valve Sedna.
-- neviweb130.set_valve_alert, pour définir l'état d'alerte de batterie faible.
-- neviweb130.set_valve_temp_alert, pour définir une alerte de basse température sur la valve Sedna.
-- neviweb130.set_early_start, pour activer/désactiver le chauffage anticipé pour les thermostats Wi-Fi.
-- neviweb130.set_air_floor_mode, pour basculer entre le capteur de température du sol ou le capteur de température ambiante pour
-  contrôler la température ambiante.
-- neviweb130.set_floor_air_limit, pour régler la température limite d'air maximale du thermostat de sol.
-- neviweb130.set_phase_control, pour définir le mode de contrôle de phase du gradateur DM2550ZB (inversé ou avant).
-- neviweb130.set_hvac_dr_options, pour définir ou réinitialiser l'option de période de pointe (DR) dans Neviweb pour les thermostats.
-- neviweb130.set_hvac_dr_setpoint, pour régler la réduction du point de consigne du thermostat pendant la période DR, 100 à -100 (°C*10). 0 sert  
-  simplement à faire clignoter la petite icône sur le thermostat.
-- neviweb130.set_load_dr_options, pour définir ou réinitialiser les options de période DR dans Neviweb pour le contrôleur de charge.
-- neviweb130.set_cycle_output, pour définir la durée du cycle principal du thermostat basse tension en minutes.
-- neviweb130.set_aux_cycle_output, pour définir la durée du cycle auxiliaire des thermostats basse tension en minutes.
-- neviweb130.set_control_onoff, change l'état des sorties 1 et 2 sur le multi contrôleur d'alarme pour valve sedna.
-- neviweb130.set_battery_type, définit le type de pile, alcaline ou lithium, pour le capteur de fuite d'eau.
-- neviweb130.set_tank_size, pour définir la capacité du réservoir du chauffe-eau pour Calypso RM3500ZB.
-- neviweb130.set_low_temp_protection, pour activer ou non la protection du chauffe-eau pour la température de l'eau minimale.
-- En dessous de 45°C, le chauffage redémarre automatiquement.
-- neviweb130.set_controlled_device, pour changer le nom de l'appareil contrôlé par le contrôleur de charge RM3250ZB.
-- neviweb130.set_flow_meter_model, pour changer le modèle de débitmètre connecté à la valve sedna 2e gen et démarrer/arrêter la
-  protection de fuite du débitmètre.
-- neviweb130.set_flow_meter_delay, pour régler le délai de fuite avant la fermeture de la valve si une fuite est détectée par le débitmètre. 
-- neviweb130.set_flow_meter_options, pour paramétrer l'action du débitmètre : fermer la valve (oui/non) et envoyer un message d'alerte 
-  (oui/non), ou simplement ne rien faire.
-- neviweb130.set_tank_type, pour définir le type de réservoir pour LM4110-ZB, propane ou mazout.
-- neviweb130.set_gauge_type, pour définir le type de jauge pour LM4110-ZB sur réservoir de propane, modèle 5-95 ou 10-80.
-- neviweb130.set_low_fuel_alert, pour définir la limite de niveau bas de carburant pour le réservoir de propane, 0 (off), 10, 20 ou 30 %.
-- neviweb130.set_tank_height, pour régler la hauteur du réservoir de carburant pour le capteur LM4110-ZB, 0 (off), 23, 24, 35, 38, 47, 48, 50.
-- neviweb130.set_fuel_alert, pour définir l'alerte de carburant, marche/arrêt pour LM4110-ZB.
-- neviweb130.set_power_supply, pour définir la source d'alimentation de la valve Sedna entre la batterie, acups-01 ou les deux.
-- neviweb130.set_battery_alert, pour activer/désactiver l'alerte de batterie pour le LM4110-ZB.
-- neviweb130.set_input_output_names, pour définir le nom des entrées 1 et 2 et des sorties 1 et 2 du périphérique MC3100ZB.
-- neviweb130.set_activation, pour activer ou bloquer la mise à jour de l'état d'un appareil sur Neviweb.
-- neviweb130.set_sensor_type, pour définir la valeur du capteur 10k ou 12k pour les thermostats de sol.
-- neviweb130.set_remaining_time, pour définir la valeur de l'attribut coldLoadPickupRemainingTime.
-- neviweb130.set_on_off_input_delay, pour régler le délai « on » ou « off » en secondes pour les entrées 1 et 2 du MC3100ZB.
-- neviweb130.set_em_heat, pour allumer/éteindre le chauffage auxiliaire pour les thermostats de sol et basse tension. Il s'agit d'un
-  remplacement de `turn_aux_heat_on` ou off qui est obsolète par HA. Le fonctionnement est différent pour les appareils TH6xxxWF, où le
-  mode préréglé passe à PRESET.BOOST ou revient au mode préréglé précédent lors de la mise hors tension du chauffage auxiliaire.
-- neviweb130.set_display_config, pour activer/désactiver l'affichage sur le contrôleur de la pompe à chaleur.
-- neviweb130.set_sound_config, pour activer/désactiver le son sur le contrôleur de la pompe à chaleur.
-- neviweb130.set_heat_pump_operation_limit, pour définir la température minimale de fonctionnement de la pompe à chaleur.
-- neviweb130.set_heat_lockout_temperature, pour définir la limite maximale de température extérieure pour permettre le fonctionnement
-  de l'appareil de chauffage. Fonctionne différemment pour les appareils TH1123ZB-G2, TH1124ZB-G2 et de chauffage/refroidissement (TH6xxxWF).
-  Chacun utilise un attribut différent.
-- neviweb130.set_cool_lockout_temperature, pour définir la limite minimale de température extérieure pour permettre le fonctionnement de
-  la climatisation.
-- neviweb130.set_hc_second_display, pour définir l'affichage secondaire du thermostat TH1134ZB-HC.
-- neviweb130.set_language, pour définir la langue d'affichage sur les thermostats TH1134ZB-HC.
-- neviweb130.set_neviweb_status, pour définir le statut global de Neviweb, domicile/extérieur via le GT130.
-- neviweb130.set_climate_neviweb_status, pour définir le statut global de Neviweb, domicile/extérieur via les thermostats Zigbee ou Wi-Fi.
-- neviweb130.set_refuel_alert, pour recevoir une alerte lorsque le réservoir de propane est ravitaillé,
-- neviweb130.set_accessory_type, pour définir le type d’accessoire (humidificateur, déshumidificateur, échangeur d’air) connecté au TH6500WF ou TH6250WF.
-- neviweb130.set_schedule_mode, pour définir le mode de planification, manuel ou automatique pour le TH6500WF ou le TH6250WF.
-- neviweb130.set_flow_alarm_disable_timer, pour désactiver l'alarme de débit anormal pendant une période de 1 sec. à 24 heures.
-- neviweb130.set_heatcool_setpoint_delta, pour définir un delta de température entre la consigne de chauffage et la consigne de refroidissement à partir de 
-  1 à 5°C en mode auto (heat/cool) pour TH6xxxWF.
-- neviweb130.set_fan_filter_reminder, pour régler le délai entre chaque nettoyage du filtre du ventilateur de 1 à 12 mois, pour 
-  TH6xxxWF.
-- neviweb130.set_temperature_offset, pour ajuster la calibration sur le capteur de température de -2 à 2°C par incrément de 0,5°C, pour TH6xxxWF.
-- neviweb130.set_aux_heating_source, pour sélectionner le type de source de chauffage d'appoint utilisé pour le TH6xxxWF.
-- neviweb130.set_fan_speed, pour régler la vitesse du ventilateur, activé ou automatique pour TH6xxxWF.
-- neviweb130.set_switch_temp_alert, pour régler la fonction d'envoi d'alerte de basse température pour les MC3100ZB.
+- neviweb130.set_valve_alert, pour régler l’alerte de batterie faible.
+- neviweb130.set_valve_temp_alert, pour régler l’alerte de basse température de la valve Sedna.
+- neviweb130.set_early_start, pour activer ou désactiver le démarrage anticipé des thermostats Wi-Fi.
+- neviweb130.set_air_floor_mode, pour choisir entre la sonde de plancher et la sonde ambiante pour contrôler la température.
+- neviweb130.set_floor_air_limit, pour régler la limite de température de l’air des thermostats de plancher.
+- neviweb130.set_phase_control, pour régler le mode de contrôle de phase du gradateur DM2550ZB (reverse ou forward).
+- neviweb130.set_hvac_dr_options, pour activer ou réinitialiser les options de période DR dans Neviweb pour les thermostats.
+- neviweb130.set_hvac_dr_setpoint, pour régler la réduction de consigne des thermostats pendant la période DR, de 100 à -100 (°C × 10). 0 fait seulement clignoter la petite icône.
+- neviweb130.set_load_dr_options, pour activer ou réinitialiser les options de période DR dans Neviweb pour les contrôleurs de charge.
+- neviweb130.set_cycle_output, pour régler la durée du cycle principal des thermostats basse tension, en minutes.
+- neviweb130.set_aux_cycle_output, pour régler la durée du cycle d’appoint des thermostats basse tension, en minutes.
+- neviweb130.set_control_onoff, pour changer l’état des sorties 1 et 2 du multicontrôleur de la valve Sedna.
+- neviweb130.set_battery_type, pour choisir le type de pile du détecteur de fuite, alcaline ou lithium.
+- neviweb130.set_tank_size, pour régler la capacité du chauffe-eau du Calypso RM3500ZB.
+- neviweb130.set_low_temp_protection, pour activer ou non la protection de température d’eau du chauffe-eau. Sous 45°C, le chauffage redémarre automatiquement.
+- neviweb130.set_controlled_device, pour changer le nom de l’appareil contrôlé par le contrôleur de charge RM3250ZB.
+- neviweb130.set_flow_meter_model, pour changer le modèle de débitmètre connecté à la valve Sedna 2e génération et activer ou arrêter la protection contre les fuites par le débitmètre.
+- neviweb130.set_flow_meter_delay, pour régler le délai avant la fermeture de la valve quand le débitmètre détecte une fuite.
+- neviweb130.set_flow_meter_options, pour régler l’action du débitmètre : fermer la valve (oui/non) et envoyer une alerte (oui/non), ou ne rien faire.
+- neviweb130.set_tank_type, pour choisir le type de réservoir du LM4110-ZB, propane ou mazout.
+- neviweb130.set_gauge_type, pour choisir le type de jauge du LM4110-ZB sur un réservoir de propane, modèle 5-95 ou 10-80.
+- neviweb130.set_low_fuel_alert, pour régler le seuil de niveau bas du réservoir de propane, 0 (off), 10, 20 ou 30%.
+- neviweb130.set_tank_height, pour régler la hauteur du réservoir de mazout du LM4110-ZB, 0 (off), 23, 24, 35, 38, 47, 48, 50.
+- neviweb130.set_fuel_alert, pour activer ou désactiver l’alerte de carburant du LM4110-ZB.
+- neviweb130.set_power_supply, pour choisir l’alimentation de la valve Sedna : batterie, acups-01 ou les deux.
+- neviweb130.set_battery_alert, pour activer ou désactiver l’alerte de batterie du LM4110-ZB.
+- neviweb130.set_input_output_names, pour nommer les entrées 1 et 2 et les sorties 1 et 2 du MC3100ZB.
+- neviweb130.set_activation, pour activer ou bloquer la lecture d’un appareil dans Neviweb.
+- neviweb130.set_sensor_type, pour choisir le type de sonde, 10k ou 12k.
+- neviweb130.set_remaining_time, pour régler l’attribut coldLoadPickupRemainingTime.
+- neviweb130.set_on_off_input_delay, pour régler le délai «on» ou «off» en secondes des entrées 1 et 2 du MC3100ZB.
+- neviweb130.set_em_heat, pour activer ou désactiver le chauffage d’appoint des thermostats de plancher et basse tension. Remplace turn_aux_heat_on et turn_aux_heat_off, retirés par HA.
+- neviweb130.set_display_config, pour allumer ou éteindre l’affichage de la thermopompe.
+- neviweb130.set_sound_config, pour activer ou désactiver le son de la thermopompe.
+- neviweb130.set_heat_pump_operation_limit, pour régler la température minimale de fonctionnement de la thermopompe.
+- neviweb130.set_heat_lockout_temperature, pour régler la température extérieure maximale à laquelle le chauffage peut fonctionner.
+- neviweb130.set_cool_lockout_temperature, pour régler la température extérieure minimale à laquelle la climatisation peut fonctionner.
+- neviweb130.set_hc_second_display, pour régler le deuxième affichage du TH1134ZB-HC.
+- neviweb130.set_language, pour choisir la langue d’affichage du TH1134ZB-HC.
+- neviweb130.set_neviweb_status, pour régler le statut global Neviweb, maison ou absent, par le capteur du GT130.
+- neviweb130.set_climate_neviweb_status, pour régler le statut global Neviweb, maison ou absent, par n’importe quel thermostat.
+- neviweb130.set_refuel_alert, pour recevoir une alerte quand le réservoir de propane est rempli.
+- neviweb130.set_accessory_type, pour choisir le type d’accessoire (humidificateur, déshumidificateur, échangeur d’air) connecté au TH6500WF ou TH6250WF.
+- neviweb130.set_schedule_mode, pour choisir le mode d’horaire, manuel ou auto, du TH6500WF ou TH6250WF.
+- neviweb130.set_flow_alarm_disable_timer, pour désactiver l’alarme de débit anormal de 1 seconde à 24 heures.
+- neviweb130.set_heatcool_setpoint_delta, pour régler l’écart entre la consigne de chauffage et celle de climatisation, de 1 à 5°C en mode auto, pour TH6xxxWF.
+- neviweb130.set_fan_filter_reminder, pour régler le délai entre deux nettoyages du filtre du ventilateur, de 1 à 12 mois, pour TH6xxxWF.
+- neviweb130.set_temperature_offset, pour corriger la sonde de température de -2 à 2°C par pas de 0,5°C, pour TH6xxxWF.
+- neviweb130.set_aux_heating_source, pour choisir le type de chauffage d’appoint utilisé par TH6xxxWF.
+- neviweb130.set_fan_speed, pour régler la vitesse du ventilateur, on ou auto, pour TH6xxxWF.
 - neviweb130.set_min_time_on, pour régler la durée minimale de marche avant l’arrêt (run-on) pour TH6500WF et TH6250WF.
 - neviweb130.set_min_time_off, pour régler la durée minimale d’arrêt avant le redémarrage (cooldown) pour TH6500WF et TH6250WF.
 - neviweb130.set_heat_interstage_delay et set_cool_interstage_delay, pour régler la durée minimale de chauffage ou de climatisation avant de passer à l’étage suivant pour TH6500WF et TH6250WF.
@@ -642,54 +586,35 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
 - neviweb130.set_light_min_intensity, pour régler l’intensité minimale du gradateur.
 - neviweb130.set_key_double_up, pour activer ou désactiver l’action du double appui vers le haut du DM2550ZB.
 - neviweb130.set_switch_power_timer, pour régler la minuterie du RM3250ZB, off ou de 1 min à 24 h. L’appareil s’éteint après ce délai.
+- neviweb130.set_switch_temp_alert, pour régler l’alerte de basse température du MC3100ZB.
 
 Les actions marquées « Equipment configuration should be performed by a professional » dans les outils de développement modifient le fonctionnement de l’équipement CVC. Utilisez-les seulement si vous connaissez votre installation.
 
 ## Capter le signal Éco Sinopé pour les périodes de pointe
+Si au moins un thermostat ou un contrôleur de charge est inscrit au programme Éco Sinopé, vous pouvez savoir quand Neviweb envoie le signal de préchauffage aux thermostats ou le signal d’arrêt aux contrôleurs de charge. Ces attributs indiquent qu’une période de pointe s’en vient et comment elle est gérée :
 
-Si vous possédez au moins un thermostat ou un contrôleur de charge inscrit au programme Éco-Sinopé, il est maintenant possible de 
-capter lorsque Neviweb envoie le signal pour le démarrage de la période du préchauffage pour les thermostats ou le signal d'arrêt pour les 
-contrôleurs de charge. Sept attributs ont été ajoutés pour les thermostats et trois pour le contrôleur de charge afin de savoir que la 
-période de pointe est à venir et comment il est géré :
+- Pour les thermostats :
+  - **eco_status** : «off» en temps normal, passe à «on» au début de la période de préchauffage. C’est l’attribut à suivre pour détecter le début d’une pointe.
+  - **eco_setpoint** : «off» en temps normal, passe à «on» pendant la pointe si l’appareil est géré par Éco Sinopé.
+  - **eco_optout** : «off» en temps normal et pendant la pointe, passe à «on» si quelqu’un change la consigne pendant la pointe.
+  - **eco_power_relative** : «off» en temps normal. Sert à fixer une température minimale, relative à la consigne, à laquelle le thermostat se rallume automatiquement pour la protection contre le gel.
+  - **eco_power_absolute** : «off» en temps normal. Sert à limiter pi_heating_demand entre 1 et 100% pendant la pointe.
+  - **eco_setpoint_status** : «off» en temps normal, passe à «on» si la consigne est changée par Éco Sinopé.
+  - **eco_setpoint_delta** : 0 en temps normal, prend une valeur entre -10 et +10 pendant la pointe. La valeur est positive pour le préchauffage et négative pour la pointe. C’est un écart appliqué à la consigne : -10 = consigne réduite de 10°C, +2 = consigne augmentée de 2°C.
 
-- **Pour les thermostats** :
-  - **eco_status** : réglé sur « off » pendant le fonctionnement normal, allumer « on » au début de la période de préchauffage.
-    C'est l'attribut à suivre pour détecter un démarrage en pointe.
-  - **eco_setpoint** : réglé sur «off» pendant le fonctionnement normal, allumer «on» pendant la période de pointe si l'appareil est géré par 
-    Eco-Sinopé.
-  - **eco_optout** : réglé sur «off» pendant le fonctionnement normal, en période de pointe, allumer «on» si quelqu'un modifie le point de consigne 
-    manuellement durant la période de pointe.
-  - **eco_power_relative** : réglé sur « off » en fonctionnement normal, permet de définir une température minimale par rapport au point de consigne 
-    où le thermostat s'allumera automatiquement pour la protection contre le gel.
-  - **eco_power_absolute** : réglé sur « off » en fonctionnement normal, utilisé pour limiter le niveau `pi_heating_demand` entre 1 et 
-    100% en période de pointe.
-  - **eco_setpoint_status** : réglé sur « off » pendant le fonctionnement normal, allumez « on » si le point de consigne de l'appareil est modifié par 
-    Eco-Sinopé.
-  - **eco_setpoint_delta** : mis à 0 en fonctionnement normal, modifié à des valeurs comprises entre -10 et +10 en période de pointe. 
-    Pour le préchauffage, la valeur est positive et pour la période de pointe, elle est négative. Il s'agit d'un delta appliqué aux 
-    consigne. -10 = consigne réduite de 10°C. +2 = consigne augmentée de 2°C.
+- Pour les contrôleurs de charge :
+  - **eco_status** : «off» en temps normal, passe à «on» au début de la période de préchauffage. C’est l’attribut à suivre pour détecter le début d’une pointe.
+  - **eco_onoff** : «off» en temps normal, passe à «on» pendant la pointe si l’appareil est géré par Éco Sinopé. L’appareil est éteint pendant la pointe. Rien n’est fait pendant le préchauffage.
+  - **eco_optout** : «off» en temps normal et pendant la pointe, passe à «on» si quelqu’un rallume l’appareil pendant la pointe.
 
-- **Pour contrôleur de charge** :
-  - **eco_status** : réglé sur « off » pendant le fonctionnement normal, allumer « on » pendant la période de pointe au début de la période 
-    de préchauffage. c'est l'attribut à suivre pour détecter un démarrage en pointe.
-  - **eco_onoff** : réglé sur «off» pendant le fonctionnement normal, allumer «on» pendant les périodes de pointe si l'appareil est géré par 
-    Eco-Sinopé. L'appareil est éteint pendant les périodes de pointe. Rien n'est fait pendant la période de préchauffage.
-  - **eco_optout** : réglé sur « off » pendant le fonctionnement normal, en période de pointe, allumez « on » si quelqu'un allume l'appareil 
-    en période de pointe.
+- Pour le multicontrôleur MC3100ZB :
+  - **eco_status** : «off» en temps normal, passe à «on» au début de la période de préchauffage. C’est l’attribut à suivre pour détecter le début d’une pointe.
+  - **eco_setpoint** : «off» en temps normal, aucun changement pendant la pointe si l’appareil est géré par Éco Sinopé.
+  - **eco_optout** : «off» en temps normal, passe à «on» si quelqu’un change l’état on/off pendant la pointe.
+  - **eco_power_relative** : «off» en temps normal. Sert à fixer une température minimale, relative à la température ambiante, à laquelle le MC3100ZB se rallume automatiquement pour la protection contre le gel.
+  - **eco_power_absolute** : «off» en temps normal, usage inconnu.
 
-- **Pour Multicontrôleur MC3100ZB** :
-  - **eco_status** : réglé sur « off » pendant le fonctionnement normal, allumer « on » pendant la période de pointe au début de la période 
-    de préchauffage. c'est l'attribut à suivre pour détecter un démarrage en pointe.
-  - **eco_setpoint** : réglé sur « off » en fonctionnement normal, pas de changement en période de pointe si l'appareil est géré par 
-    Eco-Sinopé.
-  - **eco_optout** : réglé sur « off » pendant le fonctionnement normal, pendant les périodes de pointe, allumer « on » si quelqu'un change la
-    valeur onoff en période de pointe.
-  - **eco_power_relative** : réglé sur « off » en fonctionnement normal, utilisé pour définir une température minimale par rapport à la
-    température ambiante, valeur de température à laquelle le MC3100ZB s’allumera automatiquement pour la protection contre le gel.
-  - **eco_power_absolute** : réglé sur « off » en fonctionnement normal, utilisation inconnue.
-
-Il est alors possible de réaliser une automatisation pour préparer tous les appareils HA pour la période de pointe en suivant le changement
-de l'attribut eco_status de «off» à «on».
+Vous pouvez ainsi créer une automatisation qui prépare vos appareils HA pour la pointe en suivant le passage d’eco_status de «off» à «on».
 
 ## Statistiques d’énergie et d’eau
 Les appareils qui rapportent leur consommation dans Neviweb ont ces entités capteur, en kWh :
@@ -708,66 +633,56 @@ Neviweb130 est traduit en français et en anglais : entités, services, attribut
 Après avoir modifié les fichiers de traduction, redémarrez Home Assistant. Recharger l’intégration ne suffit pas pour que HA charge les nouvelles traductions.
 
 ## Dépannage
-si vous voyez votre appareil dans le journal, mais qu'il n'apparaît pas dans la liste des entités, vous devez ajouter le numéro de modèle de l'appareil dans le 
-code. Ou vous pouvez m'envoyer le numéro de modèle afin que je puisse l'ajouter dans le code.
+Si votre appareil apparaît dans le journal mais pas dans la liste des entités, son numéro de modèle doit être ajouté au code. Ouvrez une issue avec le numéro de modèle pour qu’il soit ajouté.
 
-Dans le journal, recherchez les lignes :
+Dans le journal, cherchez ces lignes :
 ```
 [custom_components.neviweb130] Received gateway data: [{'id': 100225, 'identifier': '500b91400001f750', 'name': 'Chargeur auto', 'family': '2506',...
 [custom_components.neviweb130] Received signature data: {'signature': {'model': 2506, 'modelCfg': 0, 'softBuildCfg': 0, 'softVersion': {'minor': 9, 'middle': 2, 'major': 1}, 'hardRev': 2, 'protocol': 'sinopcom'}}
 ```
-« family » : « 2506 » et « model » : 2506 sont ce dont vous avez besoin pour trouver le numéro de modèle de votre appareil.  
-Les listes de modèles sont dans `const.py` (CLIMATE_MODEL, LIGHT_MODEL, SWITCH_MODEL, VALVE_MODEL, SENSOR_MODEL). Le plus simple est d’ouvrir une issue avec le numéro de modèle.
+'family': '2506' et 'model': 2506 donnent le numéro de modèle de votre appareil. Les listes de modèles sont dans `const.py` (CLIMATE_MODEL, LIGHT_MODEL, SWITCH_MODEL, VALVE_MODEL, SENSOR_MODEL).
 
-Si vous obtenez une trace de pile liée à un composant Neviweb130 dans le journal de Home Assistant, vous pouvez  
-[signaler un problème ici](https://github.com/claudegel/sinope-130/issues/new/choose)
+Si vous voyez une trace d’erreur liée à Neviweb130 dans `neviweb130_log.txt` ou `home-assistant.log`, [ouvrez une issue](https://github.com/claudegel/sinope-130/issues/new/choose).
 
-Vous pouvez également poster sur l'un de ces forum pour obtenir de l'aide :
+Vous pouvez aussi demander de l’aide sur l’un de ces forums :
 - https://community.home-assistant.io/t/sinope-line-voltage-thermostats
 - https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer
 
 ### Fichier de journalisation
 
-Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt`, dans votre répertoire de configuration (config), et non dans `home-assistant.log`. Par défaut, le fichier est vidé à chaque démarrage de l’intégration (log_reset_on_start), renommé quand il atteint 2 Mo (log_max_bytes) et 2 fichiers de rotation sont conservés (log_backup_count). Ces réglages et le niveau de journalisation sont dans les options de l’intégration.
-
-Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous signalez.
+Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt`, dans votre répertoire de configuration, et non dans `home-assistant.log`. La section `logger:` de `configuration.yaml` n’a aucun effet sur ce fichier. Par défaut, le fichier est vidé à chaque démarrage de l’intégration (log_reset_on_start), renommé quand il atteint 2 Mo (log_max_bytes) et 2 fichiers de rotation sont conservés (log_backup_count).
 
 ### Activer les messages de débogage
 
-Pour modifier le niveau de journalisation dans la V2, rendez-vous dans Paramètres / Appareils et services. Cliquez sur Neviweb130, puis sur 
-l'icône en forme d'engrenage ⚙️ (configuration).
-Il vous suffit ensuite de sélectionner le niveau de journalisation souhaité. Aucun redémarrage de HA n'est nécessaire.
-Au même endroit, vous avez également la possibilité de télécharger votre fichier de journalisation (neviweb130_log.txt), si jamais vous 
-souhaitez me l'envoyer pour faciliter le débogage. 
+- Ouvrez la page de l’intégration neviweb130, cliquez sur Configurer et mettez **log_level** à `debug`. Aucun redémarrage n’est nécessaire.
+- Reproduisez le problème, puis utilisez **download_log** dans les mêmes options pour télécharger le fichier, ou lisez directement `config/neviweb130_log.txt`.
+- Remettez ensuite le niveau à `warning`, le journal debug grossit vite.
+
+Joignez un extrait de ce fichier quand vous demandez de l’aide.
 
 ### Messages d'erreur reçus de Neviweb
-Dans votre journal, à l'occasion, vous pouvez recevoir ces messages de Neviweb :
-- ACCDAYREQMAX : Requête quotidienne maximale atteinte (« quotidienne » : 30000)... Réduire la fréquence d'interrogation (scan_interval).
-- ACCSESSEXC : Plusieurs sessions ouvertes en même temps. Ceci est courant si vous redémarrez Home Assistant plusieurs fois et/ou si vous 
-  ayez également une session ouverte sur Neviweb.
-- ACCRATELIMIT: Limite maximale de tentatives de connexion atteinte lors de la connexion à Neviweb. Connexions trop fréquentes.
-  Veuillez patienter quelques minutes avant le redémarrage de HA.
-- DVCACTNSPTD : Action du périphérique non prise en charge. L'appel de service n'est pas pris en charge pour cet appareil spécifique.
-- DVCATTRNSPTD : Attribut de périphérique non pris en charge. Le périphérique que vous avez installé possède un firmware plus ancien et ne prend pas en charge 
-  certains attributs. Attendez la mise à jour du firmware dans Neviweb et l'erreur devrait disparaître ou signalez un problème afin que nous puissions mettre un 
-  exception dans le code.
-- DVCBUSY : Neviweb effectue une mise à jour et les appareils ne sont pas disponibles. Essayez plus tard.
-- DVCCOMMTO : Délai de communication de l'appareil : l'appareil ne répond pas assez rapidement ou vous interrogez cet appareil trop
-  fréquemment.
-- DVCERR: L'appareil a rejeté la requête. La commande a envoyé un attribut invalide ou non défini.
-- DVCNOTSYNC : L'appareil n'est pas synchronisé avec Neviweb. Vérifiez votre réseau, routeur et/ou passerelle Wi-Fi.
-- DVCUNVLB : Appareil indisponible. Neviweb ne parvient pas à se connecter à des appareils spécifiques, principalement des appareils Wi-Fi. 
-- MAINTENANCE : Accès Neviweb temporairement bloqué pour maintenance... Réessayez plus tard.
-- SVCERR : Erreur de service. Service non disponible. Essayez plus tard.
-- SVCINVREQ : Demande invalide envoyée à Neviweb, service inexistant ou demande mal formée.
-- SVCUNAUTH: Mauvaise requête de service ou requête mal formée rejetée par le serveur Neviweb.
-- USRBADLOGIN : votre login et/ou mot de passe fourni dans la configuration de Neviweb ne sont pas les bons.
-- USRSESSEXP : Session utilisateur expirée. Réduisez votre scan_interval en dessous de 10 minutes ou votre session sera terminée.
-- VALINVLD : Valeur non valide envoyée à Neviweb.
-- ReadTimeout : La demande a été envoyée à l'appareil mais aucune réponse n'est revenue. Problème de réseau.
-- TimeoutError : Erreur de délai d'attente détectée... Réessayez plus tard.
+Vous pouvez voir ces messages de Neviweb dans le journal :
+- ACCDAYREQMAX : nombre maximal de requêtes par jour atteint (30000). Réduisez la fréquence de lecture.
+- ACCRATELIMIT : trop de tentatives de connexion. Attendez quelques minutes avant de réessayer.
+- ACCSESSEXC : trop de sessions ouvertes en même temps. C’est fréquent après plusieurs redémarrages de Home Assistant ou quand Neviweb est aussi ouvert ailleurs.
+- DVCACTNSPTD : action non supportée par l’appareil.
+- DVCATTRNSPTD : attribut non supporté. Le micrologiciel de l’appareil ne supporte pas certains attributs. L’appareil passe automatiquement en mode sécuritaire (voir safe_mode). Attendez une mise à jour du micrologiciel dans Neviweb, ou ouvrez une issue pour qu’une exception soit ajoutée.
+- DVCBUSY : Neviweb fait une mise à jour et les appareils ne sont pas disponibles. Réessayez plus tard.
+- DVCCOMMTO : délai de communication dépassé. L’appareil n’a pas répondu à temps, ou il est lu trop souvent.
+- DVCERR : la commande ou l’attribut a été refusé par l’appareil.
+- DVCNOTSYNC : appareil non synchronisé avec Neviweb.
+- DVCUNVLB : appareil non disponible. Neviweb ne peut pas joindre l’appareil, surtout les appareils Wi-Fi.
+- MAINTENANCE : Neviweb est temporairement indisponible pour maintenance. Réessayez plus tard.
+- SVCERR : service non disponible. Réessayez plus tard.
+- SVCINVREQ : requête invalide envoyée à Neviweb. Le service n’existe pas ou la requête est mal formée.
+- SVCUNAUTH : requête refusée par le serveur Neviweb, l’action n’est pas autorisée pour cet appareil.
+- USRBADLOGIN : nom d’utilisateur ou mot de passe Neviweb invalide.
+- USRSESSEXP : session expirée. Réduisez scan_interval.
+- VALINVLD : valeur invalide envoyée à Neviweb.
+- ReadTimeout : la requête a été envoyée mais l’appareil n’a pas répondu. Problème de réseau.
+- TimeoutError : délai de la requête dépassé. Réessayez plus tard.
 
-Si vous trouvez d'autres codes d'erreur, veuillez me les transmettre.
+Si vous voyez un autre code d’erreur, signalez-le dans une issue.
 
 ### Attributs manquants non renvoyés par Neviweb
 
@@ -783,7 +698,7 @@ Neviweb laisse parfois tomber des attributs lors d’une mise à jour, même s�
 Custom-UI n’est plus nécessaire. Neviweb130 définit lui-même l’image des thermostats, capteurs et valves, et les exemples ci-dessous utilisent des cartes Lovelace modernes.
 
 Prérequis :
-- Copiez les icônes dans `config/www/neviweb130/` (servi comme `/local/neviweb130/` dans HA). Voir [Noms des fichiers d’icônes](#noms-des-fichiers-dicônes).
+- Copiez les icônes d’appareils du dossier [www](../www) de ce dépôt dans `config/www/neviweb130/`, et les icônes météo de [www/icons](../www/icons) dans `config/www/neviweb130/weather/` (servis comme `/local/neviweb130/` dans HA). Voir [Noms des fichiers d’icônes](#noms-des-fichiers-dicônes).
 - Pour les exemples Mushroom, installez ces cartes avec HACS : card-mod, Mushroom et stack-in-card.
 
 Neviweb130 expose le chemin de l’icône dans ces attributs :
@@ -901,7 +816,7 @@ Comme ci-dessus :
 
 ## Noms des fichiers d’icônes
 
-Les icônes vont dans `config/www/neviweb130/`. L’image s’affiche seulement si le fichier existe :
+Copiez les icônes d’appareils du dossier [www](../www) de ce dépôt dans `config/www/neviweb130/`. L’image s’affiche seulement si le fichier existe :
 - Thermostats : `heat-off.png`, `heat-0.png` à `heat-5.png`, `heat-auto-0.png` à `heat-auto-5.png`
 - Thermostats de plancher : `floor-off.png`, `floor-0.png` à `floor-5.png`, `floor-auto-0.png` à `floor-auto-5.png`
 - Détecteurs de fuite : `drop.png`, `leak.png`
@@ -909,20 +824,20 @@ Les icônes vont dans `config/www/neviweb130/`. L’image s’affiche seulement 
 - Valves : `valve-open.png`, `valve-close.png`, `leak.png`
 - Réservoir de propane (LM4110-ZB) : `propane-unknown.png`, `propane-0.png` à `propane-8.png`
 
-Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weather/<nom>.png`. Au démarrage, une notification avertit si ce dossier est absent ou vide. La correspondance code → fichier est dans le README anglais (section Weather icons) et dans `WEATHER_ICON_MAP` (`schema.py`). Les noms de fichiers sont sensibles à la casse.
+Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weather/<nom>.png` : copiez-y les fichiers du dossier [www/icons](../www/icons) de ce dépôt. Au démarrage, une notification avertit si ce dossier est absent ou vide. La correspondance code → fichier est dans le README anglais (section Weather icons) et dans `WEATHER_ICON_MAP` (`schema.py`). Les noms de fichiers sont sensibles à la casse.
 
 ## Réinitialisation matérielle de l’appareil
 - Thermostats :
-    - Augmentez la température jusqu'à ce que l'affichage change.
-    - Appuyez sur les deux boutons jusqu'à ce que CLR apparaisse à l'écran.
-    - Appuyez une fois sur le bouton supérieur pour obtenir YES sur l'écran.
-    - Appuyez simultanément sur les deux boutons et relâchez-les immédiatement. TERMINÉ (DONE) devrait apparaître à l’écran.
-    - Le thermostat redémarrera avec la configuration d'usine
+    - Montez la température jusqu’à ce que l’affichage change.
+    - Appuyez sur les deux boutons jusqu’à ce que CLR apparaisse à l’écran.
+    - Appuyez une fois sur le bouton du haut pour afficher YES.
+    - Appuyez sur les deux boutons en même temps et relâchez aussitôt. DONE devrait apparaître à l’écran.
+    - Le thermostat redémarre avec les réglages d’usine.
 
-- thermostat G2 :
-    - Augmentez la température jusqu'à ce que l'affichage change.
-    - Appuyez et maintenez enfoncés les deux boutons jusqu'à ce que RST apparaisse à l'écran.
-    - Attendez le redémarrage de l'appareil.
+- Thermostats G2 :
+    - Montez la température jusqu’à ce que l’affichage change.
+    - Gardez les deux boutons enfoncés jusqu’à ce que RST apparaisse à l’écran.
+    - Attendez que l’appareil redémarre.
 
 ## À faire
 - Améliorer la récupération des statistiques énergétiques de Neviweb.

@@ -678,7 +678,7 @@ Neviweb sometimes drops attributes during an update, even if they are listed for
 Custom-UI is no longer needed. Neviweb130 sets the entity picture of thermostats, sensors and valves itself, and the examples below use modern Lovelace cards.
 
 Prerequisites:
-- Copy the icons into `config/www/neviweb130/` (served as `/local/neviweb130/` in HA). See [Device and weather icons](#device-and-weather-icons) for the file names.
+- Copy the device icons from the [www](www) folder of this repository into `config/www/neviweb130/`, and the weather icons from [www/icons](www/icons) into `config/www/neviweb130/weather/` (served as `/local/neviweb130/` in HA). See [Device and weather icons](#device-and-weather-icons) for the file names.
 - For the Mushroom examples, install these cards with HACS: card-mod, Mushroom and stack-in-card.
 
 Neviweb130 exposes the icon path in these attributes:
@@ -799,7 +799,7 @@ Same as above:
 
 Neviweb130 sets the entity picture itself. Custom-UI and `customize.yaml` are no longer needed. The picture is shown only if the png file exists, otherwise the default icon is used. The current path is also exposed in the `icon_type` attribute.
 
-Copy the icons in `config/www/neviweb130/` (served as `/local/neviweb130/`). File names used by the code:
+Copy the device icons from the [www](www) folder of this repository into `config/www/neviweb130/` (served as `/local/neviweb130/`). File names used by the code:
 
 | Device                   | Files                                                                                     |
 |--------------------------|-------------------------------------------------------------------------------------------|
@@ -814,7 +814,7 @@ The thermostat level follows the heating demand: 0 below 1%, then one step every
 
 ### Weather icons
 
-The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Its picture is taken from `config/www/neviweb130/weather/<name>.png`. At startup, neviweb130 sends a notification if this folder is missing or empty. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
+The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Its picture is taken from `config/www/neviweb130/weather/<name>.png`: copy the files of the [www/icons](www/icons) folder of this repository there. At startup, neviweb130 sends a notification if this folder is missing or empty. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
 
 | Code | File               | Code | File               | Code | File                |
 |------|--------------------|------|--------------------|------|---------------------|
