@@ -148,7 +148,7 @@
           "prefix": "Neviweb account name",
           "log_level": "Log Level",
           "log_max_bytes": "Log Max Size",
-          "log_backup_count": "Backucp Files Number",
+          "log_backup_count": "Backup Files Number",
           "log_reset_on_start": "Log Reset on Start",
           "download_log": "Download log",
           "reload": "Reload Integration",

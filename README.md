@@ -33,9 +33,8 @@ Report a problem or suggest an improvement: [Open an issue](https://github.com/c
 - [Services / Actions](#custom-services)
 - [Debugging](#logging-for-debugging)
 - [Eco-Sinopé](#catch-eco-sinope-signal-for-peak-period)
-- [Energy statistic](#energy-statistic)
+- [Energy and water statistics](#energy-and-water-statistics)
 - [Localisation (language)](#localisation)
-- [Sedna flow meeter](#statistic-for-sedna-flow-meeter)
 - [Troubleshooting](#troubleshooting)
 - [Customization](#customization)
 - [Device hard reset](#device-hard-reset)
@@ -45,119 +44,103 @@ Report a problem or suggest an improvement: [Open an issue](https://github.com/c
 
 ### Neviweb130-V2 is almost there
 
-neviweb130 v5.0.0b0 is ready for testing. I just need to add documentation on separate branch for those who are interested
+neviweb130 v5.0.0b0 is ready for testing.
 
 ## Supported Devices
-Here is a list of currently supported devices. Basically, it's everything that can be added in Neviweb.
-- **Zigbee thermostats**:
-  - Sinopé TH1123ZB 3000W Line voltage thermostat
-  - Sinopé TH1124ZB 4000W Line voltage thermostat
-  - Sinopé TH1123ZB 3000W Thermostat for public areas
-  - Sinopé TH1124ZB 4000W Thermostat for public areas
-  - Sinopé TH1123ZB-G2 3000W Thermostat second generation
-  - Sinopé TH1124ZB-G2 4000W Thermostat second generation
-  - Sinopé TH1134ZB-HC for control of heating/cooling interlocking
-  - Sinopé TH1300ZB 3600W Floor heating thermostat
-  - Sinopé TH1320ZB-04 Floor heating thermostat
-  - Sinopé TH1400ZB Low voltage thermostat
+Here is the list of currently supported devices. Basically, it's everything that can be added in Neviweb.
+- Zigbee thermostats:
+  - Sinopé TH1123ZB 3000W line voltage thermostat
+  - Sinopé TH1124ZB 4000W line voltage thermostat
+  - Sinopé TH1123ZB 3000W thermostat for public areas
+  - Sinopé TH1124ZB 4000W thermostat for public areas
+  - Sinopé TH1123ZB-G2 3000W thermostat, second generation
+  - Sinopé TH1124ZB-G2 4000W thermostat, second generation
+  - Sinopé TH1134ZB-HC for heating/cooling interlocking
+  - Sinopé TH1300ZB 3600W floor heating thermostat
+  - Sinopé TH1320ZB-04 floor heating thermostat
+  - Sinopé TH1400ZB low voltage thermostat
   - Sinopé TH1500ZB 3600W double pole thermostat
-  - Nordik TH1420ZB-01 Nordik low voltage radiant hydroponic floor thermostat
-  - Ouellet OTH3600-GA-ZB Ouellet Floor thermostat
-  - Ouellet OTH4000-ZB Ouellet 4000W Line voltage thermostat
-- **Wi-Fi thermostats** (no need for GT130):
-  - Sinopé TH1124WF Wi-Fi 4000W Line voltage thermostat
-  - Sinopé TH1123WF Wi-Fi 3000W Line voltage thermostat
-  - Sinopé TH1133WF Wi-Fi 3000W Line voltage thermostat lite
-  - Sinopé TH1133CR Sinopé Evo 3000w Line voltage thermostat lite
-  - Sinopé TH1134WF Wi-Fi 4000W Line voltage thermostat lite
-  - Sinopé TH1134CR Sinopé Evo 4000w Line voltage thermostat lite
-  - Sinopé TH1143WF Wi-Fi 3000W two wires connection, color screen
-  - Sinopé TH1144WF WI-Fi 4000W two wires connection, color screen
-  - Sinopé TH1145WF Wi-Fi 4000W two wires connection, color screen
-  - Sinopé TH1300WF Wi-Fi 3600W floor thermostat
-  - Sinopé TH1310WF Wi-Fi 3600W floor thermostat
-  - Sinopé TH1315WF Wi-Fi 3600W floor thermostat, no energy measurement chip only calculated energy
-  - Sinopé TH1325WF Wi-Fi 3600W floor thermostat
+  - Nordik TH1420ZB-01 low voltage radiant hydronic floor thermostat
+  - Ouellet OTH3600-GA-ZB floor thermostat
+  - Ouellet OTH4000-ZB 4000W line voltage thermostat
+- Wi-Fi thermostats (no GT130 needed):
+  - Sinopé TH1123WF Wi-Fi 3000W line voltage thermostat
+  - Sinopé TH1124WF Wi-Fi 4000W line voltage thermostat
+  - Sinopé TH1133WF Wi-Fi 3000W line voltage thermostat lite
+  - Sinopé TH1133CR Sinopé Evo 3000W line voltage thermostat lite
+  - Sinopé TH1134WF Wi-Fi 4000W line voltage thermostat lite
+  - Sinopé TH1134CR Sinopé Evo 4000W line voltage thermostat lite
+  - Sinopé THEWF01 Wi-Fi thermostat lite
+  - Sinopé TH1143WF and TH1144WF Wi-Fi 3000W and 4000W thermostats, two wire connection, color screen
+  - Sinopé TH1145WF Wi-Fi 4000W thermostat, two wire connection, color screen
+  - Sinopé TH1300WF, TH1310WF, TH1315WF and TH1325WF Wi-Fi 3600W floor thermostats
   - Sinopé TH1400WF Wi-Fi low voltage thermostat
   - Sinopé TH1500WF Wi-Fi 3600W double pole thermostat
-  - Sinopé TH6500WF Wi-Fi heat/cool
-  - Sinopé TH6510WF Wi-Fi heat/cool
-  - Sinopé TH6250WF Wi-Fi heat/cool
-  - Sinopé TH6250WF_PRO Wi-Fi heat/cool
-  - Sinopé TH6251WF_PRO Wi-Fi heat/cool
-  - Sinopé THEWF01 Wi-Fi lite thermostat
-  - Flextherm concerto connect FLP55 floor thermostat (sku FLP55 do not provide energy stats in Neviweb)
+  - Sinopé TH6500WF, TH6510WF, TH6250WF, TH6250WF-PRO and TH6251WF-PRO Wi-Fi heat/cool (preliminary, volunteers needed to test)
+  - Flextherm Concerto Connect FLP55 floor thermostat (the FLP55 does not provide energy stats in Neviweb)
   - Flextherm True Comfort floor thermostat
   - SRM40 floor thermostat
-- **Heatpump controller**:
+- Heat pump controllers:
   - Sinopé HP6000ZB-GE for Ouellet heat pump with Gree connector
   - Sinopé HP6000ZB-GE-RS485 for Tosot heat pump with Gree connector
   - Sinopé HP6000ZB-MA for Ouellet Convectair heat pump with Midea connector
-  - Sinopé PH6000ZB-HS for Hisense, Haxxair and Zephyr heat pump
-- **Wi-Fi Heatpump controller**:
-  - Sinopé HP6000WF-MA for Ouellet Convectair heat pump with Midea connector
-  - Sinopé HP6000WF-HA for for Hotpoint heat pump
-  - Sinopé HP6000WF-TCL for Runtru/Ameristar, Nirvana and TCL heat pump
-- **Zigbee lighting**:
-  - Sinopé SW2500ZB Light switch
-  - Sinopé SW2500ZB-G2 Light switch
-  - Sinopé DM2500ZB Dimmer
-  - Sinopé DM2500ZB-G2 Dimmer
-  - Sinopé DM2550ZB Dimmer
-  - Sinopé DM2550ZB-G2 Dimmer
-- **Zigbee lighting connected to Sedna valve**:
-  - Sinopé SW2500ZB-VA Light switch
-  - Sinopé DM2500ZB-VA Dimmer
-  - Sinopé DM2550ZB-VA Dimmer
-- **Zigbee specialized control**:
-  - Sinopé RM3250ZB Load controller 50A
-  - Sinopé RM3500ZB Calypso load controller 20,8A for water heater
+  - Sinopé HP6000ZB-HS for Hisense, Haxxair and Zephyr heat pump
+  - Sinopé HP6000WF-MA for Ouellet Convectair heat pump with Midea connector, Wi-Fi
+  - Sinopé HP6000WF-TCL for Runtru/Ameristar heat pump, Wi-Fi
+  - Sinopé HP6000WF-HA for Hotpoint heat pump, Wi-Fi
+- Zigbee lighting:
+  - Sinopé SW2500ZB light switch
+  - Sinopé SW2500ZB-G2 light switch
+  - Sinopé DM2500ZB dimmer
+  - Sinopé DM2500ZB-G2 dimmer
+  - Sinopé DM2550ZB dimmer
+  - Sinopé DM2550ZB-G2 dimmer
+  - SW2500ZB-VA, DM2500ZB-VA and DM2550ZB-VA connected to a Sedna valve
+- Zigbee specialized control:
+  - Sinopé RM3250ZB load controller 50A
+  - Sinopé RM3500ZB Calypso load controller 20.8A for water heater
   - Sinopé SP2610ZB in-wall outlet
   - Sinopé SP2600ZB smart portable plug
   - Sinopé MC3100ZB Sedna valve multi-controller for alarm system
-- **Zigbee specialized control connected to Sedna valve**:
-  - Sinopé RM3250ZB-VA Load controller 50A
-  - Sinopé SP2610ZB-VA in-wall outlet
-  - Sinopé SP2600ZB-VA smart portable plug
-  - Sinopé MC3100ZB-VA Sedna valve multi-controller for alarm system
-- **Wi-Fi specialized control**:
-  - Sinopé RM3500WF Load controller for water heater
-  - Sinopé RM3510WF Load controller for water heater
-  - Sinopé RM3250WF load controller 40A, Wi-Fi
-- **Water leak detector and valves**:
-  - Sinopé VA4201WZ, VA4221WZ, sedna valve 1 inch
-  - Sinopé VA4200WZ, VA4220WZ, sedna valve 3/4 inch Wi-Fi
-  - Sinopé VA4200ZB, sedna valve 3/4 inch Zigbee
-  - Sinopé VA4220WZ, sedna 2e gen 3/4 inch
-  - Sinopé VA4220WF, sedna 2e gen 3/4 inch, Wi-Fi
-  - Sinopé VA4220ZB, sedna 2e gen 3/4 inch, Zigbee
-  - Sinopé VA4221WZ, sedna 2e gen 1 inch
-  - Sinopé VA4221WF, sedna 2e gen 1 inch, Wi-Fi
-  - Sinopé VA4221ZB, sedna 2e gen 1 inch, Zigbee
-  - Sinopé WL4200,   water leak detector
-  - Sinopé WL4200S,  water leak detector with sensor
-  - Sinopé WL4200C,  perimeter cable water leak detector
+  - RM3250ZB-VA, SP2610ZB-VA, SP2600ZB-VA and MC3100ZB-VA connected to a Sedna valve
+- Wi-Fi specialized control:
+  - Sinopé RM3500WF Calypso load controller 20.8A for water heater
+  - Sinopé RM3510WF Calypso load controller 20.8A for water heater
+  - Sinopé RM3250WF load controller 40A
+- Water leak detectors and valves:
+  - Sinopé VA4201WZ, Sedna valve 1 inch, Wi-Fi
+  - Sinopé VA4200WZ, Sedna valve 3/4 inch, Wi-Fi
+  - Sinopé VA4200ZB, Sedna valve 3/4 inch, Zigbee
+  - Sinopé VA4220WZ, Sedna 2nd gen 3/4 inch
+  - Sinopé VA4220WF, Sedna 2nd gen 3/4 inch, Wi-Fi
+  - Sinopé VA4220ZB, Sedna 2nd gen 3/4 inch, Zigbee
+  - Sinopé VA4221WZ, Sedna 2nd gen 1 inch
+  - Sinopé VA4221WF, Sedna 2nd gen 1 inch, Wi-Fi
+  - Sinopé VA4221ZB, Sedna 2nd gen 1 inch, Zigbee
+  - Sinopé WL4200, water leak detector
+  - Sinopé WL4200S, water leak detector with sensor
+  - Sinopé WL4200C, perimeter cable water leak detector
   - Sinopé WL4200ZB, water leak detector
-  - Sinopé WL4210,   water leak detector
-  - Sinopé WL4210S,  water leak detector with sensor
-  - Sinopé WL4210C,  perimeter cable water leak detector
+  - Sinopé WL4210, water leak detector
+  - Sinopé WL4210S, water leak detector with sensor
+  - Sinopé WL4210C, perimeter cable water leak detector
   - Sinopé WL4210ZB, water leak detector
-  - Sinopé WL4200ZB, connected to Sedna valve
-  - Sinopé ACT4220WF-M, VA4220WF-M, sedna multi-residential master valve 2e gen 3/4 inch, Wi-Fi
-  - Sinopé ACT4220ZB-M, VA4220ZB-M, sedna multi-residential slave valve 2e gen 3/4 inch, Zigbee
-  - Sinopé ACT4221WF-M, VA4221WF-M, sedna multi-residential master valve 2e gen. 1 inch, Wi-Fi
-  - Sinopé ACT4221ZB-M, VA4221ZB-M, sedna multi-residential slave valve 2e gen. 1 inch, Zigbee
-- **Flow sensor**: (supported as attribute for the 2e gen Sedna valves)
+  - Sinopé WL4200ZB, connected to a Sedna valve
+  - Sinopé ACT4220WF-M, VA4220WF-M, Sedna multi-residential master valve 2nd gen 3/4 inch, Wi-Fi
+  - Sinopé ACT4220ZB-M, VA4220ZB-M, Sedna multi-residential slave valve 2nd gen 3/4 inch, Zigbee
+  - Sinopé ACT4221WF-M, VA4221WF-M, Sedna multi-residential master valve 2nd gen 1 inch, Wi-Fi
+  - Sinopé ACT4221ZB-M, VA4221ZB-M, Sedna multi-residential slave valve 2nd gen 1 inch, Zigbee
+- Flow sensors (supported through the 2nd gen Sedna valves):
   - Sinopé FS4220, 3/4 inch flow sensor
   - Sinopé FS4221, 1 inch flow sensor
-- **Tank level monitor**:
-  - Sinopé LM4110-ZB, Propane tank level monitor
-  - Sinopé LM4110-LTE, Propane tank level monitor LTE
-- **Gateway**:
+- Tank level monitors:
+  - Sinopé LM4110-ZB, propane tank level monitor
+  - Sinopé LM4110-LTE, propane tank level monitor, LTE, multiple tanks
+- Gateways:
   - GT130
-  - GT4220WF-M, mesh gateway
-- **Power supply**:
-  - Sinopé ACUPS-01, battery backup for Sedna valve, GT130 or GT125
+  - GT4220WF and GT4220WF-M, mesh gateway for valves
+- Power supply:
+  - Sinopé ACUPS-01, battery backup for Sedna valve
 
 ## Prerequisite
 You need to connect your devices to a GT130 web gateway and add them in your Neviweb portal before being able to 
@@ -185,16 +168,13 @@ You need to install only one of them but all can be used at the same time on HA.
 ConBee II must be removed from Neviweb as they cannot be on two Zigbee networks at the same time.
 
 ## Installation
-### Neviweb130 custom component to manage your device via Neviweb portal:
-There are two methods to install this custom component:
-- **Via HACS component**:
-  - This repository is compatible with the Home Assistant Community Store 
-    ([HACS](https://community.home-assistant.io/t/custom-component-hacs/121727)).
-  - After installing HACS, install 'Sinope neviweb-130' (neviweb130) from the store, and use the configuration.yaml example below.
-- **Manually via direct download**:
-  - Download the zip file of this repository using the top right, green download button.
-  - Extract the zip file on your computer, then copy the entire `custom_components` folder inside your Home Assistant 
-    `config` directory (where you can find your `configuration.yaml` file).
+There are two ways to install this custom component:
+- With HACS:
+  - This repository is compatible with the Home Assistant Community Store ([HACS](https://community.home-assistant.io/t/custom-component-hacs/121727)).
+  - After installing HACS, install 'sinope-130' from the store, restart Home Assistant and add the integration (see Configuration).
+- Manually:
+  - Download the zip file of this repository with the green Code button.
+  - Extract the zip file on your computer, then copy the entire `custom_components` folder into your Home Assistant `config` directory (where your `configuration.yaml` file is).
   - Your config directory should look like this:
 
     ```
@@ -202,42 +182,6 @@ There are two methods to install this custom component:
       configuration.yaml
       custom_components/
         neviweb130/
-          translations/
-            en.json
-            fr.json
-          __init__.py
-          climate.py
-          const.py
-          helpers.py
-          light.py
-          manifest.json
-          schema.py
-          sensor.py
-          services.yaml
-          string.json
-          switch.py
-          update.py
-          valve.py
-    ```
-
-- **Neviweb130-V2 installation**
-  Version V2 will be installed via a simple update of Neviweb130 to version v5.0.0. You must perform a backup beforehand, as V2
-  completely changes the way Neviweb130 operates. The Neviweb130 update module allows you to create a backup prior to
-  the update.
-
-  For those wishing to test the new V2 version, you can copy the V2 files from the **Neviweb130-V2** branch. There are significantly
-  more files because the operation of Neviweb130-V2 differs completely from that of version V1.
-  You can copy all the V2 files into the V1 directory or install them on a separate test machine.
-
-  Your V2 directory will look like this:
-  ```
-    config/
-      configuration.yaml
-      custom_components/
-        neviweb130/
-          translations/
-            en.json
-            fr.json
           __init__.py
           binary_sensor.py
           button.py
@@ -246,6 +190,7 @@ There are two methods to install this custom component:
           const.py
           coordinator.py
           devices.py
+          exceptions.py
           helpers.py
           light.py
           manifest.json
@@ -259,7 +204,16 @@ There are two methods to install this custom component:
           switch.py
           update.py
           valve.py
+          translations/en.json
+          translations/fr.json
+      www/
+        neviweb130/
+          heat-0.png ... (device icons, see Device and weather icons)
+          weather/
+            Sun.png ... (weather icons)
+      ...
     ```
+
     Upon the first startup of HA, Neviweb130-V2 will perform the following operations:
     - import the V1 configuration from `configuration.yaml` into the `config_flow` (HA's modern configuration method).
     - convert `unique_id`s to an alphanumeric format (int to str).
@@ -304,9 +258,9 @@ custom_component which can run along with this custom_component in HA.
 | **network**       | no       | if not specified, 1st location found is used. Write the name of the GT130 location in Neviweb you want to control. | Network name is the location name in Neviweb written on top center of first page, where your Wi-Fi or Zigbee devices are registered.                                                                                         |
 | **network2**      | no       | 2nd location found                                                                                                 | The name of the second location you want to control (Zigbee and/or Wi-Fi only). Don't add it if you have only one network.                                                                                                   |
 | **network3**      | no       | 3rd location found                                                                                                 | The name of the third location you want to control (Zigbee and/or Wi-Fi only). Don't add it if you have only one network.                                                                                                    |
-| **scan_interval** | no       | 540                                                                                                                | The number of seconds between each access to Neviweb to update device state. Sinopé asked for a minimum of 5 minutes between polling now so you can reduce scan_interval to 300. Don't go over 600, the session will expire. |
+| **scan_interval** | no       | 420                                                                                                                | The number of seconds between each access to Neviweb to update device state. Sinopé asked for a minimum of 5 minutes between polling now so you can reduce scan_interval to 300. Don't go over 600, the session will expire. |
 | **homekit_mode**  | no       | False                                                                                                              | Add support for Homekit specific values. Not needed if you don't use homekit.                                                                                                                                                |
-| **ignore_miwi**   | no       | False                                                                                                              | Ignore miwi devices if present in same location then Zigbee and/or Wi-Fi devices. Warm if we set wrong Neviweb location.                                                                                                     |
+| **ignore_miwi**   | no       | False                                                                                                              | Ignore miwi devices if present in same location then Zigbee and/or Wi-Fi devices. Warns if the wrong Neviweb location is set.                                                                                                     |
 | **stat_interval** | no       | 1800                                                                                                               | The number of seconds between each access to Neviweb for energy statistic update. Scan will start after 5 minutes from HA startup and will be updated at every 300 to 1800 seconds.                                          |
 | **notify**        | no       | both                                                                                                               | The method to send notification in case of device error. value option are `nothing`, `logging`, `notification`, `both`.   |                                                                        
 | **safe_mode**     | no       | -                                                                                                                  | Safe mode is used to run device update in a way that won't crash in case of bad or missing parameters. If a device receive DVCATTRNSPTD error, safe_mode will fire automatically for that device to detect faulty attribute and allow device update to complete. Default value is "-". If you want to test device attributes put your device ID in safe_mode value ex. "12345".                                             |
@@ -463,7 +417,7 @@ Home Assistant standards. Configuration via **configuration.yaml** is now obsole
 
   These fields are optional if you do not have a Miwi device. Otherwise, you must enter the location name. Unused locations
   can be left blank, or you can enter "_" to instruct Neviweb130-V2 not to search for them.
-- Scan_interval, default 360 seconds.
+- Scan_interval, default 420 seconds (300 to 600).
 - HomeKit support, optional
 - Ignore Miwi devices, optional
 - Stat_interval, default 1800 seconds
@@ -500,24 +454,32 @@ Here is a sample device page:
 ![Page appareil](www/page_appareil.jpg)
 ![Page appareil suite](www/page_appareil_suite.jpg)
 
-## Sedna valve
-For Sedna valves there are two ways to connect it to Neviweb:
-- Via Wi-Fi direct connection. This way leak sensor are connected directly to the Sedna valve which will close if leak 
-  is detected.
-- via GT130 in Zigbee mode. This  way leak sensor are also connected to the GT130 but on leak detection nothing is 
-  passed to the valve. You'll need to set some automation rule in Neviweb or HA, to have the Sedna valve close if leak 
-  is detected by sensor.
+### Integration options
 
-Both ways are supported by this custom component. 
+Click on Configure on the neviweb130 integration page to reach these options (see also [doc/options_en.md](doc/options_en.md)):
+- **prefix**: Neviweb account name.
+- **log_level**, **log_max_bytes**, **log_backup_count**, **log_reset_on_start**: settings of the neviweb130 log file (see Troubleshooting).
+- **download_log**: copies the log file to `/local/neviweb130.log` so you can download it from your browser. It is deleted after 30 minutes.
+- **reload**: reloads neviweb130 without restarting Home Assistant.
+- **migrate**: migrates old numeric unique_id to the new text unique_id required by HA.
+- **request_limit** (default 25000): daily safety limit of requests sent to Neviweb. Neviweb's own limit is 30000 per day. A notification is sent when the request counter sensor goes over this value.
+- **update_check_interval** (1h, 3h, 6h, 12h or 24h, default 6h): how often the update entity checks GitHub for a new neviweb130 release.
+- **backup_mode** (full or partial) and **backup_folders** (default `config`): backup made by the update entity before installing a new version. `full` calls `hassio.backup_full`. `partial` calls `hassio.backup_partial` with the folders listed in backup_folders (`config` means the Home Assistant configuration). Both need a Home Assistant installation with the Supervisor.
+
+## Sedna valve
+There are two ways to connect a Sedna valve to Neviweb:
+- Wi-Fi direct connection. Leak sensors are connected directly to the Sedna valve, which closes when a leak is detected.
+- Through the GT130 in Zigbee mode. Leak sensors are also connected to the GT130, but a leak detection is not passed to the valve. You need an automation in Neviweb or HA to close the Sedna valve when a sensor detects a leak.
+
+Both modes are supported by this custom component.
 
 ## Gateway GT130
-It is now possible to know if your GT130 is still online of offline with Neviweb via the gateway_status attribute. The 
-GT130 is detected as sensor.neviweb130_sensor_gt130
+The `gateway_status` binary sensor of the GT130 tells you whether the gateway is online or offline in Neviweb.
 
 ## Updater system
 
 Neviweb130 now include a complete update system that include:
-- Automatic update check every 6 hours:
+- Automatic update check every 6 hours by default (update_check_interval option):
   - New update available.
   - Pre-release available.
   - Breaking changes.
@@ -549,12 +511,12 @@ Neviweb130 now include a complete update system that include:
   - Add (Pre-release) in updater title.
 
 - Backup option:
-  Add a button to allow for system backup before update. All the config directory and database are backuped.
+  A backup is made before the update, set by the backup_mode and backup_folders options (see Integration options).
 
 - Version notes can be viewed via link provided on the update card that point to GitHub releases motes.
 
 - Updater have many attributes to help user:
-  - check_interval: 6h, (will become an option in futur version)
+  - check_interval: set by the update_check_interval option (default 6h).
   - last_check: date/time of last available version check.
   - next_check: date/time of next available version check.
   - last_update_success: Last date/time an update was done.
@@ -580,7 +542,7 @@ sensor sensor.neviweb130_daily_requests that increase at each request: update, s
 The sensor survive HA restart and is set back to 0 at midnight every days.
 
 This way it is possible to improve your scan_interval to get the higher frequency without busting the limit.
-When reaching 25000 requests, neviweb130 will send a notification. Eventually this warning limit will be configurable.
+When reaching 25000 requests, neviweb130 will send a notification. This warning limit is set with the request_limit option.
 
 ## Running more than one instance of neviweb130 to manage different Neviweb connections
 > This section is still working but as Neviweb130 now support multi account directly, it become obsolete.
@@ -613,191 +575,137 @@ When reaching 25000 requests, neviweb130 will send a notification. Eventually th
 >All devices on this second instance will have a name like `climate.neviweb131_climate_office_thermostat`.
 
 ## Custom services
-Automations require services to be able to send command. Ex. light.turn_on. For the Sinopé devices connected via 
-neviweb130, it is possible to use custom services to send specific information to devices or to change some devices 
-parameters. Those custom services can be accessed via development tool/services or can be used in automation:
-- neviweb130.set_second_display, allow to change setting of the thermostats second display from setpoint temperature to 
-  outdoor temperature. This needs to be sent only once to each device.
-- neviweb130.set_climate_keypad_lock, allow to lock the keypad of the climate device.
-- neviweb130.set_light_keypad_lock, allow to lock the keypad of the light device.
-- neviweb130.set_switch_keypad_lock, allow to lock the keypad of the switch device.
-- neviweb130.set_light_timer, this is used to set a timer in seconds (0 to 10800) to the light devices to turn_off after 
-  that delay.
-- neviweb130.set_switch_timer, this is used to set a timer in seconds (0 to 10800) to the switch devices and multi 
-  controller device to turn_off after that delay.
-- neviweb130.set_switch_timer2, this is used to set the timer2 in seconds (0 to 10800) to the switch multi controller 
-  device to turn_off after that delay.
-- neviweb130.set_led_indicator, this allows to change led indicator color and intensity on light devices for «on» and 
-  «off» state. you can send any color in the RGB list via the three color parameters red, green and blue, and you can 
-  set intensity of the LED indicator.
-- neviweb130.set_time_format, to display time in 12h or 24h on thermostats.
-- neviweb130.set_temperature_format, to display temperature in Celsius or Fahrenheit format on thermostats.
-- neviweb130.set_backlight, to set backlight intensity in state «on» or «off» for thermostats.
-- neviweb130.set_wattage, to set wattageOverload for light devices.
-- neviweb130.set_auxiliary_load, to set status and load of the auxiliary heating.
-- neviweb130.set_setpoint_min, to set minimum setpoint temperature for thermostats.
-- neviweb130.set_setpoint_max, to set maximum setpoint temperature for thermostats.
-- neviweb130.set_cool_setpoint_min, to set minimum cooling setpoint for TH1134ZB-HC.
-- neviweb130.set_cool_setpoint_max, to set maximum cooling setpoint for TH1134ZB-HC.
-- neviweb130.set_floor_limit_low, to set minimum setpoint temperature for floor thermostats. (5 to 34°C), (0 = off)
-- neviweb130.set_floor_limit_high, to set maximum setpoint temperature for floor thermostats. (7 to 36°C), (0 = off)
-- neviweb130.set_sensor_alert, to set all alert for water leak sensor, temperature, battery, leak, status and set action 
-  on valve.
-- neviweb130.set_valve_alert, to set low battery alert status.
-- neviweb130.set_valve_temp_alert, to set low temperature alert on sedna valve.
-- neviweb130.set_early_start, to set early heating on/off for Wi-Fi thermostats.
-- neviweb130.set_air_floor_mode, to switch between floor or ambient temperature sensor to control room temperature.
-- neviweb130.set_floor_air_limit, to set floor thermostat max air limit temperature.
-- neviweb130.set_phase_control, to set phase control mode for DM2550ZB dimmer (reverse or forward).
-- neviweb130.set_hvac_dr_options, to set or reset DR period option in Neviweb for thermostats.
-- neviweb130.set_hvac_dr_setpoint, to adjust thermostat setpoint reduction during DR period, 100 to -100 (°C*10). 0 will 
-  just make the small icon to flash.
-- neviweb130.set_load_dr_options, to set or reset DR period options in Neviweb for load controller.
-- neviweb130.set_cycle_output, to set main cycle length of low voltage thermostat in minutes.
-- neviweb130.set_aux_cycle_output, to set auxiliary cycle length of low voltage thermostats in minutes.
-- neviweb130.set_control_onoff, change status of output 1 and 2 on alarm multi-controller for sedna valve.
-- neviweb130.set_battery_type, set battery type, alkaline or lithium, for the water leak sensor.
-- neviweb130.set_tank_size, to set the water heater tank capacity for Calypso RM3500ZB.
-- neviweb130.set_low_temp_protection, to activate or not the water heater protection for water temperature. Below 45°C 
-  heating is auto restarted.
-- neviweb130.set_controlled_device, to change the name of the device controlled by the RM3250ZB load controller.
-- neviweb130.set_flow_meter_model, to change the flow meter model connected to sedna valve 2e gen and start/stop leak 
-  protection from flow meter.
-- neviweb130.set_flow_meter_delay, to set the leak delay before the valve close if a leak is detected by the flow meter. 
-- neviweb130.set_flow_meter_options, to set the flow meter action: close the valve (yes/no) and to send alert message 
-  (yes/no), or just do nothing.
-- neviweb130.set_tank_type, to set tank type for LM4110-ZB, propane or oil.
-- neviweb130.set_gauge_type, to set gauge type for LM4110-ZB on propane tank, model 5-95 or 10-80.
-- neviweb130.set_low_fuel_alert, to set low fuel level limit for propane tank, 0 (off), 10, 20 or 30%.
-- neviweb130.set_tank_height, to set fuel tank height for LM4110-ZB sensor, 0 (off), 23, 24, 35, 38, 47, 48, 50.
-- neviweb130.set_fuel_alert, to set fuel alert, on/off for LM4110-ZB.
-- neviweb130.set_power_supply, to set power source for Sedna valve between battery, acups-01 or both.
-- neviweb130.set_battery_alert, to set battery alert on/off for LM4110-ZB.
-- neviweb130.set_input_output_names, to set name for input 1 and 2 and output 1 and 2 of MC3100ZB device.
-- neviweb130.set_activation, to activate or block neviweb polling for a device.
-- neviweb130.set_sensor_type, to set sensor value 10k or 12k.
-- neviweb130.set_remaining_time, to set value for coldLoadPickupRemainingTime attribute.
-- neviweb130.set_on_off_input_delay, to set the «on» or «off» delay in seconds for input 1 and 2 of MC3100ZB.
-- neviweb130.set_em_heat, to turn on/off aux heat for floor and low voltage thermostats. This is a replacement of 
-  turn_aux_heat_on or off that was deprecated by HA. It work differently for the TH6xxxWF devices where it change the
-  preset mode to PRESET.BOOST or back to previous preset mode when turned off.
-- neviweb130.set_display_config, to set on/off display on heatpump.
-- neviweb130.set_sound_config, to set on/off sound on heatpump.
-- neviweb130.set_heat_pump_operation_limit, to set minimum operation temperature for heatpump.
-- neviweb130.set_heat_lockout_temperature, to set maximum outside temperature limit to allow heating device operation.
-  Work differently for TH1123ZB-G2, TH1124ZB-G2 and heat/cool devices (TH6xxxWF). Each use different attribute.
-- neviweb130.set_cool_lockout_temperature, to set minimum outside temperature limit to allow cooling device operation.
-- neviweb130.set_hc_second_display, to set second display of TH1134ZB-HC thermostat.
-- neviweb130.set_language, to set display language on TH1134ZB-HC thermostats.
-- neviweb130.set_aux_heat_min_time_on, to set auxiliary heating minimum time on.
-- neviweb130.set_cool_min_time_on, to set cooling minimum time on.
-- neviweb130.set_cool_min_time_off, to set cooling minimum time off.
-- neviweb130.set_neviweb_status, to set global Neviweb status, home / away via GT130.
-- neviweb130.set_climate_neviweb_status, to set global Neviweb status, home / away via Zigbee or Wi-Fi thermostats.
-- neviweb130.set_refuel_alert, to get an alert when the propane tank is refueled,
-- neviweb130.set_humidifier_type, to set the type of humidifier device connected to TH6500WF or TH6250WF.
+Automations use actions (services) to send commands, e.g. light.turn_on. For Sinopé devices connected through neviweb130, custom actions send specific information to devices or change device parameters. They are available in Developer tools → Actions and in automations:
+- neviweb130.set_second_display, to change the thermostat second display from setpoint temperature to outdoor temperature. This needs to be sent only once to each device.
+- neviweb130.set_climate_keypad_lock, to lock the keypad of the climate device.
+- neviweb130.set_light_keypad_lock, to lock the keypad of the light device.
+- neviweb130.set_switch_keypad_lock, to lock the keypad of the switch device.
+- neviweb130.set_light_timer, to set a timer in seconds (0 to 10800) after which the light turns off.
+- neviweb130.set_switch_timer, to set a timer in seconds (0 to 10800) after which the switch or multi-controller turns off.
+- neviweb130.set_switch_timer2, to set timer 2 in seconds (0 to 10800) after which the multi-controller turns off.
+- neviweb130.set_led_indicator, to change the LED indicator color and intensity of light devices for the «on» and «off» states. Any RGB color can be sent with the red, green and blue parameters.
+- neviweb130.set_time_format to display time in 12h or 24h on thermostats.
+- neviweb130.set_temperature_format to display temperature in Celsius or Fahrenheit format on thermostats.
+- neviweb130.set_backlight to set backlight intensity in state «on» or «off» for thermostats.
+- neviweb130.set_wattage to set wattageOverload for light devices.
+- neviweb130.set_auxiliary_load to set the status and load of the auxiliary heating.
+- neviweb130.set_setpoint_min to set minimum setpoint temperature for thermostats.
+- neviweb130.set_setpoint_max to set maximum setpoint temperature for thermostats.
+- neviweb130.set_cool_setpoint_min to set minimum cooling setpoint for TH1134ZB-HC.
+- neviweb130.set_cool_setpoint_max to set maximum cooling setpoint for TH1134ZB-HC.
+- neviweb130.set_floor_limit_low to set minimum setpoint temperature for floor thermostats. (5 to 34°C, 0 = off)
+- neviweb130.set_floor_limit_high to set maximum setpoint temperature for floor thermostats. (7 to 36°C, 0 = off)
+- neviweb130.set_sensor_leak_alert to set the leak alert of the water leak sensor.
+- neviweb130.set_sensor_temp_alert to set the low temperature alert of the water leak sensor.
+- neviweb130.set_sensor_closure_action to set the valve closure action on leak, only for leak sensors connected directly to the Sedna valve.
+- neviweb130.set_valve_alert to set low battery alert status.
+- neviweb130.set_valve_temp_alert to set the low temperature alert on the Sedna valve.
+- neviweb130.set_early_start to set early heating on/off for Wi-Fi thermostats.
+- neviweb130.set_air_floor_mode to switch between floor or ambient temperature sensor to control room temperature.
+- neviweb130.set_floor_air_limit to set floor thermostat max air limit temperature.
+- neviweb130.set_phase_control to set phase control mode for DM2550ZB dimmer (reverse or forward).
+- neviweb130.set_hvac_dr_options to set or reset DR period option in Neviweb for thermostats.
+- neviweb130.set_hvac_dr_setpoint to adjust the thermostat setpoint reduction during the DR period, 100 to -100 (°C × 10). 0 only makes the small icon flash.
+- neviweb130.set_load_dr_options to set or reset DR period options in Neviweb for load controller.
+- neviweb130.set_cycle_output to set main cycle length of low voltage thermostat in minutes.
+- neviweb130.set_aux_cycle_output to set auxiliary cycle length of low voltage thermostats in minutes.
+- neviweb130.set_control_onoff to change the status of outputs 1 and 2 of the Sedna valve multi-controller.
+- neviweb130.set_battery_type to set the battery type, alkaline or lithium, for the water leak sensor.
+- neviweb130.set_tank_size to set the water heater tank capacity for Calypso RM3500ZB.
+- neviweb130.set_low_temp_protection to activate or not the water heater protection for water temperature. Below 45°C, heating restarts automatically.
+- neviweb130.set_controlled_device to change the name of the device controlled by the RM3250ZB load controller.
+- neviweb130.set_flow_meter_model to change the flow meter model connected to the 2nd gen Sedna valve and start/stop leak protection from flow meter.
+- neviweb130.set_flow_meter_delay to set the leak delay before the valve closes when a leak is detected by the flow meter. 
+- neviweb130.set_flow_meter_options to set the flow meter action: close the valve (yes/no) and to send alert message (yes/no), or just do nothing.
+- neviweb130.set_tank_type to set tank type for LM4110-ZB, propane or oil.
+- neviweb130.set_gauge_type to set gauge type for LM4110-ZB on propane tank, model 5-95 or 10-80.
+- neviweb130.set_low_fuel_alert to set low fuel level limit for propane tank, 0 (off), 10, 20 or 30%.
+- neviweb130.set_tank_height to set the oil tank height for LM4110-ZB sensor, 0 (off), 23, 24, 35, 38, 47, 48, 50.
+- neviweb130.set_fuel_alert to set the fuel alert on/off for LM4110-ZB.
+- neviweb130.set_power_supply to set the Sedna valve power source: battery, acups-01 or both.
+- neviweb130.set_battery_alert to set battery alert on/off for LM4110-ZB.
+- neviweb130.set_input_output_names to set name for input 1 and 2 and output 1 and 2 of MC3100ZB device.
+- neviweb130.set_activation to activate or block Neviweb polling for a device.
+- neviweb130.set_sensor_type to set the sensor type, 10k or 12k.
+- neviweb130.set_remaining_time to set value for coldLoadPickupRemainingTime attribute.
+- neviweb130.set_on_off_input_delay to set the «on» or «off» delay in seconds for input 1 and 2 of MC3100ZB.
+- neviweb130.set_em_heat to turn auxiliary heat on or off for floor and low voltage thermostats. It replaces turn_aux_heat_on and turn_aux_heat_off, deprecated by HA.
+- neviweb130.set_display_config to turn the heat pump display on or off.
+- neviweb130.set_sound_config to turn the heat pump sound on or off.
+- neviweb130.set_heat_pump_operation_limit to set the minimum operating temperature of the heat pump.
+- neviweb130.set_heat_lockout_temperature to set maximum outside temperature limit to allow heating device operation.
+- neviweb130.set_cool_lockout_temperature to set minimum outside temperature limit to allow cooling device operation.
+- neviweb130.set_hc_second_display to set second display of TH1134ZB-HC thermostat.
+- neviweb130.set_language to set display language on TH1134ZB-HC thermostats.
+- neviweb130.set_neviweb_status, to set global Neviweb status, home / away, via the GT130 sensor.
+- neviweb130.set_climate_neviweb_status, to set global Neviweb status, home / away, via any thermostat.
+- neviweb130.set_refuel_alert, to get an alert when the propane tank is refueled.
+- neviweb130.set_accessory_type, to set the accessory type (humidifier, dehumidifier, air exchanger) connected to TH6500WF or TH6250WF.
 - neviweb130.set_schedule_mode, to set the schedule mode, manual or auto for TH6500WF or TH6250WF.
-- neviweb130.set_flow_alarm_disable_timer, to disable abnormal fow alarm for a period from 1 sec. to 24 hrs.
-- neviweb130.set_heatcool_setpoint_delta, to set a temperature delta between heating setpoint and cooling setpoint from 
-  1 to 5°C in auto (heat/cool) mode for TH6xxxWF.
-- neviweb130.set_fan_filter_reminder, to set the delay between each fan filter cleaning from 1 to 12 month, for 
-  TH6xxxWF.
-- neviweb130.set_temperature_offset, to adjust temperature sensor from -2 to 2°C with 0.5°C increment, for TH6xxxWF.
+- neviweb130.set_flow_alarm_disable_timer, to disable the abnormal flow alarm for 1 second to 24 hours.
+- neviweb130.set_heatcool_setpoint_delta, to set a temperature delta between heating setpoint and cooling setpoint from 1 to 5°C in auto mode for TH6xxxWF.
+- neviweb130.set_fan_filter_reminder, to set the delay between each fan filter cleaning from 1 to 12 months, for TH6xxxWF.
+- neviweb130.set_temperature_offset, to adjust temperature sensor from -2 to 2°C in 0.5°C steps, for TH6xxxWF.
 - neviweb130.set_aux_heating_source, to select which type of auxiliary heating source is in use for TH6xxxWF.
 - neviweb130.set_fan_speed, to set fan speed, on or auto for TH6xxxWF.
-- neviweb130.set_switch_temp_alert, to set low temperature alert on / off for MC3100ZB devices.
+- neviweb130.set_min_time_on, to set the minimum time the device stays on before turning off (run-on time) for TH6500WF and TH6250WF.
+- neviweb130.set_min_time_off, to set the minimum time the device stays off before turning on again (cooldown time) for TH6500WF and TH6250WF.
+- neviweb130.set_heat_interstage_delay and set_cool_interstage_delay, to set the minimum heating or cooling time before going to the next stage for TH6500WF and TH6250WF.
+- neviweb130.set_heat_dissipation_time and set_cool_dissipation_time, to set the heating or cooling purge time for TH6xxxWF.
+- neviweb130.set_reversing_valve_polarity, to set the polarity of the heat pump reversing valve for TH6500WF and TH6250WF.
+- neviweb130.set_humidity_mode, to set the humidity setpoint mode for TH6500WF and TH6250WF.
+- neviweb130.set_room_setpoint_away, to set the away room setpoint for Wi-Fi thermostats.
+- neviweb130.set_cool_setpoint_away, to set the away cooling setpoint for TH6xxxWF and HP6000WF.
+- neviweb130.set_pump_protection, to set pump protection on/off for low voltage thermostats.
+- neviweb130.set_led_on_intensity and set_led_off_intensity, to set the LED indicator intensity in «on» or «off» state.
+- neviweb130.set_light_min_intensity, to set the dimmer minimum intensity.
+- neviweb130.set_key_double_up, to activate or deactivate the double up key press action for DM2550ZB.
+- neviweb130.set_switch_power_timer, to set the RM3250ZB timer, off or 1 min to 24 h. The device turns off after that delay.
+- neviweb130.set_switch_temp_alert, to set the low temperature alert of the MC3100ZB.
+
+Services marked «Equipment configuration should be performed by a professional» in Developer tools change how the HVAC equipment runs. Use them only if you know your installation.
 
 ## Logging for debugging
-As the file home-assistant.log is no longer available, we have added a new logger that write all logger data about neviweb130 
-to a file `neviweb130_log.txt` in your config directory. This file is overwritten each time Ha is restarted. The file is also rotated 
-each time it reach 2 meg in size. Log rotation have a total of 4 files.
+Neviweb130 writes all its log messages to its own file, `neviweb130_log.txt`, in your config directory, not to `home-assistant.log`. By default the file is cleared each time the integration starts (log_reset_on_start), rotated when it reaches 2 MB (log_max_bytes) and 2 rotated files are kept (log_backup_count). These settings and the log level are in the integration options.
 
 To help debugging, add relevant snippet of this file to any issue you may report.
 
-## Catch Eco Sinope signal for peak period
-If you have at least on thermostat or one load controller registered with Éco-Sinopé program, it is now possible to 
-catch when Neviweb send the signal for pre-heating start period for thermostats or turn_off signal for the load 
-controller. Seven attributes have been added for thermostats and three for load controller to know that peak period is 
-coming and how it is managed:
+## Catch Éco Sinopé signal for peak period
+If at least one thermostat or load controller is registered in the Éco Sinopé program, you can detect when Neviweb sends the pre-heating signal for thermostats or the turn-off signal for load controllers. These attributes tell you that a peak period is coming and how it is managed:
 
 - For thermostats:
-  - **eco_status**: set to «off» during normal operation, turn «on» during peak period at the beginning of the 
-    pre-heating period. this is the attribute to follow to detect a peak start.
-  - **eco_setpoint**: set to «off» during normal operation, turn «on» during peak period if device is managed by 
-    Eco-Sinopé.
-  - **eco_optout**: set to «off» during normal operation during peak period, turn «on» if somebody change the setpoint 
-    during peak period.
-  - **eco_power_relative**: set to «off» during normal operation, used to set a minimum temperature compared to setpoint 
-    where the thermostat will turn on automatically for frost protection.
-  - **eco_power_absolute**: set to «off» during normal operation, used to limit the pi_heating_demand level between 1 to 
-    100% during peak period.
-  - **eco_setpoint_status**: set to «off» during normal operation, turn «on» if device setpoint is changed by 
-    Eco-Sinopé.
-  - **eco_setpoint_delta**: set to 0 during normal operation, changed to values between -10 and +10 during peak period. 
-    For pre-heating the value is positive and for peak period it is a negative value. This is a delta applied to regular 
-    setpoint. -10 = setpoint reduced by 10°C. +2 = setpoint increased by 2°C.
+  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
+  - **eco_setpoint**: «off» during normal operation, turns «on» during the peak period if the device is managed by Éco Sinopé.
+  - **eco_optout**: «off» during normal operation and during the peak period, turns «on» if somebody changes the setpoint during the peak period.
+  - **eco_power_relative**: «off» during normal operation. Used to set a minimum temperature, relative to the setpoint, at which the thermostat turns on automatically for frost protection.
+  - **eco_power_absolute**: «off» during normal operation. Used to limit the pi_heating_demand level between 1 and 100% during the peak period.
+  - **eco_setpoint_status**: «off» during normal operation, turns «on» if the device setpoint is changed by Éco Sinopé.
+  - **eco_setpoint_delta**: 0 during normal operation, changes to a value between -10 and +10 during the peak period. The value is positive for pre-heating and negative for the peak period. It is a delta applied to the regular setpoint: -10 = setpoint reduced by 10°C, +2 = setpoint increased by 2°C.
 
-- For load controller:
-  - **eco_status**: set to «off» during normal operation, turn «on» during peak period at the beginning of the 
-    pre-heating period. this is the attribute to follow to detect a peak start.
-  - **eco_onoff**: set to «off» during normal operation, turn «on» during peak period if device is managed by 
-    Eco-Sinopé. The device is turned off during peak period. Nothing is done during pre-heating period.
-  - **eco_optout**: set to «off» during normal operation during peak period, turn «on» if somebody turn on the device 
-    during peak period.
+- For load controllers:
+  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
+  - **eco_onoff**: «off» during normal operation, turns «on» during the peak period if the device is managed by Éco Sinopé. The device is turned off during the peak period. Nothing is done during the pre-heating period.
+  - **eco_optout**: «off» during normal operation and during the peak period, turns «on» if somebody turns the device on during the peak period.
 
-- For Multi-controller MC3100ZB:
-  - **eco_status**: set to «off» during normal operation, turn «on» during peak period at the beginning of the 
-    pre-heating period. this is the attribute to follow to detect a peak start.
-  - **eco_setpoint**: set to «off» during normal operation, no change during peak period if device is managed by 
-    Eco-Sinopé.
-  - **eco_optout**: set to «off» during normal operation, during peak period, turn «on» if somebody change the onoff 
-    value during peak period.
-  - **eco_power_relative**: set to «off» during normal operation, used to set a minimum temperature compared to room 
-    temperature value where the MC3100ZB will turn on automatically for frost protection.
-  - **eco_power_absolute**: set to «off» during normal operation, usage unknown.
+- For the MC3100ZB multi-controller:
+  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
+  - **eco_setpoint**: «off» during normal operation, no change during the peak period if the device is managed by Éco Sinopé.
+  - **eco_optout**: «off» during normal operation, turns «on» if somebody changes the on/off value during the peak period.
+  - **eco_power_relative**: «off» during normal operation. Used to set a minimum temperature, relative to the room temperature, at which the MC3100ZB turns on automatically for frost protection.
+  - **eco_power_absolute**: «off» during normal operation, usage unknown.
 
-It is then possible to make an automation to set all HA devices ready for peak period by following the eco_status 
-attribute change from «off» to «on».
+You can then build an automation that prepares your HA devices for the peak period by following the eco_status change from «off» to «on».
 
-## Energy statistic
-Seven attributes are added to track energy usage for devices:
-- total_kwh_count: total count of energy usage to date.
-- hourly_kwh_count:  total count for hourly usage for current day.
-- daily_kwh_count: total count for daily usage for current month.
-- monthly_kwh_count: total count for monthly usage for current year.
-- hourly_kwh: kwh used for last hour.
-- daily_kwh: kwh used for last day.
-- monthly_kwh: kwh used for last month.
+## Energy and water statistics
+Devices that report energy in Neviweb get these sensor entities, in kWh:
+- **Total Energy** (`total_kwh_count`, total_increasing)
+- **Monthly**, **Daily** and **Hourly** energy (`monthly_kwh_count`, `daily_kwh_count`, `hourly_kwh_count`, total)
 
-They are polled from Neviweb every 30 minutes. The first polling start 5 minutes after HA restart. Neviweb have a two 
-hours delay to publish his data. Your data will be delayed by 2 hours.
+2nd gen Sedna valves with a flow sensor get the same set for water, in liters: **Total Flow** (`total_flow_count`, total_increasing) and the monthly, daily and hourly flow counts (total).
 
-### Track energy consumption in HA Energy dashboard
-When energy attributes are available, it is possible to track energy consumption of individual devices in Home Assistant 
-energy dashboard by creating a [Template sensor](https://www.home-assistant.io/integrations/template/) in configuration.yaml:
-```yaml
-template:
-  - sensor:
-      - name: "Basement energy usage"
-        unique_id: sensor.basement_energy_usage
-        unit_of_measurement: "kWh"
-        device_class: energy
-        state_class: total_increasing
-        state: >-
-          {{ state_attr("climate.neviweb130_th1124zb_basement","hourly_kwh_count") }}
-```
-or:
-```yaml
-template:
-  - sensor:
-      - name: "Basement energy usage"
-        unique_id: sensor.basement_energy_usage
-        unit_of_measurement: "kWh"
-        device_class: energy
-        state_class: total
-        state: >-
-          {{ state_attr("climate.neviweb130_th1124zb_basement","hourly_kwh") }}
-```
+These sensors have the energy or water device class and can be added directly to the HA Energy dashboard. No template sensor is needed. Statistics are polled from Neviweb every `stat_interval` seconds (default 1800).
+
+The `hourly_kwh`, `daily_kwh` and `monthly_kwh` attributes (kWh used during the last hour, day and month) are still exposed on climate, light and switch entities, and `hourly_flow`, `daily_flow` and `monthly_flow` on valve entities.
 
 ## Localisation
 Neviweb130 is now translated in French for the errors and notifications messages. The translation is done automatically based
@@ -807,119 +715,56 @@ en.json file located in the translations folder into other language.
 If you modify translations files you will need to not only reload HA but also restart the HA server to force HA to reload 
 translations properly.
 
-## Statistic for Sedna flow meeter
-Seven attributes are added to track water usage for Sedna valve. They are shown as m³ (cubic meeter) which is what 
-energy module is looking for:
-- total_flow_count: total count of water liters usage to date.
-- hourly_flow_count:  total count of hourly water liters usage for current day.
-- daily_flow_count: total count of daily water liters usage for current month.
-- monthly_flow_count: total count of monthly water liters usage for current year.
-- hourly_flow: water liters used for last hour.
-- daily_flow: water liters used for last day.
-- monthly_flow: water liters used for last month.
-
-They are polled from Neviweb every 30 minutes. The first polling start 5 minutes after HA restart. Neviweb have a two 
-hours delay to publish his data.
-
-### Track water consumption in HA Energy dashboard
-When flow attributes are available, it is possible to track water consumption of sedna valve in Home Assistant energy 
-dashboard by creating a [Template sensor](https://www.home-assistant.io/integrations/template/) in configuration.yaml:
-```yaml
-template:
-  - sensor:
-      - name: "Sedna Water Flow"
-        unique_id: sensor.sedna_water_flow
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total_increasing
-        state: >-
-          {{ state_attr("valve.neviweb130_valve_water_valve","hourly_flow_count") }}
-```
-or:
-```yaml
-template:
-  - sensor:
-      - name: "Sedna Water Flow"
-        unique_id: sensor.sedna_water_flow
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total
-        state: >-
-          {{ state_attr("valve.neviweb130_valve_water_valve","hourly_flow") }}
-```
-
 ## Troubleshooting
-if you see your device in the log, but it does not appear in entity list you need to add the device model number in the 
-code. Or you can send the model number to me, so I can add it in the code.
+If your device appears in the log but not in the entity list, its model number must be added to the code. Open an issue with the model number so it can be added.
 
-In the log look for lines:
-```
+In the log, look for these lines:
+```yaml
 [custom_components.neviweb130] Received gateway data: [{'id': 100225, 'identifier': '500b91400001f750', 'name': 'Chargeur auto', 'family': '2506',...
 [custom_components.neviweb130] Received signature data: {'signature': {'model': 2506, 'modelCfg': 0, 'softBuildCfg': 0, 'softVersion': {'minor': 9, 'middle': 2, 'major': 1}, 'hardRev': 2, 'protocol': 'sinopcom'}}
 ```
-'family': '2506' and 'model': 2506 is what you need to find the model number of your device. It should be added in 
-climate.py, light.py, switch.py, sensor.py or valve.py near line 132 to 136 (climate.py) depending on device type. Then restart HA 
-and your device will be listed in entity list.
+'family': '2506' and 'model': 2506 give the model number of your device. Model lists are in `const.py` (CLIMATE_MODEL, LIGHT_MODEL, SWITCH_MODEL, VALVE_MODEL, SENSOR_MODEL).
 
-If you get a stack trace related to a Neviweb130 component in your home assistant log, you can 
-[open an issue](https://github.com/claudegel/sinope-130/issues/new/choose)
+If you get a stack trace related to a Neviweb130 component in `neviweb130_log.txt` or `home-assistant.log`, you can file an issue in this repository.
 
-You can also post in one of those threads to get help:
-- https://community.home-assistant.io/t/sinope-line-voltage-thermostats
-- https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer
+You can also ask for help in one of these threads:
+- https://community.home-assistant.io/t/sinope-line-voltage-thermostats/17157
+- https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer/38835
 
-### Turning on Neviweb130 debug messages in `neviweb130_log.txt` file
+### Turning on Neviweb130 debug messages
 
-To have a maximum of information to help you, please provide a snippet of your `neviweb130_log.txt` file. I've added 
-some debug log messages that could help diagnose the problem.
+Neviweb130 writes its messages to its own file, `config/neviweb130_log.txt`, not to `home-assistant.log`. The `logger:` section of `configuration.yaml` has no effect on it.
 
-Add those lines to your `configuration.yaml` file
-   ```yaml
-   logger:
-     default: warning
-     logs:
-       custom_components.neviweb130: debug
-       homeassistant.service: debug
-       homeassistant.config_entries: debug
-   ```
-This will set default log level to warning for all your components, except for Neviweb130 which will display more detailed 
-messages.
+To get debug messages:
+- Open the neviweb130 integration page, click on Configure and set **log_level** to `debug`.
+- Reproduce the problem, then use **download_log** in the same options to get the file from your browser, or read `config/neviweb130_log.txt` directly.
+- Put the log level back to `warning` afterwards, as the debug log grows fast.
 
-### Turning on Neviweb130-V2 debug log level messages in neviweb130_log.txt file
-
-To change the logging level in V2, go to Settings / Devices & Services. Click on Neviweb130, then select the gear icon, ⚙️ (configuration).
-From there, simply choose the desired logging level and clic 'Validate' at the bottom. No restart of HA is required. In the same location,
-you also have the option to download your log file (neviweb130_log.txt), should you wish to send it to me to assist with debugging.
+Please provide a snippet of this file when you ask for help.
 
 ### Error messages received from Neviweb
-In you log you can get those messages from Neviweb:
-- ACCDAYREQMAX: Maximum daily request reached ('daily': 30000)... Reduce polling frequency.
-- ACCSESSEXC: To many open session at the same time. This is common if you restart Home Assistant many times and/or you 
-  also have an open session on Neviweb.
-- ACCRATELIMIT: Maximum access rate limit reach when login to Neviweb. Too frequent login. Wait few minute before HA restart.
-- DVCACTNSPTD: Device action not supported. Service call is not supported for that specific device.
-- DVCATTRNSPTD: Device attribute not supported, The device you have installed have and older firmware and do not support 
-  some attributes. Wait for firmware update in Neviweb and the error should disappear or file an issue so we can put an 
-  exception in the code.
+You can get these messages from Neviweb in the log:
+- ACCDAYREQMAX: maximum daily requests reached (30000 per day). Reduce the polling frequency.
+- ACCRATELIMIT: too many login attempts. Wait a few minutes before retrying.
+- ACCSESSEXC: too many open sessions at the same time. This is common after several Home Assistant restarts or when Neviweb is also open elsewhere.
+- DVCACTNSPTD: device action not supported. This action is not available for that device.
+- DVCATTRNSPTD: device attribute not supported. The device firmware does not support some attributes. The device is put in safe mode automatically (see safe_mode). Wait for a firmware update in Neviweb, or open an issue so an exception can be added.
 - DVCBUSY: Neviweb is performing an update and devices are not available. Try later.
-- DVCCOMMTO: Device Communication Timeout: device do not respond fast enough, or you are polling that device too 
-  frequently.
-- DVCERR: Device is rejecting the command. Commande sent contain invalid or undefined attributes.
-- DVCNOTSYNC: Device is not in sync with Neviweb. Check your network, router and/or Wi-Fi gateway.
-- DVCUNVLB: Device unavailable. Neviweb is unable to connect with specific device, mostly Wi-Fi devices. 
-- MAINTENANCE: Neviweb access temporary blocked for maintenance... Retry later.
-- SVCERR: Service error. Service unavailable. Try later.
-- SVCINVREQ: Invalid request sent to Neviweb, service do not exist or malformed request.
-- SVCUNAUTH: Bad or malformed service request rejected by Neviweb server.
-- USRBADLOGIN: your login and/or password provided in configuration for Neviweb is no good.
-- USRSESSEXP: User session expired. Reduce your scan_interval below 10 minutes or your session will be terminated.
-- VALINVLD: Invalid value sent to Neviweb.
-- ReadTimeout: Request was sent to the device but no answer came back. Network problem.
-- TimeoutError: Timeout error detected... Retry later.
+- DVCCOMMTO: device communication timeout. The device did not respond in time, or you are polling it too often.
+- DVCERR: the command or attribute was rejected by the device.
+- DVCNOTSYNC: device not synchronized with Neviweb.
+- DVCUNVLB: device unavailable. Neviweb cannot reach the device, mostly Wi-Fi devices.
+- MAINTENANCE: Neviweb is temporarily unavailable for maintenance. Retry later.
+- SVCERR: service unavailable. Try later.
+- SVCINVREQ: invalid request sent to Neviweb. The service does not exist or the request is malformed.
+- SVCUNAUTH: request rejected by the Neviweb server, the action is not authorized for this device.
+- USRBADLOGIN: invalid Neviweb username or password.
+- USRSESSEXP: user session expired. Reduce scan_interval.
+- VALINVLD: invalid value sent to Neviweb.
+- ReadTimeout: the request was sent but no answer came back from the device. Network problem.
+- TimeoutError: request timeout. Retry later.
 
-If you find other error code, please forward them to me.
-
-### Missing attributs not returned by Neviweb during update
+### Missing attributes not returned by Neviweb during update
 
 During device update it is possible that some attribute are just dropped by Neviweb even if they are listed as attribute
 for a device. During Neviweb130-V2 startup, a notification will be sent to list those missing attributes and there value
@@ -1055,24 +900,59 @@ For battery level it's the same as above with **battery_icon**.
 Icons are available from [www](https://github.com/claudegel/sinope-130/tree/master/www) sub-directory. 
 Copy them in config/www/neviweb130 in your HA.
 
-## Customization for battery level for monitor and valve:
+## Customization for battery level for monitor and valve
 
 Same as above with attribute **battery_icon**, **leak_icon** and **icon_type**.
 
-# Device hard reset
-- Thermostats:
-    - Raise the temperature until the display change.
-    - Push the two button until CLR appear on the screen.
-    - Push once the upper button to get YES on the display.
-    - Push both button simultaneously and release immediately. DONE should appear on the screen.
-    - The thermostat will restart with factory setup
+### Device and weather icons
 
-- thermostats G2:
-    - Raise the temperature until the display change.
-    - Push and hold the two button until RST appear on the screen.
-    - Wait until device restart.
+Neviweb130 sets the entity picture itself. Custom-UI and `customize.yaml` are no longer needed. The picture is shown only if the png file exists, otherwise the default icon is used. The current path is also exposed in the `icon_type` attribute.
+
+Copy the icons in `config/www/neviweb130/` (served as `/local/neviweb130/`). File names used by the code:
+
+| Device                   | Files                                                                                     |
+|--------------------------|-------------------------------------------------------------------------------------------|
+| Thermostats              | `heat-off.png`, `heat-0.png` to `heat-5.png`, `heat-auto-0.png` to `heat-auto-5.png`      |
+| Floor thermostats        | `floor-off.png`, `floor-0.png` to `floor-5.png`, `floor-auto-0.png` to `floor-auto-5.png` |
+| Leak sensors             | `drop.png`, `leak.png`                                                                    |
+| Battery level            | `battery-unknown.png`, `battery-1.png` to `battery-5.png`                                 |
+| Valves                   | `valve-open.png`, `valve-close.png`, `leak.png`                                           |
+| Propane tank (LM4110-ZB) | `propane-unknown.png`, `propane-0.png` to `propane-8.png`                                 |
+
+The thermostat level follows the heating demand: 0 below 1%, then one step every 20%. `-off` is used when the thermostat is off and `-auto-` when it is in auto mode.
+
+#### Weather icons
+
+The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Its picture is taken from `config/www/neviweb130/weather/<name>.png`. At startup, neviweb130 sends a notification if this folder is missing or empty. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
+
+| Code | File               | Code | File               | Code | File                |
+|------|--------------------|------|--------------------|------|---------------------|
+| 0    | Hide.png           | 11   | Cloudlightning.png | 22   | Cloudsnow5.png      |
+| 1    | Sun.png            | 12   | Cloudlightning2.png| 23   | Cloudrainmoon.png   |
+| 2    | Sun2.png           | 13   | Cloudsnow.png      | 24   | Cloudrainmoon2.png  |
+| 3    | Cloudsun.png       | 14   | Cloudsnow2.png     | 25   | Cloudrainmoon3.png  |
+| 4    | Cloudsun2.png      | 15   | Cloudsnow3.png     | 26   | Cloudsnow6.png      |
+| 5    | Cloud.png          | 16   | Cloudsnow4.png     | 28   | Cloudrain2.png      |
+| 6    | Cloudrainsun.png   | 17   | Cloudfog.png       | 29   | Cloudrain3.png      |
+| 7    | Cloudrainsun2.png  | 18   | Moonstar.png       | 30   | Cloudrainsun3.png   |
+| 8    | Cloud2.png         | 19   | Cloudmoon.png      | 31   | Cloudrainmoon4.png  |
+| 9    | Cloud3.png         | 20   | Cloudmoon2.png     | 32   | Cloudrainsun4.png   |
+| 10   | Cloudrain.png      | 21   | Cloudmoon3.png     | 33   | Cloudrainmoon5.png  |
+
+File names are case sensitive.
+
+## Device hard reset
+- Thermostats:
+    - Raise the temperature until the display changes.
+    - Press both buttons until CLR appears on the screen.
+    - Press the upper button once to get YES on the display.
+    - Press both buttons at the same time and release immediately. DONE should appear on the screen.
+    - The thermostat restarts with factory settings.
+
+- G2 thermostats:
+    - Raise the temperature until the display changes.
+    - Press and hold both buttons until RST appears on the screen.
+    - Wait until the device restarts.
 
 ## TO DO
-- This custom component will be updated to neviweb130-V2 soon. This imply config_flow, coordinator, attributes entities,
-  English/French translation and many more features.
 - Improve energy stat polling from Neviweb.

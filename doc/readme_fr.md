@@ -35,7 +35,6 @@ Signaler un problème ou proposer une amélioration : [Créer une issue](https:/
 - [Éco-Sinopé](#capter-le-signal-eco-sinope-de-neviweb-pour-les-periodes-de-pointe)
 - [Statistiques d'énergie](#statistiques-pour-lenergie)
 - [Localisation (language)](#localisation)
-- [Statistiques de débit](#statistique-pour-le-capteur-de-debit-sedna)
 - [Dépannage](#depannage)
 - [Personnalisation](#personnalisation)
 - [Réinitialisation](#reinitialisation-materielle-de-lappareil)
@@ -92,7 +91,7 @@ Voici une liste des appareils actuellement pris en charge. En gros, c'est tout c
   - Sinopé HP6000ZB-GE, pour les thermopompes Ouellet avec connecteur Gree
   - Sinopé HP6000ZB-GE-RS485 pour les thermopompes Tosot avec connecteur Gree
   - Sinopé HP6000ZB-MA, pour les thermopompes Ouellet, Convectair avec connecteur Midea
-  - Sinopé PH6000ZB-HS, pour les thermopompes Hisense, Haxxair et Zephyr
+  - Sinopé HP6000ZB-HS, pour les thermopompes Hisense, Haxxair et Zephyr
 - **Contrôleur de pompe à chaleur Wi-Fi**:
   - Sinopé HP6000WF-MA, pour les thermopompes Ouellet, Convectair avec connecteur Midea
   - Sinopé HP6000WF-HA, pour les thermopompes Hotpoint
@@ -308,7 +307,7 @@ custom_component qui peut s'exécuter avec ce custom_component dans HA.
 | **network**       | non      | s'il n'est pas spécifié, le 1er emplacement trouvé est utilisé. Écrivez le nom de l'emplacement GT130 dans Neviweb que vous souhaitez contrôler. | Le nom du réseau est le nom de l'emplacement dans Neviweb écrit en haut au centre de la première page, où vos appareils Wi-Fi ou Zigbee sont enregistrés.                                                                                         |
 | **network2**      | non      | 2nd réseaux (emplacement) trouvé                                                                                   | Le nom du deuxième emplacement que vous souhaitez contrôler (Zigbee et/ou Wi-Fi uniquement). Ne l'ajoutez pas si vous n'avez qu'un seul réseau.                                                                                                 |
 | **network3**      | non      | 3rd réseaux (emplacement) trouvé                                                                                   | Le nom du troisième emplacement que vous souhaitez contrôler (Zigbee et/ou Wi-Fi uniquement). Ne l'ajoutez pas si vous n'avez qu'un seul réseau.                                                                                             |
-| **scan_interval** | non      | 540                                                                                                                | Le nombre de secondes entre chaque accès à Neviweb pour mettre à jour l'état de l'appareil. Sinopé a maintenant demandé un minimum de 5 minutes entre les interrogations afin que vous puissiez réduire scan_interval à 300. Ne dépassez pas 600, la session expirera. |
+| **scan_interval** | non      | 420                                                                                                                | Le nombre de secondes entre chaque accès à Neviweb pour mettre à jour l'état de l'appareil. Sinopé a maintenant demandé un minimum de 5 minutes entre les interrogations afin que vous puissiez réduire scan_interval à 300. Ne dépassez pas 600, la session expirera. |
 | **homekit_mode**  | non      | False                                                                                                              | Ajoutez la prise en charge des valeurs spécifiques à Homekit. Pas nécessaire si vous n'utilisez pas homekit.                                                                                                                                               |
 | **ignore_miwi**   | non      | False                                                                                                              | Ignorez les appareils Miwi s'ils sont présents au même endroit que les appareils Zigbee et/ou Wi-Fi. Réchauffez-vous si nous définissons un mauvais emplacement Neviweb.                                                                                                   |
 | **stat_interval** | non      | 1800                                                                                                               | Le nombre de secondes entre chaque accès à Neviweb pour la mise à jour des statistiques énergétiques. L'analyse démarrera 5 minutes après le démarrage de HA et sera mise à jour toutes les 300 à 1 800 secondes.                                          |
@@ -476,7 +475,7 @@ Les paramètres sont:
   
   Ces champs sont optionnels si vous n'avez pas d'appareil Miwi. Dans le cas contraire il faut entrer le nom de l'emplacement. Les emplacements
   non utilisés sont laissé vides ou on peut mettre un "_" pour indiquer à Neviweb130-V2 de ne pas les rechercher.
-- Scan_interval, par défaut 360 secondes.
+- Scan_interval, par défaut 420 secondes (300 à 600).
 - Support Homekit, optionnel
 - Ignorer les appareils Miwi, optionnel
 - Stat_interval, par défaut 1800 secondes
@@ -523,8 +522,7 @@ Pour les valves Sedna, il existe deux façons de les connecter à Neviweb :
 Les deux modes sont pris en charge par ce composant personnalisé.
 
 ## Passerelle GT130
-Il est désormais possible de savoir si votre GT130 est toujours en ligne ou hors ligne avec Neviweb via l'attribut gateway_status. Le 
-GT130 est détecté comme sensor.neviweb130_sensor_gt130
+Le capteur binaire `gateway_status` du GT130 indique s’il est en ligne ou hors ligne dans Neviweb.
 
 ## Systeme de mise a jour
 
@@ -561,13 +559,12 @@ Neviweb130 inclut désormais un système de mise à jour complet qui comprend :
   - Ajouter (Pre-release) dans le titre du programme de mise à jour.
 
 - Option de sauvegarde :
-  Ajoute un bouton pour activer la sauvegarde du système avant la mise à jour. Tout le répertoire de configuration (config) et la base
-  de données sont sauvegardés.
+  Une sauvegarde est faite avant la mise à jour, selon les options backup_mode et backup_folders (voir doc/options.md).
 
 - Les notes de version peuvent être consultées via le lien fourni sur la carte de mise à jour qui pointe vers les versions de GitHub.
 
 - Le programme de mise à jour possède de nombreux attributs pour aider l'utilisateur :
-  - check_interval: 6h, (deviendra une option dans la prochaine version de Neviweb130-V2)
+  - check_interval : réglé par l’option update_check_interval (défaut 6h).
   - last_check : date/heure de la dernière vérification de version disponible.
   - next_check : date/heure de la prochaine vérification de version disponible.
   - last_update_success : date/heure de la dernière mise à jour.
@@ -592,7 +589,7 @@ sensor `sensor.neviweb130_daily_requests` qui augmentent à chaque requête : mi
 Le capteur survit au redémarrage de HA et est remis à 0 à minuit tous les soirs.
 
 De cette façon, il est possible d'améliorer votre `scan_interval` pour obtenir la fréquence la plus élevée sans dépasser la limite.
-Lorsqu'il atteint 25 000 requêtes, neviweb130 enverra une notification. A terme, cette limite d'avertissement sera configurable.
+Lorsqu'il atteint 25 000 requêtes, neviweb130 enverra une notification. Cette limite d’avertissement se règle avec l’option request_limit.
 
 ## Execution de plusieurs instances de neviweb130 pour gerer differents comptes Neviweb.
 > Cette section fonctionne toujours mais comme Neviweb130 prend désormais directement en charge le multi-compte, elle devient obsolète.
@@ -655,9 +652,9 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
 - neviweb130.set_cool_setpoint_max, pour définir le point de consigne de refroidissement maximum pour le TH1134ZB-HC.
 - neviweb130.set_floor_limit_low, pour définir la température de consigne minimale pour les thermostats de sol. (5 à 34°C), (0 = éteint)
 - neviweb130.set_floor_limit_high, pour définir la température de consigne maximale pour les thermostats de sol. (7 à 36°C), (0 = éteint)
-- neviweb130.set_sensor_alert, pour définir toutes les alertes pour le capteur de fuite d'eau, la température, la batterie, la fuite,
-  l'état et définir l'action 
-  sur la valve.
+- neviweb130.set_sensor_leak_alert, pour régler l’alerte de fuite du détecteur de fuite.
+- neviweb130.set_sensor_temp_alert, pour régler l’alerte de basse température du détecteur de fuite.
+- neviweb130.set_sensor_closure_action, pour régler l’action de fermeture de la valve en cas de fuite, seulement pour les détecteurs connectés directement à la valve Sedna.
 - neviweb130.set_valve_alert, pour définir l'état d'alerte de batterie faible.
 - neviweb130.set_valve_temp_alert, pour définir une alerte de basse température sur la valve Sedna.
 - neviweb130.set_early_start, pour activer/désactiver le chauffage anticipé pour les thermostats Wi-Fi.
@@ -707,13 +704,10 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
   la climatisation.
 - neviweb130.set_hc_second_display, pour définir l'affichage secondaire du thermostat TH1134ZB-HC.
 - neviweb130.set_language, pour définir la langue d'affichage sur les thermostats TH1134ZB-HC.
-- neviweb130.set_aux_heat_min_time_on, pour régler la durée minimale d'activation du chauffage d'appoint.
-- neviweb130.set_cool_min_time_on, pour activer le temps minimum de refroidissement.
-- neviweb130.set_cool_min_time_off, pour définir le temps d'arrêt minimum du refroidissement.
 - neviweb130.set_neviweb_status, pour définir le statut global de Neviweb, domicile/extérieur via le GT130.
 - neviweb130.set_climate_neviweb_status, pour définir le statut global de Neviweb, domicile/extérieur via les thermostats Zigbee ou Wi-Fi.
 - neviweb130.set_refuel_alert, pour recevoir une alerte lorsque le réservoir de propane est ravitaillé,
-- neviweb130.set_humidifier_type, pour définir le type d'appareil humidificateur connecté au TH6500WF ou TH6250WF.
+- neviweb130.set_accessory_type, pour définir le type d’accessoire (humidificateur, déshumidificateur, échangeur d’air) connecté au TH6500WF ou TH6250WF.
 - neviweb130.set_schedule_mode, pour définir le mode de planification, manuel ou automatique pour le TH6500WF ou le TH6250WF.
 - neviweb130.set_flow_alarm_disable_timer, pour désactiver l'alarme de débit anormal pendant une période de 1 sec. à 24 heures.
 - neviweb130.set_heatcool_setpoint_delta, pour définir un delta de température entre la consigne de chauffage et la consigne de refroidissement à partir de 
@@ -724,14 +718,27 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
 - neviweb130.set_aux_heating_source, pour sélectionner le type de source de chauffage d'appoint utilisé pour le TH6xxxWF.
 - neviweb130.set_fan_speed, pour régler la vitesse du ventilateur, activé ou automatique pour TH6xxxWF.
 - neviweb130.set_switch_temp_alert, pour régler la fonction d'envoi d'alerte de basse température pour les MC3100ZB.
+- neviweb130.set_min_time_on, pour régler la durée minimale de marche avant l’arrêt (run-on) pour TH6500WF et TH6250WF.
+- neviweb130.set_min_time_off, pour régler la durée minimale d’arrêt avant le redémarrage (cooldown) pour TH6500WF et TH6250WF.
+- neviweb130.set_heat_interstage_delay et set_cool_interstage_delay, pour régler la durée minimale de chauffage ou de climatisation avant de passer à l’étage suivant pour TH6500WF et TH6250WF.
+- neviweb130.set_heat_dissipation_time et set_cool_dissipation_time, pour régler la durée de purge en chauffage ou en climatisation pour TH6xxxWF.
+- neviweb130.set_reversing_valve_polarity, pour régler la polarité de la valve d’inversion de la thermopompe pour TH6500WF et TH6250WF.
+- neviweb130.set_humidity_mode, pour régler le mode de consigne d’humidité pour TH6500WF et TH6250WF.
+- neviweb130.set_room_setpoint_away, pour régler la consigne d’absence des thermostats Wi-Fi.
+- neviweb130.set_cool_setpoint_away, pour régler la consigne de climatisation en absence pour TH6xxxWF et HP6000WF.
+- neviweb130.set_pump_protection, pour activer ou désactiver la protection de pompe des thermostats basse tension.
+- neviweb130.set_led_on_intensity et set_led_off_intensity, pour régler l’intensité du voyant à l’état «on» ou «off».
+- neviweb130.set_light_min_intensity, pour régler l’intensité minimale du gradateur.
+- neviweb130.set_key_double_up, pour activer ou désactiver l’action du double appui vers le haut du DM2550ZB.
+- neviweb130.set_switch_power_timer, pour régler la minuterie du RM3250ZB, off ou de 1 min à 24 h. L’appareil s’éteint après ce délai.
+
+Les actions marquées « Equipment configuration should be performed by a professional » dans les outils de développement modifient le fonctionnement de l’équipement CVC. Utilisez-les seulement si vous connaissez votre installation.
 
 ## Journalisation pour le debogage
 
-Le fichier home-assistant.log n'étant plus disponible, nous avons ajouté un nouvel enregistreur qui écrit toutes les données de journalisation pour 
-neviweb130 vers un fichier `neviweb130_log.txt` dans votre répertoire de configuration (config). Ce fichier est écrasé à chaque redémarrage de Ha. 
-Le fichier est également renommé à chaque fois que sa taille atteint 2 Mo. La rotation des journaux comporte un total de 4 fichiers.
+Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt`, dans votre répertoire de configuration (config), et non dans `home-assistant.log`. Par défaut, le fichier est vidé à chaque démarrage de l’intégration (log_reset_on_start), renommé quand il atteint 2 Mo (log_max_bytes) et 2 fichiers de rotation sont conservés (log_backup_count). Ces réglages et le niveau de journalisation sont dans les options de l’intégration.
 
-Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous pourriez rencontrer lorsque vous rapportez une issue.
+Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous signalez.
 
 ## Capter le signal Eco Sinope de Neviweb pour les periodes de pointe
 
@@ -780,45 +787,15 @@ Il est alors possible de réaliser une automatisation pour préparer tous les ap
 de l'attribut eco_status de «off» à «on».
 
 ## Statistiques pour l'energie
-Sept attributs sont ajoutés pour suivre la consommation d'énergie des appareils :
-- total_kwh_count : nombre total de consommation d'énergie à ce jour.
-- hourly_kwh_count : nombre total d'utilisation horaire pour la journée en cours.
-- daily_kwh_count : nombre total d'utilisation quotidiennement pour le mois en cours.
-- Monthly_kwh_count : nombre total d'utilisation mensuellement pour l'année en cours.
-- hourly_kwh : kWh utilisé pour la dernière heure.
-- daily_kwh : kWh utilisé le dernier jour.
-- Monthly_kwh : kWh consommé le mois dernier.
+Les appareils qui rapportent leur consommation dans Neviweb ont ces entités capteur, en kWh :
+- **Énergie totale** (`total_kwh_count`, total_increasing)
+- énergie **mensuelle**, **quotidienne** et **horaire** (`monthly_kwh_count`, `daily_kwh_count`, `hourly_kwh_count`, total)
 
-Ils sont récupérés sur Neviweb toutes les 30 minutes. La première interrogation démarre 5 minutes après le redémarrage de HA. Neviweb a deux 
-heures de retard pour publier ses données. Vos données seront dephasées de 2 heures.
+Les valves Sedna 2e génération avec capteur de débit ont le même ensemble pour l’eau, en litres : **Débit total** (`total_flow_count`, total_increasing) et les comptes mensuel, quotidien et horaire (total).
 
-### Suivez la consommation d'énergie dans le tableau de bord HA Energy
-Lorsque les attributs énergétiques sont disponibles, il est possible de suivre la consommation d'énergie des appareils individuels dans  
-le tableau de bord énergétique de Home Assistant en créant un [Template sensor](https://www.home-assistant.io/integrations/template/) dans configuration.yaml :
+Ces capteurs ont la classe energy ou water et s’ajoutent directement au tableau de bord Énergie de HA. Aucun capteur template n’est nécessaire. Les statistiques sont lues dans Neviweb toutes les `stat_interval` secondes (défaut 1800). Neviweb publie ses données avec environ deux heures de retard.
 
-```yaml
-template:
-  - sensor:
-      - name: "Basement energy usage"
-        unique_id: sensor.basement_energy_usage
-        unit_of_measurement: "kWh"
-        device_class: energy
-        state_class: total_increasing
-        state: >-
-          {{ state_attr("climate.neviweb130_th1124zb_basement","hourly_kwh_count") }}
-```
-or:
-```yaml
-template:
-  - sensor:
-      - name: "Basement energy usage"
-        unique_id: sensor.basement_energy_usage
-        unit_of_measurement: "kWh"
-        device_class: energy
-        state_class: total
-        state: >-
-          {{ state_attr("climate.neviweb130_th1124zb_basement","hourly_kwh") }}
-```
+Les attributs `hourly_kwh`, `daily_kwh` et `monthly_kwh` (kWh de la dernière heure, du dernier jour et du dernier mois) restent exposés sur les entités climate, light et switch, et `hourly_flow`, `daily_flow` et `monthly_flow` sur les entités valve.
 
 ## Localisation
 Neviweb130 est désormais traduit en français pour les messages d'erreurs et de notifications. La traduction se fait 
@@ -829,47 +806,6 @@ en charge. N'importe quelle langue peut être ajoutée en traduisant le fichier 
 Si vous modifiez les fichiers de traduction, vous devrez non seulement recharger HA, mais aussi redémarrer le serveur 
 HA pour forcer HA à recharger correctement les traductions.
 
-## Statistique pour le capteur de debit Sedna
-Sept attributs sont ajoutés pour suivre la consommation d'eau de la valve Sedna. Ils sont affichés en m³ (mètre cube), ce qui correspond aux 
-data que le module énergie recherche :
-- total_flow_count : nombre total de litres d'eau utilisés à ce jour.
-- hour_flow_count : nombre total de litres d'eau consommés par heure pour la journée en cours.
-- daily_flow_count : nombre total de litres d'eau consommés quotidiennement pour le mois en cours.
-- Monthly_flow_count : nombre total de litres d'eau consommés mensuellement pour l'année en cours.
-- hour_flow : litres d'eau utilisés pour la dernière heure.
-- daily_flow : litres d'eau utilisés le dernier jour.
-- Monthly_flow : litres d'eau utilisés le mois dernier.
-
-Ils sont récupérés sur Neviweb toutes les 30 minutes. La première interrogation démarre 5 minutes après le redémarrage de HA. Neviweb a deux 
-heures de retard pour publier ses données. Vos données seront dephasées de 2 heures.
-
-### Suivez la consommation d'eau dans le tableau de bord HA Energy
-Lorsque les attributs de débit sont disponibles, il est possible de suivre la consommation d'eau de la vanne Sedna dans Home Assistant Energy. 
-tableau de bord en créant un [Capteur de modèle](https://www.home-assistant.io/integrations/template/) dans configuration.yaml :
-```yaml
-template:
-  - sensor:
-      - name: "Sedna Water Flow"
-        unique_id: sensor.sedna_water_flow
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total_increasing
-        state: >-
-          {{ state_attr("valve.neviweb130_valve_water_valve","hourly_flow_count") }}
-```
-or:
-```yaml
-template:
-  - sensor:
-      - name: "Sedna Water Flow"
-        unique_id: sensor.sedna_water_flow
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total
-        state: >-
-          {{ state_attr("valve.neviweb130_valve_water_valve","hourly_flow") }}
-```
-
 ## Depannage
 si vous voyez votre appareil dans le journal, mais qu'il n'apparaît pas dans la liste des entités, vous devez ajouter le numéro de modèle de l'appareil dans le 
 code. Ou vous pouvez m'envoyer le numéro de modèle afin que je puisse l'ajouter dans le code.
@@ -879,32 +815,15 @@ Dans le journal, recherchez les lignes :
 [custom_components.neviweb130] Received gateway data: [{'id': 100225, 'identifier': '500b91400001f750', 'name': 'Chargeur auto', 'family': '2506',...
 [custom_components.neviweb130] Received signature data: {'signature': {'model': 2506, 'modelCfg': 0, 'softBuildCfg': 0, 'softVersion': {'minor': 9, 'middle': 2, 'major': 1}, 'hardRev': 2, 'protocol': 'sinopcom'}}
 ```
-« family » : « 2506 » et « model » : 2506 sont ce dont vous avez besoin pour trouver le numéro de modèle de votre appareil. Il faudrait l'ajouter dans 
-climat.py, light.py, switch.py, sensor.py ou valve.py près des lignes 132 à 136 (climate.py) selon le type d'appareil. Puis redémarrez HA 
-et votre appareil sera répertorié dans la liste des entités.
+« family » : « 2506 » et « model » : 2506 sont ce dont vous avez besoin pour trouver le numéro de modèle de votre appareil.  
+Les listes de modèles sont dans `const.py` (CLIMATE_MODEL, LIGHT_MODEL, SWITCH_MODEL, VALVE_MODEL, SENSOR_MODEL). Le plus simple est d’ouvrir une issue avec le numéro de modèle.
 
-Si vous obtenez une trace de pile liée à un composant Neviweb130 dans le journal de Hone Assistant, vous pouvez  
+Si vous obtenez une trace de pile liée à un composant Neviweb130 dans le journal de Home Assistant, vous pouvez  
 [signaler un problème ici](https://github.com/claudegel/sinope-130/issues/new/choose)
 
 Vous pouvez également poster sur l'un de ces forum pour obtenir de l'aide :
 - https://community.home-assistant.io/t/sinope-line-voltage-thermostats
 - https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer
-
-### Activation des messages de journalisation Neviweb130 dans le fichier `neviweb130_log.txt`
-
-Pour avoir un maximum d'informations pour vous aider, merci de fournir un extrait de votre fichier `neviweb130_log.txt`. j'ai ajouté 
-quelques messages du journal de débogage qui pourraient aider à diagnostiquer le problème.
-Ajoutez ces lignes à votre fichier `configuration.yaml`
-   ```yaml
-   logger:
-     default: warning
-     logs:
-       custom_components.neviweb130: debug
-       homeassistant.service: debug
-       homeassistant.config_entries: debug
-   ```
-Cela définira le niveau de journalisation par défaut sur `warning` pour tous vos composants, à l'exception de Neviweb130 qui affichera des 
-informations plus détaillées.
 
 ### Activation des messages de journalisation neviweb130-V2 niveau 'debug' dans le fichier `neviweb130_log.txt`
 
@@ -1082,7 +1001,19 @@ Les icônes sont disponibles dans le sous-répertoire [www](https://github.com/c
 
 ### Personnalisation du niveau de batterie du moniteur et de la valve Sedna :
 
-Identique à ci-dessus avec l’attribut **battery_icon**, **leak_icon** and **icon_type**.
+Identique à ci-dessus avec l’attribut **battery_icon**, **leak_icon** et **icon_type**.
+
+### Noms des fichiers d’icônes
+
+Les icônes vont dans `config/www/neviweb130/`. L’image s’affiche seulement si le fichier existe :
+- Thermostats : `heat-off.png`, `heat-0.png` à `heat-5.png`, `heat-auto-0.png` à `heat-auto-5.png`
+- Thermostats de plancher : `floor-off.png`, `floor-0.png` à `floor-5.png`, `floor-auto-0.png` à `floor-auto-5.png`
+- Détecteurs de fuite : `drop.png`, `leak.png`
+- Batterie : `battery-unknown.png`, `battery-1.png` à `battery-5.png`
+- Valves : `valve-open.png`, `valve-close.png`, `leak.png`
+- Réservoir de propane (LM4110-ZB) : `propane-unknown.png`, `propane-0.png` à `propane-8.png`
+
+Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weather/<nom>.png`. Au démarrage, une notification avertit si ce dossier est absent ou vide. La correspondance code → fichier est dans le README anglais (section Weather icons) et dans `WEATHER_ICON_MAP` (`schema.py`). Les noms de fichiers sont sensibles à la casse.
 
 ## Reinitialisation materielle de l'appareil
 - Thermostats :
