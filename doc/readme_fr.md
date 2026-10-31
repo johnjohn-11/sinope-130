@@ -18,32 +18,23 @@ Signaler un problème ou proposer une amélioration : [Créer une issue](https:/
 
 ## Table des matières
 
-- [Annonce](#annonce)
-- [Appareils supportées](#appareils-pris-en-charge)
+- [Appareils pris en charge](#appareils-pris-en-charge)
 - [Prérequis](#prerequis)
 - [Installation](#installation)
-- [Configuration](#configuration-1er-generation)
-- [Configuration Multi_comptes](#configuration-multi-comptes)
-- [Configuration V2](#configuration-v2)
+- [Configuration](#configuration)
+- [Migration depuis la version 4.x](#migration-depuis-la-version-4x)
 - [Valve Sedna](#valve-sedna)
 - [GT130](#passerelle-gt130)
-- [Mise à jour](#systeme-de-mise-a-jour)
+- [Système de mise à jour](#systeme-de-mise-a-jour)
 - [Compteur de requêtes](#compteur-de-requetes-quotidiennes-neviweb)
-- [Multi instance (obsolète)](#execution-de-plusieurs-instances-de-neviweb130-pour-gerer-differents-comptes-neviweb)
 - [Services / Actions](#services-personnalises-actions)
-- [Journalisation](#journalisation-pour-le-debogage)
 - [Éco-Sinopé](#capter-le-signal-eco-sinope-de-neviweb-pour-les-periodes-de-pointe)
 - [Statistiques d'énergie](#statistiques-pour-lenergie)
-- [Localisation (language)](#localisation)
+- [Localisation (langue)](#localisation)
 - [Dépannage](#depannage)
 - [Personnalisation](#personnalisation)
-- [Réinitialisation](#reinitialisation-materielle-de-lappareil)
-- [TO DO](#a-faire)
-
-## Annonce
-### Neviweb130-V2 est presque prête
-
-Neviweb130 v5.0.0b0 est prête pour tester. Il ne me reste qu'à ajouter la documentation sur une branche séparée pour la durée des tests.
+- [Réinitialisation de l'appareil](#reinitialisation-materielle-de-lappareil)
+- [À faire](#a-faire)
 
 ## Appareils pris en charge
 Voici une liste des appareils actuellement pris en charge. En gros, c'est tout ce qui peut être ajouté dans Neviweb.
@@ -81,7 +72,7 @@ Voici une liste des appareils actuellement pris en charge. En gros, c'est tout c
   - Sinopé TH6500WF, thermostat Wi-Fi chauffage/climatisation
   - Sinopé TH6510WF, thermostat Wi-Fi chauffage/climatisation
   - Sinopé TH6250WF, thermostat Wi-Fi chauffage/climatisation
-  - Sinopé TH6250WF_PRO, thermostat Wi-Fi chauffage/climatisation PRO
+  - Sinopé TH6250WF-PRO, thermostat Wi-Fi chauffage/climatisation PRO
   - Sinopé TH6251WF-PRO, thermostat Wi-Fi chauffage/climatisation PRO
   - Sinopé THEWF01, thermostat de ligne, édition lite Wi-Fi
   - Flextherm concerto connect FLP55 thermostat de sol (sku FLP55 ne fourni pas de statistique énergétique dans Neviweb)
@@ -153,7 +144,7 @@ Voici une liste des appareils actuellement pris en charge. En gros, c'est tout c
   - Sinopé LM4110-LTE, Moniteur de niveau de réservoir de propane LTE
 - **Passerelle**:
   - GT130
-  - GT4220WF-M, passerelle mesh
+  - GT4220WF et GT4220WF-M, passerelle mesh pour les valves
 - **Alimentation**:
   - Sinopé ACUPS-01, batterie de secours pour valve Sedna, GT130 ou GT125
  
@@ -263,16 +254,111 @@ Il existe deux méthodes pour installer ce composant personnalisé :
           update.py
           valve.py
     ```
-    Au premier démarrage de HA, Neviweb130-V2 effectuera les opérations suivantes:
-    - importer la configuration V1 de configuration.yaml vers le config_flow qui est la méthode moderne de configuration de HA.
-    - transférer les unique_id vers un format alphanumérique (int vers str)
-    - transférer les numéros de modèle des appareils vers un format alphanumérique (int vers str)
-  Ces changement sont requis par HA. Aucune action n'est nécessaire de la part des utilisateurs.
-  
-## Configuration 1er generation
 
-Pour activer la gestion Neviweb130 dans votre installation, ajoutez ce qui suit à votre fichier `configuration.yaml`, puis redémarrez 
-Home Assistant.
+## Configuration
+
+Neviweb130 se configure dans l’interface de Home Assistant. La configuration dans `configuration.yaml` est obsolète. Si vous passez de la version 4.x, voir [Migration depuis la version 4.x](#migration-depuis-la-version-4x).
+
+### Ajouter un compte Neviweb
+
+Allez dans Paramètres → Appareils et services. Au bas de la page, cliquez sur **Ajouter une intégration** et cherchez **Sinope Neviweb130**. Une fenêtre s’ouvre pour entrer vos paramètres de connexion Neviweb.
+
+![nouvelle configuration](../www/nouveau_pont.jpg)
+
+Neviweb130 se charge ensuite et commence à récupérer vos appareils Neviweb.
+
+Pour gérer un autre compte Neviweb, ajoutez l’intégration de nouveau avec un **prefix** différent.
+
+### Paramètres
+
+Les noms d’emplacements sont ceux affichés en haut de la première page après la connexion à Neviweb. Si vous avez plusieurs emplacements, cliquez sur l’icône en haut pour les voir tous. Les appareils Zigbee (GT130) et Wi-Fi d’un même groupe doivent être dans le même emplacement. Les appareils MiWi (GT125) ne sont pas supportés. Pour eux, installez le composant [Neviweb](https://github.com/claudegel/sinope-1), qui peut fonctionner en même temps que celui-ci.
+
+![network](../www/network.jpg)
+
+| clé               | requis | défaut                 | description                                                                                                                                                       |
+|-------------------|--------|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **prefix**        | non    | default                | Nom du compte Neviweb. Utile seulement si vous ajoutez plus d’un compte. Chaque compte doit avoir un préfixe différent, sans espace ni accent.                     |
+| **username**      | oui    |                        | Le courriel utilisé pour vous connecter à Neviweb.                                                                                                                |
+| **password**      | oui    |                        | Votre mot de passe Neviweb.                                                                                                                                       |
+| **network**       | non    | 1er emplacement trouvé | Nom de l’emplacement Neviweb où sont vos appareils Zigbee ou Wi-Fi. Vide pour la détection automatique, ou `_` pour bloquer la détection.                        |
+| **network2**      | non    | 2e emplacement trouvé  | Nom du deuxième emplacement. Vide si vous n’en avez qu’un.                                                                                                        |
+| **network3**      | non    | 3e emplacement trouvé  | Nom du troisième emplacement. Vide si vous n’en avez qu’un ou deux.                                                                                               |
+| **scan_interval** | non    | 420                    | Secondes entre deux lectures de l’état des appareils dans Neviweb, de 300 à 600. Sinopé demande au moins 5 minutes. Au-delà de 600, la session expire.           |
+| **homekit_mode**  | non    | False                  | Ajoute les valeurs propres à HomeKit. Inutile si vous n’utilisez pas HomeKit.                                                                                    |
+| **ignore_miwi**   | non    | False                  | À mettre à True si un emplacement choisi contient aussi des appareils MiWi (GT125). Sinon, un avertissement indique que l’emplacement contient des appareils MiWi. |
+| **stat_interval** | non    | 1800                   | Secondes entre deux lectures des statistiques d’énergie dans Neviweb, de 300 à 1800.                                                                              |
+| **notify**        | non    | both                   | Façon de signaler les erreurs d’appareil : `nothing`, `logging`, `notification` ou `both`.                                                                        |
+| **safe_mode**     | non    | -                      | ID d’appareils séparés par des virgules à lire en mode sécuritaire, ou `-`. Les attributs non supportés par le micrologiciel sont ignorés. Un appareil qui retourne `DVCATTRNSPTD` est ajouté automatiquement et une notification est envoyée. |
+
+Si vous avez aussi un GT125 dans Neviweb, entrez le nom de l’emplacement, sinon l’emplacement du GT125 pourrait être pris par erreur. Les emplacements inutilisés peuvent rester vides, ou être mis à `_` pour que Neviweb130 ne les cherche pas. Un troisième emplacement doit être activé par Sinopé. Si vous entrez des noms, écrivez-les exactement comme dans Neviweb, majuscules comprises. Les lettres accentuées sont refusées.
+
+### Gérer l’intégration
+
+Tout se trouve dans Paramètres → Appareils et services → Neviweb130 :
+
+![options](../www/options.jpg)
+
+Vous pouvez y :
+- ajouter un autre compte Neviweb,
+- changer les options de l’intégration avec **Configurer** (voir [doc/options.md](options.md)),
+- changer les paramètres du compte avec **Reconfigurer**.
+
+Les changements s’appliquent sans redémarrer Home Assistant : Neviweb130 se recharge lui-même. Un gestionnaire de session ferme et rouvre les connexions Neviweb au besoin, ce qui évite les erreurs ACCSESSEXC lors de redémarrages fréquents de Home Assistant.
+
+*Options de configuration disponibles* :
+
+![options de configuration](../www/configuration.jpg)
+
+*Reconfiguration* :
+
+![reconfiguration](../www/reconfigurer.jpg)
+
+### Options de l’intégration
+
+- **prefix** : nom du compte Neviweb.
+- **log_level**, **log_max_bytes**, **log_backup_count**, **log_reset_on_start** : réglages du fichier de log de neviweb130 (voir Dépannage).
+- **download_log** : copie le fichier de log vers `/local/neviweb130.log` pour le télécharger. La copie est effacée après 30 minutes.
+- **reload** : recharge neviweb130 sans redémarrer Home Assistant.
+- **migrate** : relance la conversion des anciens unique_id numériques en texte.
+- **request_limit** (défaut 25000) : limite de sécurité des requêtes par jour. La limite de Neviweb est de 30000. Une notification est envoyée au-delà.
+- **update_check_interval** (1h, 3h, 6h, 12h ou 24h, défaut 6h) : fréquence de vérification des nouvelles versions sur GitHub.
+- **backup_mode** (full ou partial) et **backup_folders** (défaut `config`) : sauvegarde faite avant l’installation d’une mise à jour. Nécessite une installation Home Assistant avec le Supervisor.
+
+### Entités d’attributs
+
+Chaque appareil a sa page dans Paramètres → Appareils et services → Neviweb130, et Neviweb130 crée une entité pour la plupart des attributs :
+- sensor, pour les valeurs numériques comme la température, la tension et les statistiques d’énergie,
+- binary_sensor, pour les états on/off comme les détecteurs de fuite,
+- button, pour réinitialiser un attribut on/off ou une alarme,
+- number, pour changer une valeur numérique (température minimum/maximum, température d’absence, etc.),
+- switch, pour activer ou désactiver un attribut,
+- select, pour les attributs à choix multiples. Les choix sont traduits et convertis automatiquement vers et depuis les valeurs Neviweb.
+
+Ces entités se mettent à jour avec l’appareil et s’utilisent directement dans les automatisations et le tableau de bord Énergie. Les capteurs template sur les attributs ne sont plus nécessaires. Les entités, services et attributs sont traduits en français ou en anglais selon la langue de Home Assistant. S’il manque une entité d’attribut, ouvrez une issue.
+
+Exemple de page d’appareil :
+
+![Page appareil](../www/page_appareil.jpg)
+![Page appareil suite](../www/page_appareil_suite.jpg)
+
+## Migration depuis la version 4.x
+
+Au premier démarrage de la version 5, Neviweb130 :
+- importe la configuration `neviweb130:` de `configuration.yaml` dans la configuration par l’interface,
+- convertit les `unique_id` en texte (int vers str),
+- convertit les numéros de modèle des appareils en texte (int vers str).
+
+Ces changements sont requis par Home Assistant et se font automatiquement. Les noms d’appareils sont conservés et les attributs restent accessibles.
+
+Après le premier démarrage :
+- retirez ou commentez le bloc `neviweb130:` de `configuration.yaml`,
+- vérifiez vos automatisations, scripts et tableaux de bord. Ils continuent de fonctionner, mais les nouvelles entités d’attributs peuvent remplacer vos capteurs template,
+- les icônes des appareils sont fournies par l’intégration avec l’attribut `icon_type` et l’image de l’entité (voir [Personnalisation](#personnalisation)), Custom-UI n’est plus nécessaire.
+
+<details>
+<summary>Référence de l’ancienne configuration configuration.yaml (version 4.x)</summary>
+
+#### Un seul compte
 
 ```yaml
 # Exemple d'entrée dans configuration.yaml 
@@ -289,38 +375,8 @@ neviweb130:
   notify: "both"
   safe_mode: "-"
 ```
-Les noms de réseaux sont les noms trouvés en haut de la première page après la connexion à Neviweb. Si vous disposez de plusieurs réseaux, 
-cliquez simplement sur l'icône en haut pour trouver tous les noms de réseaux. Sélectionnez celui utilisé pour les appareils Zigbee GT130 ou Wi-Fi.
-Les deux types d'appareils peuvent être sur le même réseau pour fonctionner dans neviweb130 ou sur des réseaux séparés. Si vous disposez de deux 
-réseaux pour deux GT130 ou deux groupes Wi-Fi, vous pouvez ajoutez le paramètre network2 dans votre configuration.yaml. Voir ci-dessous. 
-Vous ne pouvez pas mélanger des appareils Miwi et des appareils Zigbee/Wi-Fi sur le même réseau. Pour les appareils miwi, installez [Neviweb](https://github.com/claudegel/sinope-1) 
-custom_component qui peut s'exécuter avec ce custom_component dans HA.
 
-![network](../www/network.jpg)
-
-**Options de configuration:**  
-
-| clé               | requis | défaut                                                                                                            | description                                                                                                                                                                                                                  |
-|-------------------|----------|--------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **username**      | Oui      |                                                                                                                    | Votre adresse email utilisée pour vous connecter à Neviweb.                                                                                                                                                                                 |
-| **password**      | Oui      |                                                                                                                    | le mot de passe de votre compte Neviweb.                                                                                                                                                                                                       |
-| **network**       | non      | s'il n'est pas spécifié, le 1er emplacement trouvé est utilisé. Écrivez le nom de l'emplacement GT130 dans Neviweb que vous souhaitez contrôler. | Le nom du réseau est le nom de l'emplacement dans Neviweb écrit en haut au centre de la première page, où vos appareils Wi-Fi ou Zigbee sont enregistrés.                                                                                         |
-| **network2**      | non      | 2nd réseaux (emplacement) trouvé                                                                                   | Le nom du deuxième emplacement que vous souhaitez contrôler (Zigbee et/ou Wi-Fi uniquement). Ne l'ajoutez pas si vous n'avez qu'un seul réseau.                                                                                                 |
-| **network3**      | non      | 3rd réseaux (emplacement) trouvé                                                                                   | Le nom du troisième emplacement que vous souhaitez contrôler (Zigbee et/ou Wi-Fi uniquement). Ne l'ajoutez pas si vous n'avez qu'un seul réseau.                                                                                             |
-| **scan_interval** | non      | 420                                                                                                                | Le nombre de secondes entre chaque accès à Neviweb pour mettre à jour l'état de l'appareil. Sinopé a maintenant demandé un minimum de 5 minutes entre les interrogations afin que vous puissiez réduire scan_interval à 300. Ne dépassez pas 600, la session expirera. |
-| **homekit_mode**  | non      | False                                                                                                              | Ajoutez la prise en charge des valeurs spécifiques à Homekit. Pas nécessaire si vous n'utilisez pas homekit.                                                                                                                                               |
-| **ignore_miwi**   | non      | False                                                                                                              | Ignorez les appareils Miwi s'ils sont présents au même endroit que les appareils Zigbee et/ou Wi-Fi. Réchauffez-vous si nous définissons un mauvais emplacement Neviweb.                                                                                                   |
-| **stat_interval** | non      | 1800                                                                                                               | Le nombre de secondes entre chaque accès à Neviweb pour la mise à jour des statistiques énergétiques. L'analyse démarrera 5 minutes après le démarrage de HA et sera mise à jour toutes les 300 à 1 800 secondes.                                          |
-| **notify**        | non      | both                                                                                                               | La méthode pour envoyer une notification en cas d'erreur de périphérique. L'option de valeur est `nothing`, `logging`, `notification`, `both`.                                                                                                              |
-| **safe_mode**     | non      | -                  |Le mode sans échec permet d'exécuter la mise à jour de l'appareil sans plantage en cas de paramètres incorrects ou manquants. Si un appareil reçoit une erreur DVCATTRNSPTD durant la mise aà jour, le mode sans échec s'active automatiquement pour détecter l'attribut défectueux et permettre la finalisation de la mise à jour. La valeur par défaut est « - ». Pour tester les attributs du périphérique, indiquez l'ID de l'appareil, « 12345 » comme valeur du mode sans échec. |
-
-Si vous avez un GT125 également connecté à Neviweb, le paramètre réseau est obligatoire, ou il est possible que lors de la 
-configuration, le réseau du GT125 sera capté accidentellement. Si vous ne disposez que de deux réseaux GT130/Wi-Fi, vous pouvez omettre leurs
-noms comme lors de la configuration, les deux premiers réseaux trouvés seront automatiquement récupérés. Si vous préférez ajouter des noms de réseaux 
-assurez-vous qu'ils soient écrits « exactement » comme dans Neviweb. (première lettre majuscule ou non). Évitez également les lettres accentuées 
-car Home Assistant les supprimera et le nom de l'emplacement ne correspondra pas, empêchant le chargement de custom_component.
-
-## Configuration multi-comptes
+#### Configuration multi-comptes
 (nouveau depuis la version 3.1.0)
 
 Si vous devez contrôler des appareils à partir de **plusieurs comptes Neviweb** (par exemple, votre maison et celle d'un voisin), vous pouvez 
@@ -416,101 +472,37 @@ Les paramètres sont en anglais. Il ne faut pas les traduire.
   - Avec préfixe + localisation → `climate.neviweb130_parents_chalet_climate_living_room`
   - Avec localisation uniquement (pas de préfixe) → `climate.neviweb130_chalet_climate_living_room`
 
-## Configuration V2
-(nouveau depuis la version 5.0.0)
+#### Execution de plusieurs instances de neviweb130 pour gerer differents comptes Neviweb.
+> Cette section fonctionne toujours mais comme Neviweb130 prend désormais directement en charge le multi-compte, elle devient obsolète.
+>
+>Il est possible d'exécuter deux instances de neviweb130, mais vous devez utiliser deux comptes Neviweb different avec un nom d'utilisateur 
+>(e-mail) et mot de passe différents pour chacun pour vous connecter à Neviweb.
+>
+>Étapes pour y parvenir :
+>- Créez un autre répertoire dans config/custom_components ex. **neviweb131**.
+>- Copiez tous les fichiers du répertoire neviweb130 vers le nouveau répertoire neviweb131.
+>- Dans neviweb131, éditez le fichier manifest.json pour changer la ligne #2, "domain": "neviweb130",
+>et remplacez-le par le même nom que le répertoire que vous venez de créer. **"domaine": "neviweb131"**,
+>- Ajoutez une deuxième configuration dans configuration.yaml comme ceci :
+>```yaml
+># Exemple de configuration.yaml pour une deuxième instance appelée neviweb131.
+>neviweb131:
+>   username: 'Votre courriel pour le deuxième compte Neviweb'
+>   password: 'Votre mot de passe pour le deuxième compte Neviweb'
+>   network: 'Le nom d'emplacement pour votre gt130 dans ce deuxième compte Neviweb'
+>   network2: 'Votre deuxième emplacement' (2e location), facultatif
+>   network3: 'Votre troisième emplacement' (3e location), facultatif
+>   scan_interval: 360
+>   homekit_mode: False
+>   ignore_miwi: False
+>   stat_interval: 1800
+>   notify: "both"
+>```
+>- Redémarrer Home Assistant.
+>
+>Tous les appareils de cette deuxième instance porteront un nom tel que `climat.neviweb131_climate_office_thermostat`.
 
-Neviweb130 V2 est la version v5.0.0 de Neviweb130 actuel. Aussitôt terminé les derniers tests de compatibilité pour le transfert de Neviweb130 
-à Neviweb130-V2 une mise à jour sera proposée. La version V2 a été conçue pour rencontrer les derniers standards de Home Assistant. 
-La configuration dans **configuration.yaml** est maintenant obsolète.
-
-- **Via la mise à jour de neviweb130**:
-
-  La configuration de configuration.yaml est transférée vers le config_flow qui est la méthode moderne de HA. Les options dans configuration.yaml
-  peuvent être enlevés ou commentés sans risque. Les noms d'appareils sont conservés. Les attributs sont toujours accessibles.
-  On peut retrouver la configuration dans Paramètres / Appareils et services / Neviweb130. On y retrouve tous les appareils et chacun d'eux a
-  maintenant une page de configuration graphique dédiée.
-  Neviweb130-V2 est maintenant en français ou en anglais selon votre configuration de HA. Les services. les entités, les attributs, tout est traduit
-  automatiquement.
-
-  La configuration de Neviweb130-V2 se retrouve ici:
-  
-  ![options](../www/options.jpg)
-
-  Ici on peut dans l'ordre:
-  
-  - Ajouter un nouveau compte Neviweb (pont). Jusqu'à 3 comptes peuvent être gérés.
-  - Modifier certaines options de neviweb130, (voir ci dessous).
-  - Modifier la configuration de neviweb130-V2, (voir ci-dessous). Jusqu'à trois emplacements (locations) peuvent être supportés pour chaque
-    compte Neviweb. Il faut demander la permission à Sinopé pour activer le troisième emplacement.
-
-  Il n'est plus nécessaire de redémarrer HA après avoir changé des paramètres. Neviweb130-V2 est rechargé automatiquement.
-  Un gestionnaire de connection (Session_manager) se charge de terminer les connections à Neviweb et d'en recréer de nouvelles au besoin.
-  Ceci élimine les erreurs ACCSESSEXC qu'on reçois de Neviweb quand on redémarre trop souvent HA.
-
-  *Options de configuration disponibles*:
-  
-  ![configurer options](../www/configuration.jpg)
-
-  *Configuration de Neviweb130-V2, importée de Neviweb130-V1*:
-  
-  ![reconfiguration](../www/reconfigurer.jpg)
-
-
-- **Via une installation vierge**:
-
-  Pour une installation vierge, on installe Neviweb130-V2 via HACS (Sinopé neviweb130), Version minimum v5.0.0. Allez ensuite dans Paramètres /
-  Appareils et services. Au bas de la page clicquez sur **Ajouter une intégration** et recherchez **Sinopé Neviweb130**.
-  Une fenêtre de configuration apparait à l'écran pour entrer les paramètres de connections à Neviweb.
-
-  ![nouvelle configuration](../www/nouveau_pont.jpg)
-
-Les paramètres sont:
-- nom du compte Neviweb, le premier est nommé **default**. Vous pouvez le conserver, le remplacer ou même laisser ce champs vide pour avoir les même noms
-  d'appareil que dans Neviweb130-V1.
-- Courriel Neviweb
-- Mot de passe Neviweb
-- Premier emplacement (location)
-- Deuxième emplacement
-- Troisième emplacement
-  
-  Ces champs sont optionnels si vous n'avez pas d'appareil Miwi. Dans le cas contraire il faut entrer le nom de l'emplacement. Les emplacements
-  non utilisés sont laissé vides ou on peut mettre un "_" pour indiquer à Neviweb130-V2 de ne pas les rechercher.
-- Scan_interval, par défaut 420 secondes (300 à 600).
-- Support Homekit, optionnel
-- Ignorer les appareils Miwi, optionnel
-- Stat_interval, par défaut 1800 secondes
-- Avis en cas de déconnections d'appareils, 4 options:
-  - nothing, aucun avis
-  - logging, seulement dans les log
-  - Notification, on reçois une notification en cas de déconnections d'appareil
-  - Both, "Notification" plus "logging"
-- ID d'appareil à mettre à jour en mode sans échec. Pour les appareils problématiques (Wi-FI ?)
-
-Ensuite Neviweb130-V2 est rechargé et commencera à récupérer les appareils de Neviweb. 
-
-La grosse différence entre V1 et V2 c'est qu'il n'est plus nécessaire de créer des capteurs pour suivre certains attributs de vos appareils.
-Pour tous les appareils, neviweb130-V2 cré des entités d'attributs automatiquement.
-
-- capteur (sensors), pour les attributs numériques à suivre comme la température, le voltage et les statistiques d'énergie.
-- capteur_binaire (binary_sensors), pour les attributs binaires comme les capteurs de fuite.
-- bouton (button), pour modifier ou réinitialiser la valeur d'un attribut de type on/off ou alarme.
-- nombre (number), pour changer la valeur numérique d'un attribut, température minimum, maximum, en absence etc
-- commutateur (switch), pour activer / désactiver un attribut.
-- sélecteur (select), pour les attributs avec un choix d'options. Toutes les options sont traduites et il n'est plus nécessaire de mettre
-  des chiffres pour les intervalles comme 15 secondes, 15 minutes etc. Neviweb130-V2 fait la conversion automatiquement pour envoyer les
-  valeurs à Neviweb et la réception des valeurs de Neviweb.
-
-On peut retrouver tous ces entités d'attribut dans la page de chaque appareil. (Paramètres / Appareils et services / Neviweb130).
-Elles sont mises à jour en temps réel par HA. Ces entités peuvent être utilisées directement dans vos automations ou pour le module énergie.
-Si vous installez neviweb130-V2 via une mise à jour, il faudra revalider vos automations. Celles-ci demeureront fonctionnelles mais
-en utilisant les nouvelles entités d'attributs vous pourrez vous débarrasser de tous vos capteurs et ça va simplifier vos automations.
-
-Il est possible qu'il manque quelques entités d'attributs. Ils seront facilement ajoutés dès que j'en serai notifié.
-
-Voici une page d'appareil type:
-
-![Page appareil](../www/page_appareil.jpg)
-![Page appareil suite](../www/page_appareil_suite.jpg)
+</details>
 
 ## Valve Sedna
 Pour les valves Sedna, il existe deux façons de les connecter à Neviweb :
@@ -590,36 +582,6 @@ Le capteur survit au redémarrage de HA et est remis à 0 à minuit tous les soi
 
 De cette façon, il est possible d'améliorer votre `scan_interval` pour obtenir la fréquence la plus élevée sans dépasser la limite.
 Lorsqu'il atteint 25 000 requêtes, neviweb130 enverra une notification. Cette limite d’avertissement se règle avec l’option request_limit.
-
-## Execution de plusieurs instances de neviweb130 pour gerer differents comptes Neviweb.
-> Cette section fonctionne toujours mais comme Neviweb130 prend désormais directement en charge le multi-compte, elle devient obsolète.
->
->Il est possible d'exécuter deux instances de neviweb130, mais vous devez utiliser deux comptes Neviweb different avec un nom d'utilisateur 
->(e-mail) et mot de passe différents pour chacun pour vous connecter à Neviweb.
->
->Étapes pour y parvenir :
->- Créez un autre répertoire dans config/custom_components ex. **neviweb131**.
->- Copiez tous les fichiers du répertoire neviweb130 vers le nouveau répertoire neviweb131.
->- Dans neviweb131, éditez le fichier manifest.json pour changer la ligne #2, "domain": "neviweb130",
->et remplacez-le par le même nom que le répertoire que vous venez de créer. **"domaine": "neviweb131"**,
->- Ajoutez une deuxième configuration dans configuration.yaml comme ceci :
->```yaml
-># Exemple de configuration.yaml pour une deuxième instance appelée neviweb131.
->neviweb131:
->   username: 'Votre courriel pour le deuxième compte Neviweb'
->   password: 'Votre mot de passe pour le deuxième compte Neviweb'
->   network: 'Le nom d'emplacement pour votre gt130 dans ce deuxième compte Neviweb'
->   network2: 'Votre deuxième emplacement' (2e location), facultatif
->   network3: 'Votre troisième emplacement' (3e location), facultatif
->   scan_interval: 360
->   homekit_mode: False
->   ignore_miwi: False
->   stat_interval: 1800
->   notify: "both"
->```
->- Redémarrer Home Assistant.
->
->Tous les appareils de cette deuxième instance porteront un nom tel que `climat.neviweb131_climate_office_thermostat`.
 
 ## Services personnalises (Actions)
 
@@ -734,12 +696,6 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
 
 Les actions marquées « Equipment configuration should be performed by a professional » dans les outils de développement modifient le fonctionnement de l’équipement CVC. Utilisez-les seulement si vous connaissez votre installation.
 
-## Journalisation pour le debogage
-
-Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt`, dans votre répertoire de configuration (config), et non dans `home-assistant.log`. Par défaut, le fichier est vidé à chaque démarrage de l’intégration (log_reset_on_start), renommé quand il atteint 2 Mo (log_max_bytes) et 2 fichiers de rotation sont conservés (log_backup_count). Ces réglages et le niveau de journalisation sont dans les options de l’intégration.
-
-Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous signalez.
-
 ## Capter le signal Eco Sinope de Neviweb pour les periodes de pointe
 
 Si vous possédez au moins un thermostat ou un contrôleur de charge inscrit au programme Éco-Sinopé, il est maintenant possible de 
@@ -824,6 +780,12 @@ Si vous obtenez une trace de pile liée à un composant Neviweb130 dans le journ
 Vous pouvez également poster sur l'un de ces forum pour obtenir de l'aide :
 - https://community.home-assistant.io/t/sinope-line-voltage-thermostats
 - https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer
+
+### Fichier de journalisation
+
+Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt`, dans votre répertoire de configuration (config), et non dans `home-assistant.log`. Par défaut, le fichier est vidé à chaque démarrage de l’intégration (log_reset_on_start), renommé quand il atteint 2 Mo (log_max_bytes) et 2 fichiers de rotation sont conservés (log_backup_count). Ces réglages et le niveau de journalisation sont dans les options de l’intégration.
+
+Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous signalez.
 
 ### Activation des messages de journalisation neviweb130-V2 niveau 'debug' dans le fichier `neviweb130_log.txt`
 
@@ -1029,6 +991,4 @@ Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weathe
     - Attendez le redémarrage de l'appareil.
 
 ## A FAIRE
-- Ce composant personnalisé sera bientôt mis à jour vers neviweb130-V2. Cela implique un config_flow, coordinateur, attributs personnalisés
-  des entités, traduction anglais/français et bien d’autres fonctionnalités.
 - Améliorer la récupération des statistiques énergétiques de Neviweb.

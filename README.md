@@ -18,33 +18,23 @@ Report a problem or suggest an improvement: [Open an issue](https://github.com/c
 
 ## Table of contents
 
-- [Announcement](#announcement)
 - [Supported devices](#supported-devices)
 - [Prerequisite](#prerequisite)
 - [Installation](#installation)
-- [Configuration](#legacy-configuration)
-- [Multi_accounts configuration](#multi-account-configuration)
-- [V2 configuration](#v2-configuration)
+- [Configuration](#configuration)
+- [Migrating from version 4.x](#migrating-from-version-4x)
 - [Sedna valve](#sedna-valve)
 - [GT130](#gateway-gt130)
 - [Update system](#updater-system)
 - [Request counter](#neviweb-daily-request-counter)
-- [Multi instance (obsolete)](#running-more-than-one-instance-of-neviweb130-to-manage-different-neviweb-connections)
 - [Services / Actions](#custom-services)
-- [Debugging](#logging-for-debugging)
-- [Eco-Sinopé](#catch-eco-sinope-signal-for-peak-period)
+- [Eco-Sinopé](#catch-éco-sinopé-signal-for-peak-period)
 - [Energy and water statistics](#energy-and-water-statistics)
 - [Localisation (language)](#localisation)
 - [Troubleshooting](#troubleshooting)
 - [Customization](#customization)
 - [Device hard reset](#device-hard-reset)
 - [TO DO](#to-do)
-
-## Announcement
-
-### Neviweb130-V2 is almost there
-
-neviweb130 v5.0.0b0 is ready for testing.
 
 ## Supported Devices
 Here is the list of currently supported devices. Basically, it's everything that can be added in Neviweb.
@@ -214,16 +204,111 @@ There are two ways to install this custom component:
       ...
     ```
 
-    Upon the first startup of HA, Neviweb130-V2 will perform the following operations:
-    - import the V1 configuration from `configuration.yaml` into the `config_flow` (HA's modern configuration method).
-    - convert `unique_id`s to an alphanumeric format (int to str).
-    - convert device model numbers to an alphanumeric format (int to str).
-  These changes are required by HA. No action is required on the part of users.
+## Configuration
 
-## Legacy configuration
+Neviweb130 is configured from the Home Assistant UI. Configuration in `configuration.yaml` is obsolete. If you are upgrading from version 4.x, see [Migrating from version 4.x](#migrating-from-version-4x).
 
-To enable Neviweb130 management in your installation, add the following to your `configuration.yaml` file, then restart 
-Home Assistant.
+### Adding a Neviweb account
+
+Go to Settings → Devices & services. At the bottom of the page, click **Add integration** and search for **Sinope Neviweb130**. A window opens to enter your Neviweb connection settings.
+
+![new configuration](www/nouveau_pont.jpg)
+
+Then Neviweb130 loads and starts retrieving your Neviweb devices.
+
+To control another Neviweb account, add the integration again with a different **prefix**.
+
+### Parameters
+
+Location names are the names shown at the top of the first page after logging into Neviweb. If you have more than one location, click on the icon at the top to see all of them. Zigbee (GT130) and Wi-Fi devices of a same group must be in the same location. MiWi devices (GT125) are not supported. For them, install the [Neviweb](https://github.com/claudegel/sinope-1) custom component, which can run alongside this one.
+
+![network](www/network.jpg)
+
+| key               | required | default                                | description                                                                                                                                                                       |
+|-------------------|----------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **prefix**        | no       | default                                | Name of the Neviweb account. Needed only if you add more than one Neviweb account. Each account needs a different prefix, without spaces or accented characters.                |
+| **username**      | yes      |                                        | The email address you use to log into Neviweb.                                                                                                                                    |
+| **password**      | yes      |                                        | Your Neviweb password.                                                                                                                                                            |
+| **network**       | no       | 1st location found                     | Name of the Neviweb location where your Zigbee or Wi-Fi devices are registered. Leave empty for auto detection, or set to `_` to block detection.                               |
+| **network2**      | no       | 2nd location found                     | Name of the second location to control. Leave empty if you have only one location.                                                                                               |
+| **network3**      | no       | 3rd location found                     | Name of the third location to control. Leave empty if you have only one or two locations.                                                                                        |
+| **scan_interval** | no       | 420                                    | Number of seconds between each Neviweb poll to update device states, from 300 to 600. Sinopé asks for a minimum of 5 minutes between polls. Above 600 the session expires.      |
+| **homekit_mode**  | no       | False                                  | Adds support for HomeKit specific values. Not needed if you don't use HomeKit.                                                                                                   |
+| **ignore_miwi**   | no       | False                                  | Set to True if a selected location also contains MiWi devices (GT125). Without it, you get a warning saying the location contains unsupported MiWi devices.                     |
+| **stat_interval** | no       | 1800                                   | Number of seconds between each Neviweb poll for energy statistics, from 300 to 1800.                                                                                             |
+| **notify**        | no       | both                                   | How device errors are reported: `nothing`, `logging`, `notification` or `both`.                                                                                                  |
+| **safe_mode**     | no       | -                                      | Comma separated list of device IDs to poll in safe mode, or `-` for none. In safe mode, attributes not supported by the device firmware are skipped. A device that returns `DVCATTRNSPTD` is added automatically and you get a notification. |
+
+If you also have a GT125 connected to Neviweb, enter the location name, otherwise the GT125 location could be picked up by mistake. Unused locations can be left empty, or set to `_` so Neviweb130 does not search for them. A third location must be activated by Sinopé. If you enter names, write them exactly as in Neviweb, including capitalization. Accented letters are refused.
+
+### Managing the integration
+
+Everything is under Settings → Devices & services → Neviweb130:
+
+![options](www/options.jpg)
+
+From there you can:
+- add another Neviweb account,
+- change the integration options with **Configure** (see below),
+- change the account parameters with **Reconfigure**.
+
+Changes apply without restarting Home Assistant: Neviweb130 reloads itself. A session manager closes and reopens the Neviweb connections as needed, which avoids the ACCSESSEXC errors seen when Home Assistant restarts often.
+
+*Available configuration options*:
+
+![configuration options](www/configuration.jpg)
+
+*Reconfiguration*:
+
+![reconfiguration](www/reconfigurer.jpg)
+
+### Integration options
+
+Click on Configure on the neviweb130 integration page to reach these options (see also [doc/options_en.md](doc/options_en.md)):
+- **prefix**: Neviweb account name.
+- **log_level**, **log_max_bytes**, **log_backup_count**, **log_reset_on_start**: settings of the neviweb130 log file (see Troubleshooting).
+- **download_log**: copies the log file to `/local/neviweb130.log` so you can download it from your browser. It is deleted after 30 minutes.
+- **reload**: reloads neviweb130 without restarting Home Assistant.
+- **migrate**: migrates old numeric unique_id to the new text unique_id required by HA.
+- **request_limit** (default 25000): daily safety limit of requests sent to Neviweb. Neviweb's own limit is 30000 per day. A notification is sent when the request counter sensor goes over this value.
+- **update_check_interval** (1h, 3h, 6h, 12h or 24h, default 6h): how often the update entity checks GitHub for a new neviweb130 release.
+- **backup_mode** (full or partial) and **backup_folders** (default `config`): backup made by the update entity before installing a new version. `full` calls `hassio.backup_full`. `partial` calls `hassio.backup_partial` with the folders listed in backup_folders (`config` means the Home Assistant configuration). Both need a Home Assistant installation with the Supervisor.
+
+### Attribute entities
+
+Each device has its own page under Settings → Devices & services → Neviweb130, and Neviweb130 creates an entity for most device attributes:
+- sensor, for numeric values such as temperature, voltage and energy statistics,
+- binary_sensor, for on/off states such as leak sensors,
+- button, to reset an on/off or alarm attribute,
+- number, to change a numeric value (minimum/maximum temperature, away temperature, etc.),
+- switch, to enable or disable an attribute,
+- select, for attributes with a list of choices. Choices are translated and converted to and from Neviweb values automatically.
+
+These entities update with the device and can be used directly in automations and in the Energy dashboard, so template sensors on attributes are no longer needed. Entities, services and attributes are translated in English or French according to your Home Assistant language. If an attribute entity is missing, open an issue.
+
+Sample device page:
+
+![Page appareil](www/page_appareil.jpg)
+![Page appareil suite](www/page_appareil_suite.jpg)
+
+## Migrating from version 4.x
+
+At the first startup of version 5, Neviweb130:
+- imports the `neviweb130:` configuration from `configuration.yaml` into the UI configuration,
+- converts `unique_id`s to text (int to str),
+- converts device model numbers to text (int to str).
+
+These changes are required by Home Assistant and are done automatically. Device names are kept and attributes are still available.
+
+After the first startup:
+- remove or comment out the `neviweb130:` block in `configuration.yaml`,
+- check your automations, scripts and dashboards. They keep working, but the new attribute entities can replace your template sensors,
+- device icons are provided by the integration through the `icon_type` attribute and the entity picture (see [Customization](#customization)), so Custom-UI is no longer needed.
+
+<details>
+<summary>Legacy configuration.yaml reference (version 4.x)</summary>
+
+#### Single account
 
 ```yaml
 # Example configuration.yaml entry
@@ -240,38 +325,8 @@ neviweb130:
   notify: "both"
   safe_mode: "-"
 ```
-Networks names are the names found on top of first page after logging into Neviweb. If you have more then one network, 
-just click on icon on top to find all networks names. Select the one used for Zigbee GT130 or Wi-Fi devices. Both devices types 
-must be on same network to work in neviweb130. If you have two networks for two GT130 or two Wi-Fi groups then you can 
-add network2 parameter in your configuration.yaml. See below. You can't mix miwi devices and Zigbee/Wi-Fi devices on the 
-same network. For miwi devices install [Neviweb](https://github.com/claudegel/sinope-1) 
-custom_component which can run along with this custom_component in HA.
 
-![network](www/network.jpg)
-
-**Configuration options:**  
-
-| key               | required | default                                                                                                            | description                                                                                                                                                                                                                  |
-|-------------------|----------|--------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **username**      | yes      |                                                                                                                    | Your email address used to log in Neviweb.                                                                                                                                                                                   |
-| **password**      | yes      |                                                                                                                    | Your Neviweb password.                                                                                                                                                                                                       |
-| **network**       | no       | if not specified, 1st location found is used. Write the name of the GT130 location in Neviweb you want to control. | Network name is the location name in Neviweb written on top center of first page, where your Wi-Fi or Zigbee devices are registered.                                                                                         |
-| **network2**      | no       | 2nd location found                                                                                                 | The name of the second location you want to control (Zigbee and/or Wi-Fi only). Don't add it if you have only one network.                                                                                                   |
-| **network3**      | no       | 3rd location found                                                                                                 | The name of the third location you want to control (Zigbee and/or Wi-Fi only). Don't add it if you have only one network.                                                                                                    |
-| **scan_interval** | no       | 420                                                                                                                | The number of seconds between each access to Neviweb to update device state. Sinopé asked for a minimum of 5 minutes between polling now so you can reduce scan_interval to 300. Don't go over 600, the session will expire. |
-| **homekit_mode**  | no       | False                                                                                                              | Add support for Homekit specific values. Not needed if you don't use homekit.                                                                                                                                                |
-| **ignore_miwi**   | no       | False                                                                                                              | Ignore miwi devices if present in same location then Zigbee and/or Wi-Fi devices. Warns if the wrong Neviweb location is set.                                                                                                     |
-| **stat_interval** | no       | 1800                                                                                                               | The number of seconds between each access to Neviweb for energy statistic update. Scan will start after 5 minutes from HA startup and will be updated at every 300 to 1800 seconds.                                          |
-| **notify**        | no       | both                                                                                                               | The method to send notification in case of device error. value option are `nothing`, `logging`, `notification`, `both`.   |                                                                        
-| **safe_mode**     | no       | -                                                                                                                  | Safe mode is used to run device update in a way that won't crash in case of bad or missing parameters. If a device receive DVCATTRNSPTD error, safe_mode will fire automatically for that device to detect faulty attribute and allow device update to complete. Default value is "-". If you want to test device attributes put your device ID in safe_mode value ex. "12345".                                             |
-
-If you have a GT125 also connected to Neviweb the network parameter is mandatory, or it is possible that during the 
-setup, the GT125 network will be picked up accidentally. If you have only two GT130/Wi-Fi network, you can omit there 
-names as during setup, the first two network found will be picked up automatically. If you prefer to add networks names 
-make sure that they are written «exactly» as in Neviweb. (first letter capitalized or not). Avoid also accented letters 
-as Home Assistant will remove them and location name won't match preventing custom_component loading.
-
-## Multi-Account Configuration
+#### Multi-account configuration
 (New in v3.1.0)
 
 If you need to control devices from **multiple Neviweb accounts** (e.g., your home and a neighbor's), you can now use the new multi-account configuration format. This eliminates the need to duplicate the custom component folder.
@@ -360,111 +415,37 @@ neviweb130:
   - With prefix + location → `climate.neviweb130_parents_chalet_climate_living_room`
   - With location only (no prefix) → `climate.neviweb130_chalet_climate_living_room`
 
-## V2 Configuration
-(new since version 5.0.0)
+#### Running more than one instance of neviweb130 to manage different Neviweb connections
+> This section is still working but as Neviweb130 now support multi account directly, it become obsolete.
+>
+>It is possible to run two instance of neviweb130, but you need to use two different username (email) and password to 
+>connect to Neviweb.
+>Steps to achieve this:
+>
+>- Create another directory in config/custom_components like neviweb131.
+>- Copy all files from directory neviweb130 to new directory neviweb131.
+>- In neviweb131, edit file manifest.json to change the line #2, "domain": "neviweb130",
+>and change it to the same name as the directory you just create. "domain": "neviweb131",
+>- Add a second configuration in configuration.yaml like this:
+>```yaml
+># Example configuration.yaml entry for a second neviweb130 instance named neviweb131.
+>neviweb131:
+>   username: 'your Neviweb username for second connection'
+>   password: 'your Neviweb password for second connection'
+>   network: 'your gt130 location name in second Neviweb' (gt130 emplacement dans Neviweb)
+>   network2: 'your second location name in second Neviweb' (2e emplacement)
+>   network3: 'your third location name in second Neviweb' (3e emplacement)
+>   scan_interval: 360
+>   homekit_mode: False
+>   ignore_miwi: False
+>   stat_interval: 1800
+>   notify: "both"
+>```
+>- Restart Home Assistant
+>
+>All devices on this second instance will have a name like `climate.neviweb131_climate_office_thermostat`.
 
-Neviweb130 V2 is version v5.0.0 of the current Neviweb130. An update will be released as soon as the final compatibility 
-tests for the migration from Neviweb130 to Neviweb130-V2 are complete. Version V2 has been designed to meet the latest 
-Home Assistant standards. Configuration via **configuration.yaml** is now obsolete.
-
-- **Via the neviweb130 update**:
-
-  The configuration from `configuration.yaml` is migrated to the `config_flow`, which is the modern HA approach. Options in
-  `configuration.yaml` can be safely removed or commented out. Device names are preserved, and attributes remain accessible.
-  The configuration can be found under Settings > Devices & Services > Neviweb130. All devices are listed there, and each one
-  now has a dedicated graphical configuration page. Neviweb130-V2 now supports French or English, depending on your HA
-  configuration; services, entities, and attributes are all automatically translated.
-
-  The configuration for the Neviweb130-V2 can be found here:
-
-  ![options](www/options.jpg)
-
-  Here, in order, you can:
-
-  - Add a new Neviweb account (gateway). Up to 3 accounts can be managed.
-  - Modify certain neviweb130 options (see below).
-  - Modify the neviweb130-V2 configuration (see below). Up to three locations can be supported for each
-    Neviweb account. Permission must be requested from Sinopé to activate the third location.
-
-  It is no longer necessary to restart HA after changing settings; Neviweb130-V2 reloads automatically.
-  A connection manager (Session_manager) handles closing connections to Neviweb and establishing new ones as needed.
-  This eliminates the ACCSESSEXC errors received from Neviweb when restarting HA too frequently.
-
-  *Available configuration options*:
-
-  ![configuration options](www/configuration.jpg)
-
-  *Neviweb130-V2 configuration, imported from Neviweb130-V1*:
-
-  ![reconfiguration](www/reconfigurer.jpg)
-
-- **Via a clean installation**:
-
-  For a fresh installation, install Neviweb130-V2 via HACS (Sinopé neviweb130), minimum version v5.0.0. Then go to Settings /
-  Devices & Services. At the bottom of the page, click **Add integration** and search for **Sinopé Neviweb130**.
-  A configuration window will appear on the screen for entering your Neviweb connection settings.
-
-  ![new configuration](www/nouveau_pont.jpg)
-
-  The settings are:
-- Neviweb account name; the first one is named **default**. You can keep it, replace it, or even leave this field blank to
-  use the same device names as in Neviweb130-V1.
-- Neviweb email
-- Neviweb password
-- First location
-- Second location
-- Third location
-
-  These fields are optional if you do not have a Miwi device. Otherwise, you must enter the location name. Unused locations
-  can be left blank, or you can enter "_" to instruct Neviweb130-V2 not to search for them.
-- Scan_interval, default 420 seconds (300 to 600).
-- HomeKit support, optional
-- Ignore Miwi devices, optional
-- Stat_interval, default 1800 seconds
-- Notifications for device disconnections, 4 options:
-  - nothing: no notification
-  - logging: logs only
-  - Notification: receive a notification upon device disconnection
-  - Both: "Notification" plus "logging"
-- Device ID to update in safe mode. For problematic devices (Wi-Fi?)
-
-Then, Neviweb130-V2 is reloaded and will begin retrieving the Neviweb devices.
-
-The major difference between V1 and V2 is that it is no longer necessary to create sensors to track specific attributes 
-of your devices. For all devices, neviweb130-V2 automatically creates attribute entities.
-
-- sensor, for numeric attributes to be monitored, such as temperature, voltage, and energy statistics.
-- binary_sensor, for binary attributes, such as leak sensors.
-- button, to modify or reset the value of an on/off or alarm-type attribute.
-- number, to change the numeric value of an attribute (e.g., minimum/maximum temperature, away temperature, etc.).
-- switch, to enable or disable an attribute.
-- select, for attributes with a choice of options. All options are translated, so it is no longer necessary to enter
-  numeric values ​​for intervals like 15 seconds, 15 minutes, etc. Neviweb130-V2 automatically handles the conversion
-  when sending values ​​to Neviweb and receiving values ​​from Neviweb.
-
-You can find all these attribute entities on each device's page (Settings > Devices & Services > Neviweb130).
-They are updated in real-time by HA. These entities can be used directly in your automations or with the Energy dashboard.
-If you install neviweb130-V2 via an update, you will need to re-validate your automations. They will remain functional, but
-by using the new attribute entities, you can eliminate your separate sensors and simplify your automations.
-
-A few attribute entities may be missing. They can easily be added once I am notified.
-
-Here is a sample device page:
-
-![Page appareil](www/page_appareil.jpg)
-![Page appareil suite](www/page_appareil_suite.jpg)
-
-### Integration options
-
-Click on Configure on the neviweb130 integration page to reach these options (see also [doc/options_en.md](doc/options_en.md)):
-- **prefix**: Neviweb account name.
-- **log_level**, **log_max_bytes**, **log_backup_count**, **log_reset_on_start**: settings of the neviweb130 log file (see Troubleshooting).
-- **download_log**: copies the log file to `/local/neviweb130.log` so you can download it from your browser. It is deleted after 30 minutes.
-- **reload**: reloads neviweb130 without restarting Home Assistant.
-- **migrate**: migrates old numeric unique_id to the new text unique_id required by HA.
-- **request_limit** (default 25000): daily safety limit of requests sent to Neviweb. Neviweb's own limit is 30000 per day. A notification is sent when the request counter sensor goes over this value.
-- **update_check_interval** (1h, 3h, 6h, 12h or 24h, default 6h): how often the update entity checks GitHub for a new neviweb130 release.
-- **backup_mode** (full or partial) and **backup_folders** (default `config`): backup made by the update entity before installing a new version. `full` calls `hassio.backup_full`. `partial` calls `hassio.backup_partial` with the folders listed in backup_folders (`config` means the Home Assistant configuration). Both need a Home Assistant installation with the Supervisor.
+</details>
 
 ## Sedna valve
 There are two ways to connect a Sedna valve to Neviweb:
@@ -543,36 +524,6 @@ The sensor survive HA restart and is set back to 0 at midnight every days.
 
 This way it is possible to improve your scan_interval to get the higher frequency without busting the limit.
 When reaching 25000 requests, neviweb130 will send a notification. This warning limit is set with the request_limit option.
-
-## Running more than one instance of neviweb130 to manage different Neviweb connections
-> This section is still working but as Neviweb130 now support multi account directly, it become obsolete.
->
->It is possible to run two instance of neviweb130, but you need to use two different username (email) and password to 
->connect to Neviweb.
->Steps to achieve this:
->
->- Create another directory in config/custom_components like neviweb131.
->- Copy all files from directory neviweb130 to new directory neviweb131.
->- In neviweb131, edit file manifest.json to change the line #2, "domain": "neviweb130",
->and change it to the same name as the directory you just create. "domain": "neviweb131",
->- Add a second configuration in configuration.yaml like this:
->```yaml
-># Example configuration.yaml entry for a second neviweb130 instance named neviweb131.
->neviweb131:
->   username: 'your Neviweb username for second connection'
->   password: 'your Neviweb password for second connection'
->   network: 'your gt130 location name in second Neviweb' (gt130 emplacement dans Neviweb)
->   network2: 'your second location name in second Neviweb' (2e emplacement)
->   network3: 'your third location name in second Neviweb' (3e emplacement)
->   scan_interval: 360
->   homekit_mode: False
->   ignore_miwi: False
->   stat_interval: 1800
->   notify: "both"
->```
->- Restart Home Assistant
->
->All devices on this second instance will have a name like `climate.neviweb131_climate_office_thermostat`.
 
 ## Custom services
 Automations use actions (services) to send commands, e.g. light.turn_on. For Sinopé devices connected through neviweb130, custom actions send specific information to devices or change device parameters. They are available in Developer tools → Actions and in automations:
@@ -665,11 +616,6 @@ Automations use actions (services) to send commands, e.g. light.turn_on. For Sin
 
 Services marked «Equipment configuration should be performed by a professional» in Developer tools change how the HVAC equipment runs. Use them only if you know your installation.
 
-## Logging for debugging
-Neviweb130 writes all its log messages to its own file, `neviweb130_log.txt`, in your config directory, not to `home-assistant.log`. By default the file is cleared each time the integration starts (log_reset_on_start), rotated when it reaches 2 MB (log_max_bytes) and 2 rotated files are kept (log_backup_count). These settings and the log level are in the integration options.
-
-To help debugging, add relevant snippet of this file to any issue you may report.
-
 ## Catch Éco Sinopé signal for peak period
 If at least one thermostat or load controller is registered in the Éco Sinopé program, you can detect when Neviweb sends the pre-heating signal for thermostats or the turn-off signal for load controllers. These attributes tell you that a peak period is coming and how it is managed:
 
@@ -730,6 +676,11 @@ If you get a stack trace related to a Neviweb130 component in `neviweb130_log.tx
 You can also ask for help in one of these threads:
 - https://community.home-assistant.io/t/sinope-line-voltage-thermostats/17157
 - https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer/38835
+
+### Log file
+Neviweb130 writes all its log messages to its own file, `neviweb130_log.txt`, in your config directory, not to `home-assistant.log`. By default the file is cleared each time the integration starts (log_reset_on_start), rotated when it reaches 2 MB (log_max_bytes) and 2 rotated files are kept (log_backup_count). These settings and the log level are in the integration options.
+
+To help debugging, add relevant snippet of this file to any issue you may report.
 
 ### Turning on Neviweb130 debug messages
 
