@@ -5,36 +5,32 @@
 > [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/phytoressources/)  ou
 > [![Faire un don via Interac](https://img.shields.io/badge/Interac-Don-orange?style=for-the-badge)](Donations.md)
 
-Composants personnalisés pour prendre en charge les appareils [Neviweb](https://neviweb.com/) dans [Home Assistant](http://www.home-assistant.io) (HA). 
-Neviweb est une plateforme créée par Sinopé Technologies pour interagir avec leurs appareils intelligents comme les thermostats, l'éclairage
-interrupteurs/gradateurs, contrôleurs de charge, prise, vannes et détecteur de fuite d'eau, etc.
+Intégration personnalisée pour utiliser les appareils [Neviweb](https://neviweb.com/) dans [Home Assistant](http://www.home-assistant.io) (HA).
+Neviweb est la plateforme de Sinopé Technologies pour ses appareils intelligents : thermostats, interrupteurs et gradateurs, contrôleurs de charge, prises, valves, détecteurs de fuite d’eau et autres.
 
-Neviweb130 (HACS: Sinope Neviweb130) gérera les appareils Zigbee connectés à Neviweb via la passerelle GT130 et les nouveaux appareils Wi-Fi connectés 
-directement sur Neviweb. Il est actuellement pratiquement à jour avec Neviweb mais certaines informations manquent encore chez Sinopé. 
-Au fur et à mesure que de nouveaux appareils sont lancés par Sinopé, ils sont ajoutés à ce composant personnalisé. Si vous possédez 
-un appareil qui n'est pas pris en charge, veuillez ouvrir une issue et je l'ajouterai rapidement.
+Neviweb130 (Sinope Neviweb130 dans HACS) gère les appareils Zigbee connectés à Neviweb par la passerelle GT130, et les appareils Wi-Fi connectés directement à Neviweb. Il est presque à jour avec Neviweb, mais certaines informations manquent encore chez Sinopé. Les nouveaux appareils Sinopé sont ajoutés à mesure qu’ils sortent. Si votre appareil n’est pas encore pris en charge, ouvrez une issue et il sera ajouté rapidement.
 
 Signaler un problème ou proposer une amélioration : [Créer une issue](https://github.com/claudegel/sinope-130/issues/new/choose)
 
 ## Table des matières
 
 - [Appareils pris en charge](#appareils-pris-en-charge)
-- [Prérequis](#prerequis)
+- [Prérequis](#prérequis)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Migration depuis la version 4.x](#migration-depuis-la-version-4x)
 - [Valve Sedna](#valve-sedna)
 - [GT130](#passerelle-gt130)
-- [Système de mise à jour](#systeme-de-mise-a-jour)
-- [Compteur de requêtes](#compteur-de-requetes-quotidiennes-neviweb)
-- [Services / Actions](#services-personnalises-actions)
-- [Éco-Sinopé](#capter-le-signal-eco-sinope-de-neviweb-pour-les-periodes-de-pointe)
-- [Statistiques d'énergie](#statistiques-pour-lenergie)
+- [Système de mise à jour](#système-de-mise-à-jour)
+- [Compteur de requêtes](#compteur-de-requêtes-quotidiennes-neviweb)
+- [Services / Actions](#services-personnalisés-actions)
+- [Éco-Sinopé](#capter-le-signal-éco-sinopé-pour-les-périodes-de-pointe)
+- [Statistiques d'énergie](#statistiques-dénergie-et-deau)
 - [Localisation (langue)](#localisation)
-- [Dépannage](#depannage)
+- [Dépannage](#dépannage)
 - [Personnalisation](#personnalisation)
-- [Réinitialisation de l'appareil](#reinitialisation-materielle-de-lappareil)
-- [À faire](#a-faire)
+- [Réinitialisation de l'appareil](#réinitialisation-matérielle-de-lappareil)
+- [À faire](#à-faire)
 
 ## Appareils pris en charge
 Voici une liste des appareils actuellement pris en charge. En gros, c'est tout ce qui peut être ajouté dans Neviweb.
@@ -148,34 +144,23 @@ Voici une liste des appareils actuellement pris en charge. En gros, c'est tout c
 - **Alimentation**:
   - Sinopé ACUPS-01, batterie de secours pour valve Sedna, GT130 ou GT125
  
-## Prerequis
-Vous devez connecter vos appareils à une passerelle Web GT130 et les ajouter dans votre portail Neviweb avant de pouvoir 
-interagir avec eux dans Home Assistant. Pour les appareils Wi-Fi vous devez les connecter directement à Neviweb. Certain 
-appareils Zigbee peuvent être connectés à une valve Sedna connectée directement à Neviweb et agissant comme une passerelle.
-Veuillez vous référer au manuel d'instructions de votre appareil ou visiter [Assistance Neviweb](https://support.sinopetech.com/)
+## Prérequis
+Vos appareils doivent être ajoutés à votre portail Neviweb avant de pouvoir les utiliser dans Home Assistant :
+- les appareils Zigbee par une passerelle GT130,
+- les appareils Wi-Fi directement,
+- certains appareils Zigbee par une valve Sedna, elle-même connectée à Neviweb.
 
-Les appareils Wi-Fi peuvent être connectés au même emplacement (location) que les appareils GT130 Zigbee ou dans un emplacement séparé.
-**Neviweb130** supporte jusqu'à trois emplacements dans Neviweb. Il faut demander à Sinopé pour avoir le troisième emplacement.
+Consultez le manuel de votre appareil ou visitez [l’assistance Neviweb](https://support.sinopetech.com/).
 
-Il existe quatre composants personnalisés vous donnant le choix de gérer vos appareils via le portail Neviweb ou directement en local. 
+Les appareils Wi-Fi peuvent être dans le même emplacement (réseau) Neviweb que les appareils Zigbee du GT130, ou dans un emplacement séparé. Neviweb130 gère jusqu’à trois emplacements par compte Neviweb. Le troisième emplacement doit être demandé à Sinopé.
 
-- Composant personnalisé [**neviweb**](https://github.com/claudegel/sinope-1) (HACS : Sinope Neviweb) permettant de gérer vos appareils
-  Miwi via le portail Neviweb.
-- Composant personnalisé [**sinope**](https://github.com/claudegel/sinope-gt125) (HACS : Sinope GT125) permettant de gérer vos appareils
-  Miwi directement via votre passerelle web GT125.
+Quatre composants personnalisés permettent de gérer les appareils Sinopé, par Neviweb ou en local :
+- [**neviweb**](https://github.com/claudegel/sinope-1) (HACS : Sinope Neviweb), pour les appareils MiWi par le portail Neviweb.
+- [**sinope**](https://github.com/claudegel/sinope-gt125) (HACS : Sinope GT125), pour les appareils gérés directement par votre passerelle GT125.
+- [**neviweb130**](https://github.com/claudegel/sinope-130) (HACS : Sinope Neviweb130), cette intégration, pour les appareils Zigbee et Wi-Fi par le portail Neviweb.
+- [**sinope-zha**](https://github.com/claudegel/sinope-zha), les nouveaux quirks Sinopé pour ZHA avant leur ajout à zha-device-handlers. Avec un coordinateur Zigbee comme la clé USB ConBee II, ZHA gère vos appareils Zigbee en local. Copiez les fichiers sinope-zha dans votre installation HA pour tester les nouveaux quirks : ZHA les charge à la place des quirks Sinopé standards.
 
-**Passerelle Zigbee**:
-- [**neviweb130**](https://github.com/claudegel/sinope-130), ce composant personnalisé, pour gérer vos appareils Zigbee et Wi-Fi
-  via le portail Neviweb.
-- [**sinope-zha**](https://github.com/claudegel/sinope-zha) où je mets tous les gestionnaires d’adaptations Zigbee (quirks) des nouveaux
-  appareils Sinopé avant qu'ils ne soient fusionnés dans les gestionnaires de périphériques ZHA. Achetez une passerelle Zigbee
-  comme la clé USB **Dresden ConBee II** et gérez votre appareil Zigbee localement via le composant ZHA. J'ajoute le support des
-  appareils Sinopé Zigbee dans le gestionnaire de périphériques ZHA. Vous pouvez tester les gestionnaire d’adaptations Zigbee
-  Sinopé dans HA en copiant les fichiers sinope-zha directement dans votre configuration HA. ZHA les chargera à la place des
-  gestionnaire d’adaptations Zigbee standard de Sinopé dans ZHA.
-
-Vous pouvez en installer qu’un seul, mais tous peuvent être utilisés en même temps sur HA. Les appareils Zigbee gérés directement via 
-ZHA doivent être supprimées de Neviweb car elles ne peuvent pas être sur deux réseaux Zigbee en même temps.
+Ils peuvent tous être utilisés en même temps. Les appareils Zigbee gérés directement par ZHA doivent être retirés de Neviweb, car un appareil ne peut pas être sur deux réseaux Zigbee en même temps.
 
 ## Installation
 ### Composant personnalisé Neviweb130 pour gérer votre appareil via le portail Neviweb
@@ -516,74 +501,38 @@ Les deux modes sont pris en charge par ce composant personnalisé.
 ## Passerelle GT130
 Le capteur binaire `gateway_status` du GT130 indique s’il est en ligne ou hors ligne dans Neviweb.
 
-## Systeme de mise a jour
+## Système de mise à jour
 
-Neviweb130 inclut désormais un système de mise à jour complet qui comprend :
-- Vérification automatique des mises à jour toutes les 6 heures :
-  - Nouvelle mise à jour disponible.
-  - Pré-version disponible.
-  - Changements cassants. (breaking changes)
-  - Notes de version.
+Neviweb130 a sa propre entité de mise à jour :
+- **Vérification des mises à jour**, toutes les 6 heures par défaut (option update_check_interval). Elle détecte les nouvelles versions, les préversions (versions contenant b0, -beta, rc1, etc.) et les changements incompatibles trouvés dans les notes de version. Les préversions et les changements incompatibles ont une icône spéciale et une mention dans le titre de la carte de mise à jour.
+- **Validation SHA-256** : le fichier zip de la mise à jour est comparé au SHA-256 officiel de GitHub. S’ils diffèrent, la mise à jour est annulée et vous êtes avisé.
+- **Retour arrière automatique** : si une erreur survient pendant la mise à jour, l’ancienne version est restaurée et vous êtes avisé.
+- **Sauvegarde** : une sauvegarde est faite avant la mise à jour, selon les options backup_mode et backup_folders (voir [Options de l’intégration](#options-de-lintégration)).
+- **Notifications** en cas de succès, d’échec avec retour arrière et d’erreur SHA-256.
+- **Notes de version** : un lien sur la carte de mise à jour ouvre les notes de version sur GitHub.
 
--Validation SHA-256 :
-  - Valide le zip SHA-256 officiel sur GitHub.
-  - Télécharge le fichier zip de mise à jour.
-  - Valide le SHA-256.
-  - En cas de discordance, annule la mise à jour et envoi une notification.
+L’entité de mise à jour a aussi ces attributs :
+- check_interval : valeur de l’option update_check_interval (défaut 6h),
+- last_check et next_check : date et heure de la dernière et de la prochaine vérification,
+- last_update_success : date et heure de la dernière mise à jour réussie,
+- update_status : étapes effectuées pendant la mise à jour,
+- rollback_status : résultat du retour arrière si une mise à jour a échoué,
+- update_percentage : progression de la mise à jour.
 
-- Restauration automatique si une erreur est détectée lors de la mise à jour :
-  - Restaure automatiquement l'ancienne version.
-  - Informe l'utilisateur du problème via une notification.
- 
-- Notifications persistantes sur :
-  - Succès : "Mise à jour réussie".
-  - Échec : "Échec de la mise à jour, restauration effectuée".
-  - Erreur SHA-256 : "Mise à jour interrompue pour des raisons de sécurité".
+Pour éviter deux cartes de mise à jour (une de HACS, une de Neviweb130), masquez celle de HACS :
+1. Allez dans Paramètres → Appareils et services → HACS.
+2. Sur la ligne Sinope Neviweb130, désactivez l’option préversion si elle est active.
+3. Cliquez sur le menu à trois points au bout de la ligne, puis sur **2 entités**.
+4. Choisissez l’entité de mise à jour, cliquez sur le bouton de paramètres et désactivez **Visible**.
 
-- Détection des modifications avec rupture (breaking changes) :
-  Les notes de version de l'analyse du programme de mise à jour proviennent de GitHub. Si des modifications avec rupture sont détectées :
-  - Ajoute une icône spéciale dans la carte de mise à jour.
-  - Ajoute (breaking changes) dans le titre du programme de mise à jour.
- 
-- Détection de version préliminaire si la version contient, b0, -beta ou rc1 etc :
-  La version de mise à jour de l'analyse du programme de mise à jour depuis GitHub. Si une version préliminaire est détectée :
-  - Ajouter une icône spéciale dans la carte de mise à jour.
-  - Ajouter (Pre-release) dans le titre du programme de mise à jour.
+Vous pouvez toujours mettre à jour ou retélécharger Neviweb130 manuellement par HACS. Vous pouvez aussi faire l’étape 4 à partir de la carte de mise à jour de HACS la prochaine fois qu’elle apparaît.
 
-- Option de sauvegarde :
-  Une sauvegarde est faite avant la mise à jour, selon les options backup_mode et backup_folders (voir doc/options.md).
+## Compteur de requêtes quotidiennes Neviweb
+Neviweb limite chaque compte à 30000 requêtes par jour. Au-delà, vous êtes déconnecté jusqu’à minuit, ce qui pose problème avec beaucoup d’appareils ou pendant le développement.
 
-- Les notes de version peuvent être consultées via le lien fourni sur la carte de mise à jour qui pointe vers les versions de GitHub.
+Neviweb130 compte ses requêtes quotidiennes (mises à jour, statistiques, vérifications d’erreurs, etc.) dans le capteur `sensor.neviweb130_daily_requests`. Le compte survit aux redémarrages de HA et revient à 0 à minuit. Il aide à choisir un scan_interval plus court sans dépasser la limite. Une notification est envoyée quand le compte dépasse l’option request_limit (défaut 25000).
 
-- Le programme de mise à jour possède de nombreux attributs pour aider l'utilisateur :
-  - check_interval : réglé par l’option update_check_interval (défaut 6h).
-  - last_check : date/heure de la dernière vérification de version disponible.
-  - next_check : date/heure de la prochaine vérification de version disponible.
-  - last_update_success : date/heure de la dernière mise à jour.
-  - update_status : liste toutes les étapes effectuées lors de la mise à jour.
-  - rollback_status : si une mise à jour échoue, la dernière version active sera restaurée.
-  - update_percentage : Afficher un curseur pour le suivi du processus de mise à jour.
-
-Vous devrez désactiver la carte de mise à jour HACS pour Neviweb130 ou vous recevrez deux notifications de mise à jour avec deux cartes 
-de mise à jour. Cela peut être fait dans paramètres / appareils et services / HACS. Choisissez 'Sinope Neviweb130' et desactivez 
-l'option pre-release si elle est active. Puis et cliquer sur le menu 3-points à l'extrémité droite de la ligne. Dans ce menu il y a une 
-sélections: `2 entités` et `désactiver l'appareil`. Ouvrir l'option `2 entités` et chosir Update. Cliquer sur la molette de configuration
-et désactiver l'option `Visible`. Il sera toujours possible de faire une mise à jour ou retélécharger une autre version via HACS.
-
-Vous pouvez aussi attendre une nouvelle mise à jour, ouvrir la carte de mise à jour de HACS et cliquer sur la molette de configuration.
-Désactiver l'option `Visible`.
-
-## Compteur de requetes quotidiennes Neviweb
-Comme Sinopé est de plus en plus pointilleux sur le nombre de requêtes par jour, la limite est fixée à 30000. Si vous atteignez cette limite, vous 
-serez déconnecté jusqu'à minuit. C'est très mauvais si vous possédez de nombreux appareils ou si vous développez sur neviweb130.
-J'ai ajouté un compteur de requêtes Neviweb quotidien qui est réinitialisé à 0 à minuit et qui survit à un  redémarrage de HA. Cela crée un 
-sensor `sensor.neviweb130_daily_requests` qui augmentent à chaque requête : mise à jour, interrogation des statistiques, statut d'erreur, etc.
-Le capteur survit au redémarrage de HA et est remis à 0 à minuit tous les soirs.
-
-De cette façon, il est possible d'améliorer votre `scan_interval` pour obtenir la fréquence la plus élevée sans dépasser la limite.
-Lorsqu'il atteint 25 000 requêtes, neviweb130 enverra une notification. Cette limite d’avertissement se règle avec l’option request_limit.
-
-## Services personnalises (Actions)
+## Services personnalisés (actions)
 
 Les automatisations nécessitent que les services (actions) puissent envoyer des commandes. Ex. `light.turn_on`. Pour les appareils Sinopé 
 connectés via neviweb130, il est possible d'utiliser des services personnalisés pour envoyer des informations spécifiques aux appareils 
@@ -696,7 +645,7 @@ ou pour changer certains paramètres des appareils. Ces services personnalisés 
 
 Les actions marquées « Equipment configuration should be performed by a professional » dans les outils de développement modifient le fonctionnement de l’équipement CVC. Utilisez-les seulement si vous connaissez votre installation.
 
-## Capter le signal Eco Sinope de Neviweb pour les periodes de pointe
+## Capter le signal Éco Sinopé pour les périodes de pointe
 
 Si vous possédez au moins un thermostat ou un contrôleur de charge inscrit au programme Éco-Sinopé, il est maintenant possible de 
 capter lorsque Neviweb envoie le signal pour le démarrage de la période du préchauffage pour les thermostats ou le signal d'arrêt pour les 
@@ -742,7 +691,7 @@ période de pointe est à venir et comment il est géré :
 Il est alors possible de réaliser une automatisation pour préparer tous les appareils HA pour la période de pointe en suivant le changement
 de l'attribut eco_status de «off» à «on».
 
-## Statistiques pour l'energie
+## Statistiques d’énergie et d’eau
 Les appareils qui rapportent leur consommation dans Neviweb ont ces entités capteur, en kWh :
 - **Énergie totale** (`total_kwh_count`, total_increasing)
 - énergie **mensuelle**, **quotidienne** et **horaire** (`monthly_kwh_count`, `daily_kwh_count`, `hourly_kwh_count`, total)
@@ -754,15 +703,11 @@ Ces capteurs ont la classe energy ou water et s’ajoutent directement au tablea
 Les attributs `hourly_kwh`, `daily_kwh` et `monthly_kwh` (kWh de la dernière heure, du dernier jour et du dernier mois) restent exposés sur les entités climate, light et switch, et `hourly_flow`, `daily_flow` et `monthly_flow` sur les entités valve.
 
 ## Localisation
-Neviweb130 est désormais traduit en français pour les messages d'erreurs et de notifications. La traduction se fait 
-automatiquement en fonction de votre configuration HA pour la langue. Désormais, le français et l'anglais sont pris 
-en charge. N'importe quelle langue peut être ajoutée en traduisant le fichier en.json situé dans le répertoire 
-'translations' vers une autre langue.
+Neviweb130 est traduit en français et en anglais : entités, services, attributs, erreurs et notifications. La langue suit celle de Home Assistant. D’autres langues peuvent être ajoutées en traduisant le fichier `en.json` du dossier translations.
 
-Si vous modifiez les fichiers de traduction, vous devrez non seulement recharger HA, mais aussi redémarrer le serveur 
-HA pour forcer HA à recharger correctement les traductions.
+Après avoir modifié les fichiers de traduction, redémarrez Home Assistant. Recharger l’intégration ne suffit pas pour que HA charge les nouvelles traductions.
 
-## Depannage
+## Dépannage
 si vous voyez votre appareil dans le journal, mais qu'il n'apparaît pas dans la liste des entités, vous devez ajouter le numéro de modèle de l'appareil dans le 
 code. Ou vous pouvez m'envoyer le numéro de modèle afin que je puisse l'ajouter dans le code.
 
@@ -787,7 +732,7 @@ Neviweb130 écrit tous ses messages dans son propre fichier, `neviweb130_log.txt
 
 Pour faciliter le débogage, ajoutez un extrait pertinent de ce fichier à tout problème que vous signalez.
 
-### Activation des messages de journalisation neviweb130-V2 niveau 'debug' dans le fichier `neviweb130_log.txt`
+### Activer les messages de débogage
 
 Pour modifier le niveau de journalisation dans la V2, rendez-vous dans Paramètres / Appareils et services. Cliquez sur Neviweb130, puis sur 
 l'icône en forme d'engrenage ⚙️ (configuration).
@@ -826,54 +771,49 @@ Si vous trouvez d'autres codes d'erreur, veuillez me les transmettre.
 
 ### Attributs manquants non renvoyés par Neviweb
 
-Lors de la mise à jour d'un appareil, il est possible que certains attributs soient simplement ignorés par Neviweb, même s'ils figurent dans 
-la liste des attributs associés à cet appareil. Au démarrage de Neviweb130-V2, une notification sera envoyée pour lister ces attributs manquants,
-et leur valeur sera définie sur « non pris en charge » (not supported). Veuillez consulter cette liste et signaler tout nouvel attribut manquant
-en ouvrant un ticket (issue).
+Neviweb laisse parfois tomber des attributs lors d’une mise à jour, même s’ils sont listés pour l’appareil. Une notification liste ces attributs manquants et leur valeur devient `[not supported]`. Les cas connus sont listés ci-dessous. Ouvrez une issue pour en signaler de nouveaux.
 
-| Devices | missing attributes |
-| --- | --- |
+| Appareil        | Attributs manquants             |
+|-----------------|---------------------------------|
 | **TH1123ZB-G2** | coldLoadPickup, heatLockoutTemp |
 | **TH1124ZB-G2** | coldLoadPickup, heatLockoutTemp |
-| **TH6250WF** | backlight |
+| **TH6250WF**    | backlight                       |
 
 ## Personnalisation
-L'interface utilisateur personnalisée est quasiment obsolète et difficile à configurer. J'ai donc opté pour la carte Lovelace moderne afin 
-de simplifier le processus et d'obtenir de meilleurs résultats.
+Custom-UI n’est plus nécessaire. Neviweb130 définit lui-même l’image des thermostats, capteurs et valves, et les exemples ci-dessous utilisent des cartes Lovelace modernes.
 
-Prérequis :
-- Les icônes se trouvent dans le dossier www de ce dépôt. Copiez-les dans config/www/neviweb130/. Vous devez créer le répertoire
-  neviweb130 sous config/www (appelé /local dans HA).
-- Installez la carte Lovelace via HACS : card-mod, mushroom et stack-in-card.
-- Assurez-vous d'avoir au moins la version 4.1.2 de neviweb130.
+Prérequis :
+- Copiez les icônes dans `config/www/neviweb130/` (servi comme `/local/neviweb130/` dans HA). Voir [Noms des fichiers d’icônes](#noms-des-fichiers-dicônes).
+- Pour les exemples Mushroom, installez ces cartes avec HACS : card-mod, Mushroom et stack-in-card.
 
-Neviweb130 gère l'icône affichée pour les thermostats en fonction du niveau de chauffe grâce à l'attribut **icon_type**.
-Pour les capteurs, les moniteurs et les vannes, l'icône de batterie est gérée via l'attribut **battery_icon** en fonction du niveau de batterie.
-Vous pouvez récupérer le nom de l'icône à l'aide d'un modèle comme dans cet exemple :
+Neviweb130 expose le chemin de l’icône dans ces attributs :
+- **icon_type** : niveau de chauffe des thermostats, état de fuite des détecteurs, état des valves,
+- **battery_icon** : niveau de batterie des capteurs, moniteurs et valves,
+- **leak_icon** : état de fuite des valves.
 
-Niveau de chaleur: `{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}`
+Vous pouvez les lire avec un template, par exemple :
 
-détection des fuites: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'icon_type') }}`
+Niveau de chauffe : `{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}`
 
-niveau de batterie: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'battery_icon') }}`
+Détection de fuite : `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'icon_type') }}`
 
-Ces modèles template pointent directement vers /local/neviweb130/(icônes)
+Niveau de batterie : `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'battery_icon') }}`
 
-Ancien style: (plusieurs exemples)
+Ces templates retournent un chemin dans `/local/neviweb130/`.
 
-![icons](../icon_view2.png) 
+Ancien style (plusieurs exemples) :
 
-Nouveau style basé sur les cartes mushroom  et Tile :
+![icons](../icon_view2.png)
 
-![icons](../icon_view3.jpg) 
+Nouveau style avec les cartes Mushroom et Tile :
 
-(N'hésitez pas à améliorer mes icônes et à me le faire savoir.)
+![icons](../icon_view3.jpg)
 
-Voici le code pour la carte de tuile, la carte mushroom template et la carte mushroom climate. Modifiez votre tableau de bord et ajoutez la carte.
+(N’hésitez pas à améliorer les icônes et à les partager.)
 
-Ensuite, modifiez le code de la carte comme ceci :
+Voici le code d’une carte Tile, d’une carte Mushroom template et d’une carte Mushroom climate. Modifiez votre tableau de bord, ajoutez la carte, puis modifiez son code comme ceci :
 
-- tile card:
+- Carte Tile :
 ```
 type: tile
 grid_options:
@@ -889,7 +829,7 @@ show_entity_picture: true
 vertical: false
 features_position: bottom
 ```
-Mushroom template:
+- Carte Mushroom template :
 ```
 type: custom:mushroom-template-card
 entity: climate.neviweb130_climate_th1124wf
@@ -907,7 +847,7 @@ grid_options:
   columns: 12
   rows: 1
 ```
-- Mushroom Climate:
+- Carte Mushroom climate :
 ```
 type: custom:mushroom-climate-card
 entity: climate.neviweb130_climate_th1124wf
@@ -936,10 +876,9 @@ card_mod:
         display: none !important;
       }
 ```
-Vous pouvez regrouper les cartes dans une pile verticale (stack-in-card).
-L'image de l'entité étant définie pour tous les thermostats, vannes et capteurs, vous pouvez ajouter les appareils 
-directement dans une pile verticale.
-L'icône sera mise à jour dynamiquement en fonction du niveau de chauffage, du niveau de batterie, etc.
+Vous pouvez regrouper les cartes dans une carte vertical-stack ou stack-in-card.
+Comme l’image de l’entité est définie pour tous les thermostats, valves et capteurs, vous pouvez aussi ajouter les appareils directement dans une carte vertical-stack.
+Les icônes se mettent à jour automatiquement selon le niveau de chauffe, de batterie, etc.
 ```
 type: vertical-stack
 cards:
@@ -953,19 +892,14 @@ cards:
 
 ![icons](../icon_view4.jpg) 
 
-### Personnalisation du capteur de fuite
+## Personnalisation des détecteurs de fuite, moniteurs et valves
 
-Idem comme ci-dessus.
-Pour l'icône de fuite détectée, il s'agit de l'attribut **icon_type**.
-Pour le niveau de batterie, c'est la même chose avec **battery_icon**.
+Comme ci-dessus :
+- état de fuite : **icon_type** pour les détecteurs, **leak_icon** pour les valves,
+- niveau de batterie : **battery_icon**,
+- état de la valve : **icon_type** pour les valves.
 
-Les icônes sont disponibles dans le sous-répertoire [www](https://github.com/claudegel/sinope-130/tree/master/www). Copiez-les dans config/www
-
-### Personnalisation du niveau de batterie du moniteur et de la valve Sedna :
-
-Identique à ci-dessus avec l’attribut **battery_icon**, **leak_icon** et **icon_type**.
-
-### Noms des fichiers d’icônes
+## Noms des fichiers d’icônes
 
 Les icônes vont dans `config/www/neviweb130/`. L’image s’affiche seulement si le fichier existe :
 - Thermostats : `heat-off.png`, `heat-0.png` à `heat-5.png`, `heat-auto-0.png` à `heat-auto-5.png`
@@ -977,7 +911,7 @@ Les icônes vont dans `config/www/neviweb130/`. L’image s’affiche seulement 
 
 Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weather/<nom>.png`. Au démarrage, une notification avertit si ce dossier est absent ou vide. La correspondance code → fichier est dans le README anglais (section Weather icons) et dans `WEATHER_ICON_MAP` (`schema.py`). Les noms de fichiers sont sensibles à la casse.
 
-## Reinitialisation materielle de l'appareil
+## Réinitialisation matérielle de l’appareil
 - Thermostats :
     - Augmentez la température jusqu'à ce que l'affichage change.
     - Appuyez sur les deux boutons jusqu'à ce que CLR apparaisse à l'écran.
@@ -990,5 +924,5 @@ Le capteur **Icône météo** prend son image dans `config/www/neviweb130/weathe
     - Appuyez et maintenez enfoncés les deux boutons jusqu'à ce que RST apparaisse à l'écran.
     - Attendez le redémarrage de l'appareil.
 
-## A FAIRE
+## À faire
 - Améliorer la récupération des statistiques énergétiques de Neviweb.

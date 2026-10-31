@@ -5,14 +5,10 @@
 > [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/phytoressources/) or 
 > [![Donate via Interac](https://img.shields.io/badge/Interac-Don-orange?style=for-the-badge)](doc/Donations.md)
 
-Custom components to support [Neviweb](https://neviweb.com/) devices in [Home Assistant](http://www.home-assistant.io) (HA). 
-Neviweb is a platform created by Sinopé Technologies to interact with their smart devices like thermostats, light 
-switches/dimmers , load controllers, plug, valves and water leak detector etc. 
+Custom integration to support [Neviweb](https://neviweb.com/) devices in [Home Assistant](http://www.home-assistant.io) (HA).
+Neviweb is the Sinopé Technologies platform for their smart devices: thermostats, light switches and dimmers, load controllers, plugs, valves, water leak detectors and more.
 
-Neviweb130 (Sinope Neviweb130 in HACS) will manage the Zigbee devices connected to Neviweb via the GT130 gateway and the new Wi-Fi devices connected 
-directly to Neviweb. It is presently almost up to date with Neviweb but some information are still missing from Sinopé. 
-As new devices are launched by Sinopé, they are added to this custom-component. If you have a device that is not supported 
-yet, please open an issue and I'll add it quickly.
+Neviweb130 (Sinope Neviweb130 in HACS) manages the Zigbee devices connected to Neviweb through the GT130 gateway, and the Wi-Fi devices connected directly to Neviweb. It is almost up to date with Neviweb, but some information is still missing from Sinopé. New Sinopé devices are added as they are launched. If you have a device that is not supported yet, please open an issue and it will be added quickly.
 
 Report a problem or suggest an improvement: [Open an issue](https://github.com/claudegel/sinope-130/issues/new/choose)
 
@@ -133,35 +129,28 @@ Here is the list of currently supported devices. Basically, it's everything that
   - Sinopé ACUPS-01, battery backup for Sedna valve
 
 ## Prerequisite
-You need to connect your devices to a GT130 web gateway and add them in your Neviweb portal before being able to 
-interact with them within Home Assistant. Wi-Fi devices must be connected directly to Neviweb. Some Zigbee devices 
-can be connected directly to a Sedna valve which is connected to Neviweb directly. Please refer to 
-the instructions manual of your device or visit [Neviweb support](https://support.sinopetech.com/)
+Your devices must be added to your Neviweb portal before they can be used in Home Assistant:
+- Zigbee devices through a GT130 gateway,
+- Wi-Fi devices directly,
+- some Zigbee devices through a Sedna valve, which is itself connected to Neviweb.
 
-Wi-Fi devices can be connected in the same network (location) then the GT130 Zigbee devices or in a separate network.
-**Neviweb130** support up to three networks in neviweb.
+Please refer to the instruction manual of your device or visit [Neviweb support](https://support.sinopetech.com/).
 
-There are four custom components giving you the choice to manage your devices via the neviweb portal or directly via local 
+Wi-Fi devices can be in the same Neviweb location (network) as the GT130 Zigbee devices or in a separate one. Neviweb130 supports up to three locations per Neviweb account.
 
-- [**neviweb**](https://github.com/claudegel/sinope-1) (HACS: Sinope Neviweb) custom component to manage your devices via Neviweb portal.
-- [**sinope**](https://github.com/claudegel/sinope-gt125) (HACS: Sinope GT125) custom component to manage your devices directly via
-  your GT125 web gateway.
-- **Zigbee gateway**:
-  - [**neviweb130**](https://github.com/claudegel/sinope-130) (HACS: Sinope Neviweb130) this custom component, to manage your devices
-    via neviweb portal.
-  - [**sinope-zha**](https://github.com/claudegel/sinope-zha) where I put all new Sinopé devices quirks before they are merged
-    into zha-device-handlers. Buy a Zigbee gateway like Dresden ConBee II usb dongle and manage your Zigbee device locally
-    via ZHA component. I'm adding support for Sinopé Zigbee in zha-device-handlers. You can test new Sinopé devices quirks
-    in HA by coping the sinope-zha files directly in your HA setup. ZHA will load them in place of the standard sinopé quirks.
+Four custom components let you manage Sinopé devices, through Neviweb or locally:
+- [**neviweb**](https://github.com/claudegel/sinope-1) (HACS: Sinope Neviweb), for MiWi devices through the Neviweb portal.
+- [**sinope**](https://github.com/claudegel/sinope-gt125) (HACS: Sinope GT125), for devices managed directly through your GT125 gateway.
+- [**neviweb130**](https://github.com/claudegel/sinope-130) (HACS: Sinope Neviweb130), this integration, for Zigbee and Wi-Fi devices through the Neviweb portal.
+- [**sinope-zha**](https://github.com/claudegel/sinope-zha), new Sinopé quirks for ZHA before they are merged into zha-device-handlers. With a Zigbee coordinator such as the ConBee II USB dongle, ZHA manages your Zigbee devices locally. Copy the sinope-zha files into your HA setup to test new quirks: ZHA loads them in place of the standard Sinopé quirks.
 
-You need to install only one of them but all can be used at the same time on HA. Zigbee devices managed directly via 
-ConBee II must be removed from Neviweb as they cannot be on two Zigbee networks at the same time.
+They can all be used at the same time. Zigbee devices managed directly through ZHA must be removed from Neviweb, as a device cannot be on two Zigbee networks at the same time.
 
 ## Installation
 There are two ways to install this custom component:
 - With HACS:
   - This repository is compatible with the Home Assistant Community Store ([HACS](https://community.home-assistant.io/t/custom-component-hacs/121727)).
-  - After installing HACS, install 'sinope-130' from the store, restart Home Assistant and add the integration (see Configuration).
+  - After installing HACS, install 'Sinope Neviweb130' from the store, restart Home Assistant and add the integration (see Configuration).
 - Manually:
   - Download the zip file of this repository with the green Code button.
   - Extract the zip file on your computer, then copy the entire `custom_components` folder into your Home Assistant `config` directory (where your `configuration.yaml` file is).
@@ -459,71 +448,34 @@ The `gateway_status` binary sensor of the GT130 tells you whether the gateway is
 
 ## Updater system
 
-Neviweb130 now include a complete update system that include:
-- Automatic update check every 6 hours by default (update_check_interval option):
-  - New update available.
-  - Pre-release available.
-  - Breaking changes.
-  - Version notes.
+Neviweb130 includes its own update entity:
+- **Update check**, every 6 hours by default (update_check_interval option). It detects new versions, pre-releases (versions containing b0, -beta, rc1, etc.) and breaking changes found in the release notes. Pre-releases and breaking changes get a special icon and a label in the update card title.
+- **SHA-256 validation**: the update zip file is checked against the official SHA-256 from GitHub. On a mismatch, the update is cancelled and you are notified.
+- **Automatic rollback**: if an error occurs during the update, the previous version is restored and you are notified.
+- **Backup**: a backup is made before the update, set by the backup_mode and backup_folders options (see [Integration options](#integration-options)).
+- **Notifications** on success ("Update successful"), failure ("Update fail, rollback performed") and SHA-256 error ("Update aborted for security").
+- **Release notes**: a link on the update card opens the GitHub release notes.
 
-- SHA-256 validation:
-  - Get official SHA-256 from GitHub.
-  - Download update zip file.
-  - Validate SHA-256.
-  - If mismatch, cancel update and notify.
+The update entity also has these attributes:
+- check_interval: value of the update_check_interval option (default 6h),
+- last_check and next_check: date and time of the last and next version check,
+- last_update_success: date and time of the last successful update,
+- update_status: steps performed during the update,
+- rollback_status: result of the rollback if an update failed,
+- update_percentage: progress of the update.
 
-- Auto Rollback if error detected during update:
-  - Restore old version automatically.
-  - Notify user of the problem.
- 
-- Persistent notifications on:
-  - Success: "Update successful".
-  - Fail: "Update fail, rollback performed".
-  - SHA-256 error: "Update aborted for security".
- 
-- Breaking changes detection:
-  The updator scan version notes from GitHub. If breaking changes are detected:
-  - Add special icon in updater card.
-  - Add (Breaking changes) in updater title.
- 
-- Pre-release detection if version contain, b0, -beta or rc1 etc:
-  The updator scan update version from GitHub. If pre-release version is detected:
-  - Add special icon in updater card.
-  - Add (Pre-release) in updater title.
+To avoid two update cards (one from HACS, one from Neviweb130), hide the HACS one:
+1. Go to Settings → Devices & services → HACS.
+2. On the Sinope Neviweb130 line, turn off the pre-release switch if it is on.
+3. Click the three-dot menu at the end of the line, then **2 entities**.
+4. Select the update entity, click the settings button and turn off **Visible**.
 
-- Backup option:
-  A backup is made before the update, set by the backup_mode and backup_folders options (see Integration options).
-
-- Version notes can be viewed via link provided on the update card that point to GitHub releases motes.
-
-- Updater have many attributes to help user:
-  - check_interval: set by the update_check_interval option (default 6h).
-  - last_check: date/time of last available version check.
-  - next_check: date/time of next available version check.
-  - last_update_success: Last date/time an update was done.
-  - update_status: list all step performed during update.
-  - rollback_status: If an update fail, last active version will be rolled back.
-  - update_percentage: Show a slider for update process followup.
-
-You will need to deactivate HACS update card or you will get two updates notifications with two updates cards. 
-This can be done in parameters / devices & services / HACS. Pick 'Sinope Neviweb130' line and deactivate 
-the pre-release button if set. Locate the Sinope Neviweb130 integration and click on the three vertical 
-dots on the right end of the line. There are two options: `2 entities` and `deactivate the device`. Clic on `2 entities`.
-Then select update. Click on the configuration button and deactivate option `Visible`. It will still be possible to 
-do manual update or redownload neviweb130 via HACS.
-
-You can also wait for a new update and select HACS update card. Then clic on the configuration button and deactivate the 
-`Visible` option.
+You can still update or redownload Neviweb130 manually through HACS. You can also do step 4 from the HACS update card the next time one appears.
 
 ## Neviweb daily request counter
-As Sinopé is becoming more picky about request number per day, limit fixed to 30000. If you reach that limit you 
-will be disconnected until midnight. This is very bad if you have many devices or doing development on neviweb130.
-I've added a daily Neviweb request counter that is reset to 0 at midnight and suvive HA restart. It create a 
-sensor sensor.neviweb130_daily_requests that increase at each request: update, stats polling, error status, etc.
-The sensor survive HA restart and is set back to 0 at midnight every days.
+Neviweb limits each account to 30000 requests per day. Above that limit, you are disconnected until midnight, which is a problem with many devices or during development.
 
-This way it is possible to improve your scan_interval to get the higher frequency without busting the limit.
-When reaching 25000 requests, neviweb130 will send a notification. This warning limit is set with the request_limit option.
+Neviweb130 counts its daily requests (updates, statistics, error checks, etc.) in the `sensor.neviweb130_daily_requests` sensor. The count survives HA restarts and is reset to 0 at midnight. It helps you choose a shorter scan_interval without going over the limit. A notification is sent when the count goes over the request_limit option (default 25000).
 
 ## Custom services
 Automations use actions (services) to send commands, e.g. light.turn_on. For Sinopé devices connected through neviweb130, custom actions send specific information to devices or change device parameters. They are available in Developer tools → Actions and in automations:
@@ -654,12 +606,9 @@ These sensors have the energy or water device class and can be added directly to
 The `hourly_kwh`, `daily_kwh` and `monthly_kwh` attributes (kWh used during the last hour, day and month) are still exposed on climate, light and switch entities, and `hourly_flow`, `daily_flow` and `monthly_flow` on valve entities.
 
 ## Localisation
-Neviweb130 is now translated in French for the errors and notifications messages. The translation is done automatically based
-on your HA configuration for language. Now French and English are supported. Any language can be added by translating 
-en.json file located in the translations folder into other language.
+Neviweb130 is translated in English and French: entities, services, attributes, errors and notifications. The language follows your Home Assistant language. Other languages can be added by translating the `en.json` file in the translations folder.
 
-If you modify translations files you will need to not only reload HA but also restart the HA server to force HA to reload 
-translations properly.
+After changing translation files, restart Home Assistant. Reloading the integration is not enough for HA to load the new translations.
 
 ## Troubleshooting
 If your device appears in the log but not in the entity list, its model number must be added to the code. Open an issue with the model number so it can be added.
@@ -717,52 +666,49 @@ You can get these messages from Neviweb in the log:
 
 ### Missing attributes not returned by Neviweb during update
 
-During device update it is possible that some attribute are just dropped by Neviweb even if they are listed as attribute
-for a device. During Neviweb130-V2 startup, a notification will be sent to list those missing attributes and there value
-will be set to 'not supported'. Please refer to this list and report new missing attributes by opening an issue.
+Neviweb sometimes drops attributes during an update, even if they are listed for the device. A notification lists those missing attributes and their value is set to `[not supported]`. Known cases are listed below. Please open an issue to report new ones.
 
-| Devices	| missing attributes |
-| --- | --- |
-| **TH1123ZB-G2** |	coldLoadPickup, heatLockoutTemp |
-| **TH1124ZB-G2** |	coldLoadPickup, heatLockoutTemp |
-| **TH6250WF** | backlight |
+| Device          | Missing attributes              |
+|-----------------|---------------------------------|
+| **TH1123ZB-G2** | coldLoadPickup, heatLockoutTemp |
+| **TH1124ZB-G2** | coldLoadPickup, heatLockoutTemp |
+| **TH6250WF**    | backlight                       |
 
 ## Customization
-Custom-ui is almost deprecated and hard to configure. So I've switch to modern lovelace card to ease the process 
-and get better results.
+Custom-UI is no longer needed. Neviweb130 sets the entity picture of thermostats, sensors and valves itself, and the examples below use modern Lovelace cards.
 
 Prerequisites:
-- The icons are located in www folder in this repo. Copy them in config/www/neviweb130/. You need to create the
-  neviweb130 under config/www. (called /local in HA)
-- Install via HACS the lovelace card: card-mod, mushroom and for stack-in-card.
-- Make sure you have at least neviweb130 v4.1.2
+- Copy the icons into `config/www/neviweb130/` (served as `/local/neviweb130/` in HA). See [Device and weather icons](#device-and-weather-icons) for the file names.
+- For the Mushroom examples, install these cards with HACS: card-mod, Mushroom and stack-in-card.
 
-Neviweb130 will manage the icon to show depending on heat level for thermostats via the **icon_type** attribute. For
-sensors, monitors and valve, battery icon are managed via **battery_icon** attributes based on battery level.
-You can retrieve the icon name with template like this example:
+Neviweb130 exposes the icon path in these attributes:
+- **icon_type**: heat level for thermostats, leak status for leak sensors, valve state for valves,
+- **battery_icon**: battery level for sensors, monitors and valves,
+- **leak_icon**: leak status for valves.
+
+You can read them with a template, for example:
 
 Heat level: `{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}`
 
-leak detection: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'icon_type') }}`
+Leak detection: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'icon_type') }}`
 
-battery level: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'battery_icon') }}`
+Battery level: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'battery_icon') }}`
 
-Those template point directly to /local/neviweb130/(icons)
+These templates return a path in `/local/neviweb130/`.
 
-Old style: (Many examples)
+Old style (many examples):
 
 ![icons](icon_view2.png)
 
 New style based on Mushroom and Tile cards:
 
-![icons](icon_view3.jpg) 
+![icons](icon_view3.jpg)
 
-(Feel free to improve my icons and let me know.) 
+(Feel free to improve the icons and share them.)
 
-Here the code for tile card, mushroom template card and mushroom climate card. Edit your dashboard and add the card. 
-Then edit the code like this:
+Here is the code for a Tile card, a Mushroom template card and a Mushroom climate card. Edit your dashboard, add the card, then edit its code like this:
 
-- tile card:
+- Tile card:
 ```
 type: tile
 grid_options:
@@ -778,7 +724,7 @@ show_entity_picture: true
 vertical: false
 features_position: bottom
 ```
-Mushroom template:
+- Mushroom template card:
 ```
 type: custom:mushroom-template-card
 entity: climate.neviweb130_climate_th1124wf
@@ -797,7 +743,7 @@ grid_options:
   columns: 12
   rows: 1
 ```
-- Mushroom Climate:
+- Mushroom climate card:
 ```
 type: custom:mushroom-climate-card
 entity: climate.neviweb130_climate_th1124wf
@@ -826,9 +772,9 @@ card_mod:
         display: none !important;
       }
 ```
-You can group the card in a vertical stack card, stack-in-card.
-Since the entity_picture is defined for all thermostats, valve, sensors you can add the devices directly in a vertical stack card.
-Icon will be dynamically updated for heat level, battery level etc
+You can group the cards in a vertical stack card or a stack-in-card.
+Since the entity picture is set for all thermostats, valves and sensors, you can also add the devices directly in a vertical stack card.
+Icons update automatically with the heat level, battery level, etc.
 ```
 type: vertical-stack
 cards:
@@ -842,20 +788,14 @@ cards:
 
 ![icons](icon_view4.jpg) 
 
-## Customization for leak sensor
+## Customization for leak sensors, monitors and valves
 
-Same as above. 
-For leak detected icon it is the **icon_type** attribute.
-For battery level it's the same as above with **battery_icon**.
+Same as above:
+- leak status: **icon_type** for leak sensors, **leak_icon** for valves,
+- battery level: **battery_icon**,
+- valve state: **icon_type** for valves.
 
-Icons are available from [www](https://github.com/claudegel/sinope-130/tree/master/www) sub-directory. 
-Copy them in config/www/neviweb130 in your HA.
-
-## Customization for battery level for monitor and valve
-
-Same as above with attribute **battery_icon**, **leak_icon** and **icon_type**.
-
-### Device and weather icons
+## Device and weather icons
 
 Neviweb130 sets the entity picture itself. Custom-UI and `customize.yaml` are no longer needed. The picture is shown only if the png file exists, otherwise the default icon is used. The current path is also exposed in the `icon_type` attribute.
 
@@ -872,7 +812,7 @@ Copy the icons in `config/www/neviweb130/` (served as `/local/neviweb130/`). Fil
 
 The thermostat level follows the heating demand: 0 below 1%, then one step every 20%. `-off` is used when the thermostat is off and `-auto-` when it is in auto mode.
 
-#### Weather icons
+### Weather icons
 
 The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Its picture is taken from `config/www/neviweb130/weather/<name>.png`. At startup, neviweb130 sends a notification if this folder is missing or empty. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
 
