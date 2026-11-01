@@ -1600,7 +1600,7 @@
 
     "set_tank_height": {
       "name": "Définir la hauteur du réservoir",
-      "description": "Définissez la hauteur de la cuve pour le LM4110-ZB sur la cuve à mazout. Le type de cuve doit être réglé au préalable sur « oil ».",
+      "description": "Définissez la hauteur du réservoir de mazout pour le LM4110-ZB. Le type de réservoir doit être réglé au préalable sur « oil ».",
       "fields": {
         "entity_id": {
           "name": "Entité",
