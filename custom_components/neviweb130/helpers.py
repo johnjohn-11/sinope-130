@@ -6,16 +6,18 @@ import asyncio
 import datetime
 import logging
 import os
+import queue
 import shutil
 import time
 from dataclasses import dataclass
+from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 from typing import Any, Callable, Mapping
 
 from aiohttp import ClientError
 from homeassistant.components.persistent_notification import DOMAIN as PN_DOMAIN
 from homeassistant.components.recorder.models import StatisticMeanType
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntityDescription, SensorStateClass
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, UnitOfTime
+from homeassistant.const import EVENT_HOMEASSISTANT_CLOSE, EVENT_HOMEASSISTANT_STARTED, UnitOfTime
 from homeassistant.core import CoreState, HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
@@ -66,73 +68,61 @@ NETWORK_MAP = {
 # ─────────────────────────────────────────────
 
 
-async def async_write(hass, path, text):
-    def _write():
-        with open(path, "a", encoding="utf-8") as f:
-            f.write(text + "\n")
-
-    return hass.async_add_executor_job(_write)
+# Writing happens in a QueueListener thread, never in the event loop, and works from any thread.
+_log_listener: QueueListener | None = None
+_file_handler: NeviwebFileHandler | None = None
 
 
-async def async_rotate(hass, path, max_bytes, backup_count):
-    def _rotate():
-        if not os.path.exists(path):
-            return
+class NeviwebFileHandler(RotatingFileHandler):
+    """Rotating file handler that can truncate the file the first time it is opened."""
 
-        if os.path.getsize(path) < max_bytes:
-            return
+    def __init__(self, path, max_bytes, backup_count, reset_on_start):
+        super().__init__(path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8", delay=True)
+        self._truncate = reset_on_start
 
-        # Rotate backups
-        for i in range(backup_count - 1, 0, -1):
-            src = f"{path}.{i}"
-            dst = f"{path}.{i + 1}"
-            if os.path.exists(src):
-                os.replace(src, dst)
-
-        # Move current log to .1
-        os.replace(path, f"{path}.1")
-
-    return hass.async_add_executor_job(_rotate)
+    def _open(self):
+        # RotatingFileHandler forces append mode when maxBytes > 0, so the reset is done here.
+        if self._truncate:
+            self._truncate = False
+            return open(self.baseFilename, "w", encoding=self.encoding)
+        return super()._open()
 
 
-class AsyncRotatingHandler(logging.Handler):
-    def __init__(self, hass, path, max_bytes, backup_count):
-        super().__init__()
-        self.hass = hass
-        self.path = path
-        self.baseFilename = path
-        self.max_bytes = max_bytes
-        self.backup_count = backup_count
-
-    def emit(self, record):
-        msg = self.format(record)
-        # rotation async
-        self.hass.async_create_task(async_rotate(self.hass, self.path, self.max_bytes, self.backup_count))
-        # écriture async
-        self.hass.async_create_task(async_write(self.hass, self.path, msg))
+def _stop_log_listener(_event=None):
+    global _log_listener
+    if _log_listener is not None:
+        _log_listener.stop()
+        _log_listener = None
+    if _file_handler is not None:
+        _file_handler.close()
 
 
 def setup_logger(hass, name, log_path, level="INFO", max_bytes=2 * 1024 * 1024, backup_count=2, reset_on_start=True):
-    if reset_on_start and os.path.exists(log_path):
-
-        def _clear():
-            open(log_path, "w").close()
-
-        hass.async_add_executor_job(_clear)
+    global _log_listener, _file_handler
 
     logger = logging.getLogger(name)
     numeric_level = getattr(logging, level.upper(), logging.INFO)
     logger.setLevel(numeric_level)
 
-    handler = AsyncRotatingHandler(hass, log_path, max_bytes, backup_count)
-    handler.setLevel(numeric_level)
-    formatter = logging.Formatter(
-        "%(asctime)s.%(msecs)03d %(levelname)s [%(name)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-    )
-    handler.setFormatter(formatter)
+    first_setup = _log_listener is None
+    _stop_log_listener()
 
+    _file_handler = NeviwebFileHandler(log_path, max_bytes, backup_count, reset_on_start and first_setup)
+    _file_handler.setLevel(numeric_level)
+    _file_handler.setFormatter(
+        logging.Formatter("%(asctime)s.%(msecs)03d %(levelname)s [%(name)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    )
+
+    log_queue: queue.SimpleQueue = queue.SimpleQueue()
+    _log_listener = QueueListener(log_queue, _file_handler, respect_handler_level=True)
+    _log_listener.start()
+    if first_setup:
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_CLOSE, _stop_log_listener)
+
+    queue_handler = QueueHandler(log_queue)
+    queue_handler.setLevel(numeric_level)
     logger.handlers = []
-    logger.addHandler(handler)
+    logger.addHandler(queue_handler)
     logger.propagate = False
 
     return logger
@@ -161,31 +151,22 @@ def update_logger_level(name: str, level: str):
     logger.setLevel(numeric_level)
     for h in logger.handlers:
         h.setLevel(numeric_level)
+    if _file_handler is not None:
+        _file_handler.setLevel(numeric_level)
     logger.debug("Logger level updated to %s", level.upper())
 
 
 def update_logger_config(name: str, log_path: str, level: str, max_bytes: int, backup_count: int):
+    update_logger_level(name, level)
     logger = logging.getLogger(name)
-    numeric_level = getattr(logging, level.upper(), logging.WARNING)
-    logger.setLevel(numeric_level)
 
-    updated = False
-    for h in logger.handlers:
-        if isinstance(h, AsyncRotatingHandler):
-            try:
-                if os.path.samefile(h.baseFilename, log_path):
-                    h.setLevel(numeric_level)
-                    h.max_bytes = max_bytes
-                    h.backup_count = backup_count
-                    logger.debug("Logger handler updated : max_bytes=%s, backup_count=%s", max_bytes, backup_count)
-                    updated = True
-            except FileNotFoundError:
-                continue
-
-    if not updated:
+    if _file_handler is None or os.path.abspath(_file_handler.baseFilename) != os.path.abspath(log_path):
         logger.warning("No handler updated — check log path or level")
+        return
 
-    logger.debug("Logger config updated to level %s", level.upper())
+    _file_handler.maxBytes = max_bytes
+    _file_handler.backupCount = backup_count
+    logger.debug("Logger handler updated : max_bytes=%s, backup_count=%s", max_bytes, backup_count)
 
 
 async def expose_log_file(
