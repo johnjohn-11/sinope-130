@@ -221,7 +221,7 @@ Allez dans Paramètres → Appareils et services. Au bas de la page, cliquez sur
 
 Neviweb130 se charge ensuite et commence à récupérer vos appareils Neviweb.
 
-Pour gérer un autre compte Neviweb, ajoutez l’intégration de nouveau avec un **prefix** différent.
+Pour gérer un autre compte Neviweb, ajoutez l’intégration de nouveau avec un **prefix** différent. Chaque compte Neviweb ne peut être ajouté qu’une seule fois.
 
 ### Paramètres
 

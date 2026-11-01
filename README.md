@@ -205,7 +205,7 @@ Go to Settings → Devices & services. At the bottom of the page, click **Add in
 
 Then Neviweb130 loads and starts retrieving your Neviweb devices.
 
-To control another Neviweb account, add the integration again with a different **prefix**.
+To control another Neviweb account, add the integration again with a different **prefix**. Each Neviweb account can be added only once.
 
 ### Parameters
 
