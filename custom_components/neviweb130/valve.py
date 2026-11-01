@@ -121,6 +121,9 @@ from .schema import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 SNOOZE_TIME = 1200
 
 SUPPORT_FLAGS = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE

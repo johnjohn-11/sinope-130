@@ -350,6 +350,9 @@ from .schema import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 UPDATE_PROTECTION_DELAY = 10  # seconds
 
 # Add runtime attribute

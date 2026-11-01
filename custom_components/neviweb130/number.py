@@ -24,6 +24,9 @@ from .helpers import NamingHelper, create_risky_issue
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 
 @dataclass(frozen=True)
 class Neviweb130NumberEntityDescription(NumberEntityDescription):
@@ -324,7 +327,7 @@ class Neviweb130DeviceAttributeNumber(CoordinatorEntity[Neviweb130Coordinator], 
     """Representation of a specific Neviweb130 number."""
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
+    _attr_should_poll = False
     _attr_entity_category = EntityCategory.CONFIG
 
     _ATTRIBUTE_METHODS = {

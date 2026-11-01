@@ -176,6 +176,9 @@ from .schema import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 SNOOZE_TIME = 1200
 OFF_TIMER = 65535
 
@@ -2665,7 +2668,7 @@ class Neviweb130DeviceAttributeSwitch(CoordinatorEntity[Neviweb130Coordinator], 
     """Representation of a specific Neviweb130 device attribute switch."""
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
+    _attr_should_poll = False
 
     _ATTRIBUTE_METHODS = {
         "alert_temp": lambda self, state: self._client.async_set_switch_temp_alert(self._id, 1 if state else 0),

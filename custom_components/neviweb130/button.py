@@ -23,6 +23,9 @@ from .helpers import NamingHelper
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 
 @dataclass(frozen=True)
 class Neviweb130ButtonEntityDescription(ButtonEntityDescription):
@@ -141,7 +144,7 @@ class Neviweb130DeviceAttributeButton(CoordinatorEntity[Neviweb130Coordinator], 
     """Representation of a specific Neviweb130 button."""
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
+    _attr_should_poll = False
 
     _ATTRIBUTE_METHODS: dict[str, Any] = {
         # "fan_filter_remain": lambda self: self._client.async_set_fan_filter_reminder(self._id),

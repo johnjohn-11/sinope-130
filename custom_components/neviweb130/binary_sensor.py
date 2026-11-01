@@ -27,6 +27,9 @@ from .helpers import NamingHelper
 
 _LOGGER = logging.getLogger(__name__)
 
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
+
 
 def static_icon(on_icon: str, off_icon: str) -> Callable[[bool, dict | None, str | None], str]:
     """Return icon_fn function compatible for Neviweb130BinarySensorEntityDescription."""
@@ -299,7 +302,7 @@ class Neviweb130DeviceAttributeBinarySensor(CoordinatorEntity[Neviweb130Coordina
     entity_description: Neviweb130BinarySensorEntityDescription
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
+    _attr_should_poll = False
 
     def __init__(
         self,

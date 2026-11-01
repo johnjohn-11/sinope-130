@@ -22,6 +22,7 @@ from homeassistant.components.update import UpdateEntity, UpdateEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util import dt as dt_util
@@ -35,6 +36,9 @@ from .const import (
 from .helpers import build_update_summary, has_breaking_changes, translate_error
 
 _LOGGER = logging.getLogger(__name__)
+
+# Updates come from the coordinator, so entity updates do not need to be limited.
+PARALLEL_UPDATES = 0
 
 DEFAULTS = {
     "current_version": f"v{VERSION}",
@@ -280,7 +284,8 @@ class Neviweb130UpdateEntity(UpdateEntity):
         self._last_check = dt_util.now().isoformat()
         api_url = "https://api.github.com/repos/claudegel/sinope-130/releases"
         try:
-            async with aiohttp.ClientSession() as session, session.get(api_url) as resp:
+            session = async_get_clientsession(self.hass)
+            async with session.get(api_url) as resp:
                 resp.raise_for_status()
                 releases = await resp.json()
 
@@ -467,34 +472,34 @@ class Neviweb130UpdateEntity(UpdateEntity):
             # -----------------------------
             # 2. NETWORK BLOCK (only HTTP here)
             # -----------------------------
-            async with aiohttp.ClientSession() as session:
-                # 2.1 Get release info
-                async with session.get(api_url) as resp:
-                    resp.raise_for_status()
-                    release_data = await resp.json()
+            session = async_get_clientsession(self.hass)
+            # 2.1 Get release info
+            async with session.get(api_url) as resp:
+                resp.raise_for_status()
+                release_data = await resp.json()
 
-                assets = release_data.get("assets", [])
-                expected_version = release_data["tag_name"]
-                valid_assets = filter_valid_assets(assets, expected_version)
+            assets = release_data.get("assets", [])
+            expected_version = release_data["tag_name"]
+            valid_assets = filter_valid_assets(assets, expected_version)
 
-                asset_zip = next((a for a in valid_assets if a["name"].endswith(".zip")), None)
-                asset_sha = next((a for a in valid_assets if a["name"].endswith(".sha256")), None)
+            asset_zip = next((a for a in valid_assets if a["name"].endswith(".zip")), None)
+            asset_sha = next((a for a in valid_assets if a["name"].endswith(".sha256")), None)
 
-                if not asset_zip or not asset_sha:
-                    raise Exception("ZIP or SHA256 asset not found in GitHub release")
+            if not asset_zip or not asset_sha:
+                raise Exception("ZIP or SHA256 asset not found in GitHub release")
 
-                # 2.2 Download SHA256
-                async with session.get(asset_sha["browser_download_url"]) as resp:
-                    resp.raise_for_status()
-                    expected_sha256 = (await resp.text()).strip().split()[0]
+            # 2.2 Download SHA256
+            async with session.get(asset_sha["browser_download_url"]) as resp:
+                resp.raise_for_status()
+                expected_sha256 = (await resp.text()).strip().split()[0]
 
-                # 2.3 Download ZIP
-                self._update_percentage = 20
-                self.async_write_ha_state()
+            # 2.3 Download ZIP
+            self._update_percentage = 20
+            self.async_write_ha_state()
 
-                async with session.get(asset_zip["browser_download_url"]) as resp:
-                    resp.raise_for_status()
-                    zip_bytes = await resp.read()
+            async with session.get(asset_zip["browser_download_url"]) as resp:
+                resp.raise_for_status()
+                zip_bytes = await resp.read()
 
             # -----------------------------
             # 3. PREPARATION BLOCK (no network)
