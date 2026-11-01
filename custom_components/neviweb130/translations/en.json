@@ -679,7 +679,7 @@
         "name": "HeatStage1 hourly total count"
       },
       "heat_stage2_hourly_total_count": {
-        "name": "HeatStage2 hourly tota count"
+        "name": "HeatStage2 hourly total count"
       },
       "hourly_flow_count": {
         "name": "Hourly Flow"
@@ -938,7 +938,7 @@
         },
         "color": {
           "name": "LED color",
-          "description": "Color to set: \"lime\", \"amber\", \"fushia\", \"perle\", \"blue\", \"red\", \"orange\", \"green\"."
+          "description": "Color to set: \"lime\", \"amber\", \"fuchsia\", \"perle\", \"blue\", \"red\", \"orange\", \"green\"."
         }
       }
     },

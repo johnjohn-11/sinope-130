@@ -6,7 +6,7 @@
         "title": "Neviweb130: gestion Sinopé Zigbee et Wi-Fi.",
         "description": "Entrer les informations pour la connexion à Neviweb: nom d'utilisateur (courriel), mot de passe, emplacements (utiliser les champs emplacement, emplacement 2 et emplacement 3 si vous avez plusieurs emplacements ou laissez vide pour qu'ils soient détectés automatiquement), (mettre _ pour ne pas détecter), Intervalle de scan, support pour Homekit, intervalle de stats, notifications et safe_mode.\n(* = requis), Cliquez sur le bouton ? pour l’aide et documentation.",
         "data": {
-          "prefix": "Compte Neviweb, optionel pour le premier compte.",
+          "prefix": "Compte Neviweb, optionnel pour le premier compte.",
           "username": "Courriel pour Neviweb",
           "password": "Mot de passe pour Neviweb",
           "network": "Optionel, Premier emplacement dans Neviweb ou '_' ou vide pour auto détection.",
@@ -34,7 +34,7 @@
           "ignore_miwi": "Optionel, Ignorer les appareils miwi",
           "scan_interval": "Optionel, Intervalle des requêtes sur neviweb, 300 à 600 sec.",
           "stat_interval": "Optionel, Intervalle des requêtes pour les statistiques de consommation des appareils, 300 à 1800 sec.",
-          "notify": "Optionel, Avis en cas de déconnection pour un appareil.",
+          "notify": "Optionnel, avis en cas de déconnexion pour un appareil.",
           "safe_mode": "Optionel, Indiquez l’identifiant de l’appareil à mettre à jour en mode sans échec ou '-'."
         }
       }
@@ -83,8 +83,8 @@
       "multiple_cooling_level": "L'entité {entity} ne supporte pas des niveaux de climatisation multiples avec la configuration actuelle.",
       "integer_needed": "Valeur invalide pour {param}, un nombre entier est requis.",
       "float_needed": "Valeur invalide pour {param}, un nombre décimal est requis.",
-      "missing_functionality": "L'entité {entity} n'a pas les fonctionalités pompe à chaleur et chauffage auxiliaire.",
-      "invalid_value": "Valeur invalide pour {param}, doit être parmis les valeurs: {value}.",
+      "missing_functionality": "L'entité {entity} n'a pas les fonctionnalités pompe à chaleur et chauffage auxiliaire.",
+      "invalid_value": "Valeur invalide pour {param}, doit être parmi les valeurs: {value}.",
       "cannot_use_entity": "L'entité {entity} ne peut être utilisée pour ce service (action).",
       "scan_interval_error": "Format d’intervalle invalide. Utilisez des secondes ou HH:MM:SS.",
       "username_missing": "Le nom d’utilisateur ne peut pas être vide.",
@@ -151,7 +151,7 @@
           "log_backup_count": "Nombre de fichiers de sauvegarde",
           "log_reset_on_start": "Réinitialisation du journal au démarrage",
           "download_log": "Télécharger les diagnostiques",
-          "reload": "Recharger l'integration",
+          "reload": "Recharger l'intégration",
           "migrate": "Migrer les unique_id numériques",
           "request_limit": "Limite de sécurité du compteur de requêtes Neviweb",
           "update_check_interval": "Intervalle de vérification des mises à jour",
@@ -226,7 +226,7 @@
         }
       },
       "input2_status": {
-        "name": "Statut imput 2",
+        "name": "Statut entrée 2",
         "state": {
           "on": "Actif",
           "off": "Inactif"
@@ -938,7 +938,7 @@
         },
         "color": {
           "name": "Couleur",
-          "description": "Couleurs possibles : « lime », « amber », « fushia », « perle », « blue », « red », « orange », « green »."
+          "description": "Couleurs possibles : « lime », « amber », « fuchsia », « perle », « blue », « red », « orange », « green »."
         }
       }
     },
@@ -1084,7 +1084,7 @@
       "fields": {
         "entity_id": {
           "name": "Entité",
-          "description": "Nom(s) du/des thermostat (heaat/cool) Neviweb130."
+          "description": "Nom(s) du/des thermostat (heat/cool) Neviweb130."
         },
         "coolsetpointaway": {
           "name": "Consigne de refroidissement",
@@ -1261,7 +1261,7 @@
 
     "set_hvac_dr_setpoint": {
       "name": "Définir la consigne HVAC DR",
-      "description": "Set demand response setpoint reduction value for thermostats in Éco Sinopé mode.",
+      "description": "Définit la réduction de consigne des thermostats pendant une période de pointe en mode Éco Sinopé.",
       "fields": {
         "entity_id": {
           "name": "Entité",
@@ -1600,7 +1600,7 @@
 
     "set_tank_height": {
       "name": "Définir la hauteur du réservoir",
-      "description": "Définissez la hauteur de la cuve pour le LM4110-ZB sur la cuve à diezel. Le type de cuve doit être réglé au préalable sur « oil ».",
+      "description": "Définissez la hauteur de la cuve pour le LM4110-ZB sur la cuve à mazout. Le type de cuve doit être réglé au préalable sur « oil ».",
       "fields": {
         "entity_id": {
           "name": "Entité",

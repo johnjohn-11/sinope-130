@@ -111,7 +111,7 @@ set_led_indicator:
       description: 0 = when light is «off», 1 = when light is «on»
       example: 1
     color:
-      description: pick color from "lime", "amber", "fushia", "perle", "blue", "red", "orange", "green".
+      description: pick color from "lime", "amber", "fuchsia", "perle", "blue", "red", "orange", "green".
       example: "green"
 
 set_led_on_intensity:
