@@ -1,312 +1,204 @@
 ## Home Assistant Neviweb130 Custom Components
 [🇫🇷 Version française](doc/readme_fr.md)
-> 💛 **Enjoying this integration?**  
-> If you'd like to support its ongoing development, you can contribute here:
-> [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/phytoressources/) or 
+
+Custom integration to use [Neviweb](https://neviweb.com/) devices in [Home Assistant](http://www.home-assistant.io) (HA). Neviweb is the Sinopé Technologies platform for their smart devices: thermostats, light switches and dimmers, load controllers, plugs, valves, water leak detectors and more.
+
+Neviweb130 (Sinope Neviweb130 in HACS) manages the Zigbee devices connected to Neviweb through the GT130 gateway, and the Wi-Fi devices connected directly to Neviweb. New Sinopé devices are added as they are launched. If your device is not supported yet, [open an issue](https://github.com/claudegel/sinope-130/issues/new/choose) and it will be added quickly.
+
+> 💛 **Enjoying this integration?** You can support its development:
+> [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/phytoressources/) or
 > [![Donate via Interac](https://img.shields.io/badge/Interac-Don-orange?style=for-the-badge)](doc/Donations.md)
-
-Custom integration to support [Neviweb](https://neviweb.com/) devices in [Home Assistant](http://www.home-assistant.io) (HA).
-Neviweb is the Sinopé Technologies platform for their smart devices: thermostats, light switches and dimmers, load controllers, plugs, valves, water leak detectors and more.
-
-Neviweb130 (Sinope Neviweb130 in HACS) manages the Zigbee devices connected to Neviweb through the GT130 gateway, and the Wi-Fi devices connected directly to Neviweb. It is almost up to date with Neviweb, but some information is still missing from Sinopé. New Sinopé devices are added as they are launched. If you have a device that is not supported yet, please open an issue and it will be added quickly.
-
-Report a problem or suggest an improvement: [Open an issue](https://github.com/claudegel/sinope-130/issues/new/choose)
 
 ## Table of contents
 
-- [Supported devices](#supported-devices)
-- [Prerequisite](#prerequisite)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Migrating from version 4.x](#migrating-from-version-4x)
-- [Sedna valve](#sedna-valve)
-- [GT130](#gateway-gt130)
-- [Update system](#updater-system)
-- [Request counter](#neviweb-daily-request-counter)
-- [Services / Actions](#custom-services)
-- [Eco-Sinopé](#catch-éco-sinopé-signal-for-peak-period)
-- [Energy and water statistics](#energy-and-water-statistics)
-- [Localisation (language)](#localisation)
-- [Troubleshooting](#troubleshooting)
-- [Customization](#customization)
-- [Device hard reset](#device-hard-reset)
-- [TO DO](#to-do)
+- **Getting started**
+  - [Before you start](#before-you-start)
+  - [Installation](#installation)
+  - [Adding a Neviweb account](#adding-a-neviweb-account)
+  - [Account parameters](#account-parameters)
+  - [Integration options](#integration-options)
+  - [Upgrading from version 4.x](#upgrading-from-version-4x)
+- **Using Neviweb130**
+  - [Devices and entities](#devices-and-entities)
+  - [Energy and water statistics](#energy-and-water-statistics)
+  - [Éco Sinopé peak periods](#éco-sinopé-peak-periods)
+  - [Actions (services)](#actions-services)
+  - [Sedna valve](#sedna-valve)
+  - [Daily request counter](#daily-request-counter)
+  - [Updates](#updates)
+  - [Language](#language)
+- **Dashboards**
+  - [Device and weather icons](#device-and-weather-icons)
+  - [Card examples](#card-examples)
+- **Help**
+  - [Troubleshooting](#troubleshooting)
+  - [Device hard reset](#device-hard-reset)
+  - [Supported devices](#supported-devices)
 
-## Supported Devices
-Here is the list of currently supported devices. Basically, it's everything that can be added in Neviweb.
-- Zigbee thermostats:
-  - Sinopé TH1123ZB 3000W line voltage thermostat
-  - Sinopé TH1124ZB 4000W line voltage thermostat
-  - Sinopé TH1123ZB 3000W thermostat for public areas
-  - Sinopé TH1124ZB 4000W thermostat for public areas
-  - Sinopé TH1123ZB-G2 3000W thermostat, second generation
-  - Sinopé TH1124ZB-G2 4000W thermostat, second generation
-  - Sinopé TH1134ZB-HC for heating/cooling interlocking
-  - Sinopé TH1300ZB 3600W floor heating thermostat
-  - Sinopé TH1320ZB-04 floor heating thermostat
-  - Sinopé TH1400ZB low voltage thermostat
-  - Sinopé TH1500ZB 3600W double pole thermostat
-  - Nordik TH1420ZB-01 low voltage radiant hydronic floor thermostat
-  - Ouellet OTH3600-GA-ZB floor thermostat
-  - Ouellet OTH4000-ZB 4000W line voltage thermostat
-- Wi-Fi thermostats (no GT130 needed):
-  - Sinopé TH1123WF Wi-Fi 3000W line voltage thermostat
-  - Sinopé TH1124WF Wi-Fi 4000W line voltage thermostat
-  - Sinopé TH1133WF Wi-Fi 3000W line voltage thermostat lite
-  - Sinopé TH1133CR Sinopé Evo 3000W line voltage thermostat lite
-  - Sinopé TH1134WF Wi-Fi 4000W line voltage thermostat lite
-  - Sinopé TH1134CR Sinopé Evo 4000W line voltage thermostat lite
-  - Sinopé THEWF01 Wi-Fi thermostat lite
-  - Sinopé TH1143WF and TH1144WF Wi-Fi 3000W and 4000W thermostats, two wire connection, color screen
-  - Sinopé TH1145WF Wi-Fi 4000W thermostat, two wire connection, color screen
-  - Sinopé TH1300WF, TH1310WF, TH1315WF and TH1325WF Wi-Fi 3600W floor thermostats
-  - Sinopé TH1400WF Wi-Fi low voltage thermostat
-  - Sinopé TH1500WF Wi-Fi 3600W double pole thermostat
-  - Sinopé TH6500WF, TH6510WF, TH6250WF, TH6250WF-PRO and TH6251WF-PRO Wi-Fi heat/cool (preliminary, volunteers needed to test)
-  - Flextherm Concerto Connect FLP55 floor thermostat (the FLP55 does not provide energy stats in Neviweb)
-  - Flextherm True Comfort floor thermostat
-  - SRM40 floor thermostat
-- Heat pump controllers:
-  - Sinopé HP6000ZB-GE for Ouellet heat pump with Gree connector
-  - Sinopé HP6000ZB-GE-RS485 for Tosot heat pump with Gree connector
-  - Sinopé HP6000ZB-MA for Ouellet Convectair heat pump with Midea connector
-  - Sinopé HP6000ZB-HS for Hisense, Haxxair and Zephyr heat pump
-  - Sinopé HP6000WF-MA for Ouellet Convectair heat pump with Midea connector, Wi-Fi
-  - Sinopé HP6000WF-TCL for Runtru/Ameristar heat pump, Wi-Fi
-  - Sinopé HP6000WF-HA for Hotpoint heat pump, Wi-Fi
-- Zigbee lighting:
-  - Sinopé SW2500ZB light switch
-  - Sinopé SW2500ZB-G2 light switch
-  - Sinopé DM2500ZB dimmer
-  - Sinopé DM2500ZB-G2 dimmer
-  - Sinopé DM2550ZB dimmer
-  - Sinopé DM2550ZB-G2 dimmer
-  - SW2500ZB-VA, DM2500ZB-VA and DM2550ZB-VA connected to a Sedna valve
-- Zigbee specialized control:
-  - Sinopé RM3250ZB load controller 50A
-  - Sinopé RM3500ZB Calypso load controller 20.8A for water heater
-  - Sinopé SP2610ZB in-wall outlet
-  - Sinopé SP2600ZB smart portable plug
-  - Sinopé MC3100ZB Sedna valve multi-controller for alarm system
-  - RM3250ZB-VA, SP2610ZB-VA, SP2600ZB-VA and MC3100ZB-VA connected to a Sedna valve
-- Wi-Fi specialized control:
-  - Sinopé RM3500WF Calypso load controller 20.8A for water heater
-  - Sinopé RM3510WF Calypso load controller 20.8A for water heater
-  - Sinopé RM3250WF load controller 40A
-- Water leak detectors and valves:
-  - Sinopé VA4201WZ, Sedna valve 1 inch, Wi-Fi
-  - Sinopé VA4200WZ, Sedna valve 3/4 inch, Wi-Fi
-  - Sinopé VA4200ZB, Sedna valve 3/4 inch, Zigbee
-  - Sinopé VA4220WZ, Sedna 2nd gen 3/4 inch
-  - Sinopé VA4220WF, Sedna 2nd gen 3/4 inch, Wi-Fi
-  - Sinopé VA4220ZB, Sedna 2nd gen 3/4 inch, Zigbee
-  - Sinopé VA4221WZ, Sedna 2nd gen 1 inch
-  - Sinopé VA4221WF, Sedna 2nd gen 1 inch, Wi-Fi
-  - Sinopé VA4221ZB, Sedna 2nd gen 1 inch, Zigbee
-  - Sinopé WL4200, water leak detector
-  - Sinopé WL4200S, water leak detector with sensor
-  - Sinopé WL4200C, perimeter cable water leak detector
-  - Sinopé WL4200ZB, water leak detector
-  - Sinopé WL4210, water leak detector
-  - Sinopé WL4210S, water leak detector with sensor
-  - Sinopé WL4210C, perimeter cable water leak detector
-  - Sinopé WL4210ZB, water leak detector
-  - Sinopé WL4200ZB, connected to a Sedna valve
-  - Sinopé ACT4220WF-M, VA4220WF-M, Sedna multi-residential master valve 2nd gen 3/4 inch, Wi-Fi
-  - Sinopé ACT4220ZB-M, VA4220ZB-M, Sedna multi-residential slave valve 2nd gen 3/4 inch, Zigbee
-  - Sinopé ACT4221WF-M, VA4221WF-M, Sedna multi-residential master valve 2nd gen 1 inch, Wi-Fi
-  - Sinopé ACT4221ZB-M, VA4221ZB-M, Sedna multi-residential slave valve 2nd gen 1 inch, Zigbee
-- Flow sensors (supported through the 2nd gen Sedna valves):
-  - Sinopé FS4220, 3/4 inch flow sensor
-  - Sinopé FS4221, 1 inch flow sensor
-- Tank level monitors:
-  - Sinopé LM4110-ZB, propane tank level monitor
-  - Sinopé LM4110-LTE, propane tank level monitor, LTE, multiple tanks
-- Gateways:
-  - GT130
-  - GT4220WF and GT4220WF-M, mesh gateway for valves
-- Power supply:
-  - Sinopé ACUPS-01, battery backup for Sedna valve
+# Getting started
 
-## Prerequisite
-Your devices must be added to your Neviweb portal before they can be used in Home Assistant:
-- Zigbee devices through a GT130 gateway,
-- Wi-Fi devices directly,
-- some Zigbee devices through a Sedna valve, which is itself connected to Neviweb.
+## Before you start
 
-Please refer to the instruction manual of your device or visit [Neviweb support](https://support.sinopetech.com/).
+- Your devices must already be added to your Neviweb portal: Zigbee devices through a GT130 gateway, Wi-Fi devices directly, and some Zigbee devices through a Sedna valve. See your device manual or [Neviweb support](https://support.sinopetech.com/).
+- Check that your devices are in the [supported devices](#supported-devices) list.
+- MiWi devices (GT125) are not supported by this integration. Use one of the other Sinopé integrations below, they can all run at the same time.
 
-Wi-Fi devices can be in the same Neviweb location (network) as the GT130 Zigbee devices or in a separate one. Neviweb130 supports up to three locations per Neviweb account.
+<details>
+<summary>Other Sinopé integrations</summary>
 
-Four custom components let you manage Sinopé devices, through Neviweb or locally:
 - [**neviweb**](https://github.com/claudegel/sinope-1) (HACS: Sinope Neviweb), for MiWi devices through the Neviweb portal.
 - [**sinope**](https://github.com/claudegel/sinope-gt125) (HACS: Sinope GT125), for devices managed directly through your GT125 gateway.
 - [**neviweb130**](https://github.com/claudegel/sinope-130) (HACS: Sinope Neviweb130), this integration, for Zigbee and Wi-Fi devices through the Neviweb portal.
 - [**sinope-zha**](https://github.com/claudegel/sinope-zha), new Sinopé quirks for ZHA before they are merged into zha-device-handlers. With a Zigbee coordinator such as the ConBee II USB dongle, ZHA manages your Zigbee devices locally. Copy the sinope-zha files into your HA setup to test new quirks: ZHA loads them in place of the standard Sinopé quirks.
 
-They can all be used at the same time. Zigbee devices managed directly through ZHA must be removed from Neviweb, as a device cannot be on two Zigbee networks at the same time.
+Zigbee devices managed directly through ZHA must be removed from Neviweb, as a device cannot be on two Zigbee networks at the same time.
+
+</details>
 
 ## Installation
-There are two ways to install this custom component:
-- With HACS:
-  - This repository is compatible with the Home Assistant Community Store ([HACS](https://community.home-assistant.io/t/custom-component-hacs/121727)).
-  - After installing HACS, install 'Sinope Neviweb130' from the store, restart Home Assistant and add the integration (see Configuration).
-- Manually:
-  - Download the zip file of this repository with the green Code button.
-  - Extract the zip file on your computer, then copy the entire `custom_components` folder into your Home Assistant `config` directory (where your `configuration.yaml` file is).
-  - Your config directory should look like this:
 
-    ```
-    config/
-      configuration.yaml
-      custom_components/
-        neviweb130/
-          __init__.py
-          binary_sensor.py
-          button.py
-          climate.py
-          config_flow.py
-          const.py
-          coordinator.py
-          devices.py
-          exceptions.py
-          helpers.py
-          light.py
-          manifest.json
-          number.py
-          schema.py
-          select.py
-          sensor.py
-          services.yaml
-          session_manager.py
-          strings.json
-          switch.py
-          update.py
-          valve.py
-          translations/en.json
-          translations/fr.json
-      www/
-        neviweb130/
-          heat-0.png ... (device icons, see Device and weather icons)
-          weather/
-            Sun.png ... (weather icons)
-      ...
-    ```
+**With HACS (recommended):** search for **Sinope Neviweb130** in HACS, install it and restart Home Assistant.
 
-## Configuration
+<details>
+<summary>Manual installation</summary>
 
-Neviweb130 is configured from the Home Assistant UI. Configuration in `configuration.yaml` is obsolete. If you are upgrading from version 4.x, see [Migrating from version 4.x](#migrating-from-version-4x).
+1. Download the zip file of this repository with the green Code button.
+2. Extract it and copy the `custom_components/neviweb130` folder into the `custom_components` folder of your Home Assistant `config` directory (where `configuration.yaml` is).
+3. Restart Home Assistant.
 
-### Adding a Neviweb account
+Your config directory should look like this:
 
-Go to Settings → Devices & services. At the bottom of the page, click **Add integration** and search for **Sinope Neviweb130**. A window opens to enter your Neviweb connection settings.
+```
+config/
+  configuration.yaml
+  custom_components/
+    neviweb130/
+      __init__.py
+      binary_sensor.py
+      button.py
+      climate.py
+      config_flow.py
+      const.py
+      coordinator.py
+      devices.py
+      exceptions.py
+      helpers.py
+      light.py
+      manifest.json
+      number.py
+      schema.py
+      select.py
+      sensor.py
+      services.yaml
+      session_manager.py
+      strings.json
+      switch.py
+      update.py
+      valve.py
+      translations/en.json
+      translations/fr.json
+```
+
+</details>
+
+To show device and weather pictures in your dashboards, also copy the icons (see [Device and weather icons](#device-and-weather-icons)).
+
+## Adding a Neviweb account
+
+1. Go to Settings → Devices & services.
+2. Click **Add integration** and search for **Sinope Neviweb130**.
+3. Enter your Neviweb email and password. The other fields can usually stay as they are (see [Account parameters](#account-parameters)).
 
 ![new configuration](www/nouveau_pont.jpg)
 
-Then Neviweb130 loads and starts retrieving your Neviweb devices.
+Neviweb130 then loads and retrieves your Neviweb devices.
 
-To control another Neviweb account, add the integration again with a different **prefix**. Each Neviweb account can be added only once.
+**More than one Neviweb account:** add the integration again for each account, with a different **prefix**. Each Neviweb account can be added only once.
 
-### Parameters
+## Account parameters
 
-Location names are the names shown at the top of the first page after logging into Neviweb. If you have more than one location, click on the icon at the top to see all of them. Zigbee (GT130) and Wi-Fi devices of a same group must be in the same location. MiWi devices (GT125) are not supported. For them, install the [Neviweb](https://github.com/claudegel/sinope-1) custom component, which can run alongside this one.
+These are asked when you add an account. To change them later, use **Reconfigure** on the integration page.
+
+| Parameter         | Default            | Description |
+|-------------------|--------------------|-------------|
+| **prefix**        | default            | Name of the account. Change it only if you add more than one Neviweb account. Each account needs a different prefix, without spaces or accented characters. |
+| **username**      |                    | The email address you use to log into Neviweb. Required. |
+| **password**      |                    | Your Neviweb password. Required. |
+| **network**       | 1st location found | Name of the Neviweb location to control. Leave empty for auto detection. |
+| **network2**      | 2nd location found | Second location to control. Leave empty if you have only one. |
+| **network3**      | 3rd location found | Third location to control. A third location must be activated by Sinopé. |
+| **scan_interval** | 420                | Seconds between each device update, from 300 to 600. Sinopé asks for at least 5 minutes between polls. |
+| **stat_interval** | 1800               | Seconds between each energy statistics update, from 300 to 1800. |
+| **homekit_mode**  | False              | Adds HomeKit specific values. Not needed if you don't use HomeKit. |
+| **ignore_miwi**   | False              | Set to True if a selected location also contains MiWi (GT125) devices, to avoid the unsupported device warning. |
+| **notify**        | both               | How device errors are reported: `nothing`, `logging`, `notification` or `both`. |
+| **safe_mode**     | -                  | Comma separated list of device IDs to poll in safe mode, or `-` for none. In safe mode, attributes not supported by the device firmware are skipped. A device that returns `DVCATTRNSPTD` is added automatically and you get a notification. |
+
+<details>
+<summary>About locations (network, network2, network3)</summary>
+
+Location names are shown at the top of the first page after logging into Neviweb. If you have more than one location, click on the icon at the top to see all of them.
 
 ![network](www/network.jpg)
 
-| key               | required | default                                | description                                                                                                                                                                       |
-|-------------------|----------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **prefix**        | no       | default                                | Name of the Neviweb account. Needed only if you add more than one Neviweb account. Each account needs a different prefix, without spaces or accented characters.                |
-| **username**      | yes      |                                        | The email address you use to log into Neviweb.                                                                                                                                    |
-| **password**      | yes      |                                        | Your Neviweb password.                                                                                                                                                            |
-| **network**       | no       | 1st location found                     | Name of the Neviweb location where your Zigbee or Wi-Fi devices are registered. Leave empty for auto detection, or set to `_` to block detection.                               |
-| **network2**      | no       | 2nd location found                     | Name of the second location to control. Leave empty if you have only one location.                                                                                               |
-| **network3**      | no       | 3rd location found                     | Name of the third location to control. Leave empty if you have only one or two locations.                                                                                        |
-| **scan_interval** | no       | 420                                    | Number of seconds between each Neviweb poll to update device states, from 300 to 600. Sinopé asks for a minimum of 5 minutes between polls. Above 600 the session expires.      |
-| **homekit_mode**  | no       | False                                  | Adds support for HomeKit specific values. Not needed if you don't use HomeKit.                                                                                                   |
-| **ignore_miwi**   | no       | False                                  | Set to True if a selected location also contains MiWi devices (GT125). Without it, you get a warning saying the location contains unsupported MiWi devices.                     |
-| **stat_interval** | no       | 1800                                   | Number of seconds between each Neviweb poll for energy statistics, from 300 to 1800.                                                                                             |
-| **notify**        | no       | both                                   | How device errors are reported: `nothing`, `logging`, `notification` or `both`.                                                                                                  |
-| **safe_mode**     | no       | -                                      | Comma separated list of device IDs to poll in safe mode, or `-` for none. In safe mode, attributes not supported by the device firmware are skipped. A device that returns `DVCATTRNSPTD` is added automatically and you get a notification. |
+- Zigbee (GT130) and Wi-Fi devices can be in the same location or in separate ones. Neviweb130 manages up to three locations per account.
+- If you also have a GT125 connected to Neviweb, enter your location names, otherwise the GT125 location could be picked up by mistake.
+- Set an unused location to `_` so Neviweb130 does not search for it.
+- Write names exactly as in Neviweb, including capitalization. Accented letters are refused.
 
-If you also have a GT125 connected to Neviweb, enter the location name, otherwise the GT125 location could be picked up by mistake. Unused locations can be left empty, or set to `_` so Neviweb130 does not search for them. A third location must be activated by Sinopé. If you enter names, write them exactly as in Neviweb, including capitalization. Accented letters are refused.
+</details>
 
-### Managing the integration
+## Integration options
 
-Everything is under Settings → Devices & services → Neviweb130:
+Everything is under Settings → Devices & services → Neviweb130. Click **Configure** to change these options. Changes apply without restarting Home Assistant.
 
 ![options](www/options.jpg)
 
-From there you can:
-- add another Neviweb account,
-- change the integration options with **Configure** (see below),
-- change the account parameters with **Reconfigure**.
+| Option | Default | Description |
+|--------|---------|-------------|
+| **log_level** | info | Level of messages written to the log file. Set to `debug` to investigate a problem. |
+| **log_max_bytes**, **log_backup_count**, **log_reset_on_start** | 2 MB, 2, on | Size, rotation and reset at startup of the log file (see [Troubleshooting](#troubleshooting)). |
+| **download_log** | | Copies the log file to `/local/neviweb130.log` so you can download it from your browser. The copy is deleted after 30 minutes. |
+| **reload** | | Reloads Neviweb130 without restarting Home Assistant. |
+| **migrate** | | Runs the unique_id migration again. It already runs automatically at startup. |
+| **request_limit** | 25000 | Daily safety limit of requests sent to Neviweb (Neviweb's own limit is 30000). |
+| **update_check_interval** | 6h | How often the update entity checks GitHub for a new version: 1h, 3h, 6h, 12h or 24h. |
+| **backup_mode**, **backup_folders** | full, config | Backup made before installing an update. `full` calls `hassio.backup_full`, `partial` calls `hassio.backup_partial` with the listed folders. Needs a Home Assistant installation with the Supervisor. |
 
-Changes apply without restarting Home Assistant: Neviweb130 reloads itself. A session manager closes and reopens the Neviweb connections as needed, which avoids the ACCSESSEXC errors seen when Home Assistant restarts often.
+See also [doc/options_en.md](doc/options_en.md).
 
-*Available configuration options*:
+<details>
+<summary>Screenshots of the options and reconfiguration windows</summary>
 
 ![configuration options](www/configuration.jpg)
 
-*Reconfiguration*:
-
 ![reconfiguration](www/reconfigurer.jpg)
 
-### Integration options
+</details>
 
-Click on Configure on the neviweb130 integration page to reach these options (see also [doc/options_en.md](doc/options_en.md)):
-- **prefix**: Neviweb account name.
-- **log_level**, **log_max_bytes**, **log_backup_count**, **log_reset_on_start**: settings of the neviweb130 log file (see Troubleshooting).
-- **download_log**: copies the log file to `/local/neviweb130.log` so you can download it from your browser. It is deleted after 30 minutes.
-- **reload**: reloads neviweb130 without restarting Home Assistant.
-- **migrate**: migrates old numeric unique_id to the new text unique_id required by HA.
-- **request_limit** (default 25000): daily safety limit of requests sent to Neviweb. Neviweb's own limit is 30000 per day. A notification is sent when the request counter sensor goes over this value.
-- **update_check_interval** (1h, 3h, 6h, 12h or 24h, default 6h): how often the update entity checks GitHub for a new neviweb130 release.
-- **backup_mode** (full or partial) and **backup_folders** (default `config`): backup made by the update entity before installing a new version. `full` calls `hassio.backup_full`. `partial` calls `hassio.backup_partial` with the folders listed in backup_folders (`config` means the Home Assistant configuration). Both need a Home Assistant installation with the Supervisor.
+## Upgrading from version 4.x
 
-### Attribute entities
+Nothing to do at first: on the first startup of version 5, Neviweb130 imports the `neviweb130:` block of `configuration.yaml` into the UI, one entry per account (the `accounts:` format is supported). It also converts `unique_id`s and device model numbers to text, as required by Home Assistant. Entity names are kept.
 
-Each device has its own page under Settings → Devices & services → Neviweb130, and Neviweb130 creates an entity for most device attributes:
-- sensor, for numeric values such as temperature, voltage and energy statistics,
-- binary_sensor, for on/off states such as leak sensors,
-- button, to reset an on/off or alarm attribute,
-- number, to change a numeric value (minimum/maximum temperature, away temperature, etc.),
-- switch, to enable or disable an attribute,
-- select, for attributes with a list of choices. Choices are translated and converted to and from Neviweb values automatically.
-
-These entities update with the device and can be used directly in automations and in the Energy dashboard, so template sensors on attributes are no longer needed. Entities, services and attributes are translated in English or French according to your Home Assistant language. If an attribute entity is missing, open an issue.
-
-Sample device page:
-
-![Page appareil](www/page_appareil.jpg)
-![Page appareil suite](www/page_appareil_suite.jpg)
-
-## Migrating from version 4.x
-
-At the first startup of version 5, Neviweb130:
-- imports the `neviweb130:` configuration from `configuration.yaml` into the UI configuration,
-- converts `unique_id`s to text (int to str),
-- converts device model numbers to text (int to str).
-
-These changes are required by Home Assistant and are done automatically. Device names are kept and attributes are still available.
-
-After the first startup:
+After this first startup:
 - remove or comment out the `neviweb130:` block in `configuration.yaml`,
-- check your automations, scripts and dashboards. They keep working, but the new attribute entities can replace your template sensors,
-- device icons are provided by the integration through the `icon_type` attribute and the entity picture (see [Customization](#customization)), so Custom-UI is no longer needed.
+- check your automations, scripts and dashboards. They keep working, but the new [attribute entities](#devices-and-entities) can replace your template sensors,
+- remove your Custom-UI customizations for Neviweb130, the integration now sets the device pictures itself.
+
+If you were running a copy of the integration under another name (e.g. `neviweb131`) to manage a second account, add that account to Neviweb130 instead (see [Adding a Neviweb account](#adding-a-neviweb-account)).
 
 <details>
 <summary>Legacy configuration.yaml reference (version 4.x)</summary>
 
-#### Single account
+Single account:
 
 ```yaml
-# Example configuration.yaml entry
 neviweb130:
   username: '«your Neviweb username»'
   password: '«your Neviweb password»'
-  network: '«your gt130 location name in Neviweb»'   # gt130 emplacement dans Neviweb
-  network2: '«your second location name in Neviweb»' # 2e emplacement
-  network3: '«your third location name in Neviweb»'  # 3e emplacement
+  network: '«your gt130 location name in Neviweb»'
+  network2: '«your second location name in Neviweb»'
+  network3: '«your third location name in Neviweb»'
   scan_interval: 360
   homekit_mode: False
   ignore_miwi: False
@@ -315,33 +207,17 @@ neviweb130:
   safe_mode: "-"
 ```
 
-#### Multi-account configuration
-(New in v3.1.0)
-
-If you need to control devices from **multiple Neviweb accounts** (e.g., your home and a neighbor's), you can now use the new multi-account configuration format. This eliminates the need to duplicate the custom component folder.
+Multiple accounts (since 3.1.0). `location` and `network` are aliases, and global settings apply to all accounts:
 
 ```yaml
-# Multi-account configuration example
 neviweb130:
   accounts:
-    # Account with multiple locations (home + chalet)
     - username: 'your_email@example.com'
       password: 'your_password'
-      # location was called network in previous versions.
-      #
-      # Optional: you can target up to 3 locations for this account:
-      #   location / location2 / location3 (or network / network2 / network3)
-      #
-      # If you omit all locations, the integration will automatically use the first 1–3 locations
-      # returned by Neviweb for this account.
-    
-    # Separate account for parents (using 'network' - works the same as 'location')
     - username: 'parents_email@example.com'
       password: 'parents_password'
-      location: '5678'           # Optional: location id/name (or use 'network')
-      prefix: 'parents'          # Optional: account alias (used in entity naming)
-  
-  # Global settings (apply to all accounts)
+      location: 'Chalet'
+      prefix: 'parents'
   scan_interval: 360
   homekit_mode: False
   ignore_miwi: False
@@ -349,136 +225,78 @@ neviweb130:
   notify: "both"
   safe_mode: "-"
 ```
-
-> **⚠️ Important: Entity Name Conflicts in Multi-Account Setup**
-> 
-> Entity names are built from the integration domain (`neviweb130`), plus optional `prefix` and/or `location` values.
-> 
-> **Problem:** If you omit both `prefix` and `location` for multiple accounts, and both accounts have devices with similar names (e.g., both have a thermostat called "LivingRoom"), Home Assistant may auto-suffix entity_ids:
-> - `climate.neviweb130_livingroom`
-> - `climate.neviweb130_livingroom_2`  ← Collision handled by HA
-> 
-> **Solution:** Provide either a unique `prefix` (account alias), or explicit `location` names/ids, to keep entity_ids stable and readable:
-> ```yaml
-> accounts:
->   - username: 'user1@example.com'
->     password: 'pass1'
->     location: 'Home'
->     prefix: 'me'          # ← account alias
->   - username: 'user2@example.com'
->     password: 'pass2'
->     location: 'Chalet'
->     prefix: 'parents'     # ← different account alias
-> ```
-> Example: `climate.neviweb130_parents_chalet_climate_livingroom`.
-
-**Multi-account configuration options:**
-
-| key | required | default | description
-| --- | --- | --- | ---
-| **accounts** | yes (for multi-account) | | List of accounts to connect to
-| **username** | yes | | Your email address for this Neviweb account
-| **password** | yes | | The password for this Neviweb account
-| **location** (or **network**) | no | first location found | Location id/name for this account (network #1).
-| **location2** (or **network2**) | no | second location found | Location id/name for this account (network #2).
-| **location3** (or **network3**) | no | third location found | Location id/name for this account (network #3).
-| **prefix** | no | (empty) | Optional account alias used in entity naming to distinguish accounts.
-
-**Notes:**
-- `prefix` is optional. If omitted, it is not included in the entity name (Home Assistant may auto-suffix entity_ids if collisions occur).
-- If your `location` names/ids are already unique across your accounts (e.g., you use an address, site code, or other unique label), you can omit `prefix` entirely and rely on `location` to distinguish entities.
-- Each account maintains its own independent connection to Neviweb.
-- **Multiple locations per account**:
-  - If you omit all locations, the integration will automatically use the first 1–3 locations returned by Neviweb.
-  - Or you can explicitly set `location2` and `location3`.
-- Both `location*` and `network*` are accepted as aliases in the new format for consistency with the legacy format.
-- Global settings (`scan_interval`, `homekit_mode`, etc.) apply to all accounts.
-- The legacy single-account configuration format (shown above) remains fully supported for backward compatibility.
-
-**Example entity names:**
-- **Legacy single-account config (backward compatible naming)**:
-  - 1st location → `climate.neviweb130_climate_bedroom`
-  - 2nd location → `climate.neviweb130_climate_2_bedroom`
-  - 3rd location → `climate.neviweb130_climate_3_bedroom`
-- **Multi-account config (`accounts:`)**:
-  - With prefix + location → `climate.neviweb130_parents_chalet_climate_living_room`
-  - With location only (no prefix) → `climate.neviweb130_chalet_climate_living_room`
-
-#### Running more than one instance of neviweb130 to manage different Neviweb connections
-> This section is still working but as Neviweb130 now support multi account directly, it become obsolete.
->
->It is possible to run two instance of neviweb130, but you need to use two different username (email) and password to 
->connect to Neviweb.
->Steps to achieve this:
->
->- Create another directory in config/custom_components like neviweb131.
->- Copy all files from directory neviweb130 to new directory neviweb131.
->- In neviweb131, edit file manifest.json to change the line #2, "domain": "neviweb130",
->and change it to the same name as the directory you just create. "domain": "neviweb131",
->- Add a second configuration in configuration.yaml like this:
->```yaml
-># Example configuration.yaml entry for a second neviweb130 instance named neviweb131.
->neviweb131:
->   username: 'your Neviweb username for second connection'
->   password: 'your Neviweb password for second connection'
->   network: 'your gt130 location name in second Neviweb' (gt130 emplacement dans Neviweb)
->   network2: 'your second location name in second Neviweb' (2e emplacement)
->   network3: 'your third location name in second Neviweb' (3e emplacement)
->   scan_interval: 360
->   homekit_mode: False
->   ignore_miwi: False
->   stat_interval: 1800
->   notify: "both"
->```
->- Restart Home Assistant
->
->All devices on this second instance will have a name like `climate.neviweb131_climate_office_thermostat`.
 
 </details>
 
-## Sedna valve
-There are two ways to connect a Sedna valve to Neviweb:
-- Wi-Fi direct connection. Leak sensors are connected directly to the Sedna valve, which closes when a leak is detected.
-- Through the GT130 in Zigbee mode. Leak sensors are also connected to the GT130, but a leak detection is not passed to the valve. You need an automation in Neviweb or HA to close the Sedna valve when a sensor detects a leak.
+# Using Neviweb130
 
-Both modes are supported by this custom component.
+## Devices and entities
 
-## Gateway GT130
-The `gateway_status` binary sensor of the GT130 tells you whether the gateway is online or offline in Neviweb.
+Each device has its own page under Settings → Devices & services → Neviweb130. Besides the main entity (climate, light, switch, valve or sensor), Neviweb130 creates an entity for most device attributes:
+- **sensor**, for numeric values such as temperature, voltage and energy statistics,
+- **binary_sensor**, for on/off states such as leak sensors and the GT130 `gateway_status` (online or offline in Neviweb),
+- **button**, to reset an on/off or alarm attribute,
+- **number**, to change a numeric value (minimum/maximum temperature, away temperature, etc.),
+- **switch**, to enable or disable an attribute,
+- **select**, for attributes with a list of choices.
 
-## Updater system
+These entities can be used directly in automations and in the Energy dashboard, so template sensors on attributes are no longer needed. If an attribute entity is missing, open an issue.
 
-Neviweb130 includes its own update entity:
-- **Update check**, every 6 hours by default (update_check_interval option). It detects new versions, pre-releases (versions containing b0, -beta, rc1, etc.) and breaking changes found in the release notes. Pre-releases and breaking changes get a special icon and a label in the update card title.
-- **SHA-256 validation**: the update zip file is checked against the official SHA-256 from GitHub. On a mismatch, the update is cancelled and you are notified.
-- **Automatic rollback**: if an error occurs during the update, the previous version is restored and you are notified.
-- **Backup**: a backup is made before the update, set by the backup_mode and backup_folders options (see [Integration options](#integration-options)).
-- **Notifications** on success ("Update successful"), failure ("Update fail, rollback performed") and SHA-256 error ("Update aborted for security").
-- **Release notes**: a link on the update card opens the GitHub release notes.
+<details>
+<summary>Sample device page</summary>
 
-The update entity also has these attributes:
-- check_interval: value of the update_check_interval option (default 6h),
-- last_check and next_check: date and time of the last and next version check,
-- last_update_success: date and time of the last successful update,
-- update_status: steps performed during the update,
-- rollback_status: result of the rollback if an update failed,
-- update_percentage: progress of the update.
+![Page appareil](www/page_appareil.jpg)
+![Page appareil suite](www/page_appareil_suite.jpg)
 
-To avoid two update cards (one from HACS, one from Neviweb130), hide the HACS one:
-1. Go to Settings → Devices & services → HACS.
-2. On the Sinope Neviweb130 line, turn off the pre-release switch if it is on.
-3. Click the three-dot menu at the end of the line, then **2 entities**.
-4. Select the update entity, click the settings button and turn off **Visible**.
+</details>
 
-You can still update or redownload Neviweb130 manually through HACS. You can also do step 4 from the HACS update card the next time one appears.
+## Energy and water statistics
 
-## Neviweb daily request counter
-Neviweb limits each account to 30000 requests per day. Above that limit, you are disconnected until midnight, which is a problem with many devices or during development.
+Devices that report energy in Neviweb get these sensors, in kWh, ready for the HA Energy dashboard:
+- **Total Energy** (`total_kwh_count`, total_increasing),
+- **Monthly**, **Daily** and **Hourly** energy (`monthly_kwh_count`, `daily_kwh_count`, `hourly_kwh_count`, total).
 
-Neviweb130 counts its daily requests (updates, statistics, error checks, etc.) in the `sensor.neviweb130_daily_requests` sensor. The count survives HA restarts and is reset to 0 at midnight. It helps you choose a shorter scan_interval without going over the limit. A notification is sent when the count goes over the request_limit option (default 25000).
+2nd gen Sedna valves with a flow sensor get the same set for water, in liters: **Total Flow** (`total_flow_count`) and the monthly, daily and hourly flow counts.
 
-## Custom services
-Automations use actions (services) to send commands, e.g. light.turn_on. For Sinopé devices connected through neviweb130, custom actions send specific information to devices or change device parameters. They are available in Developer tools → Actions and in automations:
+Statistics are polled from Neviweb every `stat_interval` seconds (default 1800). The `hourly_kwh`, `daily_kwh` and `monthly_kwh` attributes are still exposed on climate, light and switch entities, and `hourly_flow`, `daily_flow` and `monthly_flow` on valve entities.
+
+## Éco Sinopé peak periods
+
+If at least one thermostat or load controller is registered in the Éco Sinopé program, you can detect when Neviweb announces a peak period. Follow the **eco_status** attribute: it changes from «off» to «on» at the beginning of the pre-heating period. Build an automation on this change to prepare your other HA devices.
+
+<details>
+<summary>All Éco Sinopé attributes</summary>
+
+- Thermostats:
+  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period.
+  - **eco_setpoint**: turns «on» during the peak period if the device is managed by Éco Sinopé.
+  - **eco_optout**: turns «on» if somebody changes the setpoint during the peak period.
+  - **eco_power_relative**: minimum temperature, relative to the setpoint, at which the thermostat turns on automatically for frost protection.
+  - **eco_power_absolute**: limits the pi_heating_demand level between 1 and 100% during the peak period.
+  - **eco_setpoint_status**: turns «on» if the device setpoint is changed by Éco Sinopé.
+  - **eco_setpoint_delta**: 0 during normal operation, between -10 and +10 during the peak period. Positive for pre-heating, negative for the peak period. It is added to the regular setpoint: -10 = setpoint reduced by 10°C.
+- Load controllers:
+  - **eco_status**: same as thermostats.
+  - **eco_onoff**: turns «on» during the peak period if the device is managed by Éco Sinopé. The device is turned off during the peak period. Nothing is done during the pre-heating period.
+  - **eco_optout**: turns «on» if somebody turns the device on during the peak period.
+- MC3100ZB multi-controller:
+  - **eco_status**: same as thermostats.
+  - **eco_setpoint**: no change during the peak period.
+  - **eco_optout**: turns «on» if somebody changes the on/off value during the peak period.
+  - **eco_power_relative**: minimum temperature, relative to the room temperature, at which the MC3100ZB turns on automatically for frost protection.
+  - **eco_power_absolute**: usage unknown.
+
+</details>
+
+## Actions (services)
+
+Neviweb130 adds actions (services) to change device settings that the standard HA actions don't cover: keypad lock, timers, display, setpoint limits, alerts, Éco Sinopé options, heat pump and valve settings, and more. Find them in Developer tools → Actions by typing `neviweb130.`, or in the action list of the automation editor. Each action has a description and its fields in the UI.
+
+Actions marked «Equipment configuration should be performed by a professional» change how the HVAC equipment runs. Use them only if you know your installation.
+
+<details>
+<summary>Full list of actions</summary>
+
 - neviweb130.set_second_display, to change the thermostat second display from setpoint temperature to outdoor temperature. This needs to be sent only once to each device.
 - neviweb130.set_climate_keypad_lock, to lock the keypad of the climate device.
 - neviweb130.set_light_keypad_lock, to lock the keypad of the light device.
@@ -518,7 +336,7 @@ Automations use actions (services) to send commands, e.g. light.turn_on. For Sin
 - neviweb130.set_low_temp_protection to activate or not the water heater protection for water temperature. Below 45°C, heating restarts automatically.
 - neviweb130.set_controlled_device to change the name of the device controlled by the RM3250ZB load controller.
 - neviweb130.set_flow_meter_model to change the flow meter model connected to the 2nd gen Sedna valve and start/stop leak protection from flow meter.
-- neviweb130.set_flow_meter_delay to set the leak delay before the valve closes when a leak is detected by the flow meter. 
+- neviweb130.set_flow_meter_delay to set the leak delay before the valve closes when a leak is detected by the flow meter.
 - neviweb130.set_flow_meter_options to set the flow meter action: close the valve (yes/no) and to send alert message (yes/no), or just do nothing.
 - neviweb130.set_tank_type to set tank type for LM4110-ZB, propane or oil.
 - neviweb130.set_gauge_type to set gauge type for LM4110-ZB on propane tank, model 5-95 or 10-80.
@@ -566,84 +384,241 @@ Automations use actions (services) to send commands, e.g. light.turn_on. For Sin
 - neviweb130.set_switch_power_timer, to set the RM3250ZB timer, off or 1 min to 24 h. The device turns off after that delay.
 - neviweb130.set_switch_temp_alert, to set the low temperature alert of the MC3100ZB.
 
-Services marked «Equipment configuration should be performed by a professional» in Developer tools change how the HVAC equipment runs. Use them only if you know your installation.
+</details>
 
-## Catch Éco Sinopé signal for peak period
-If at least one thermostat or load controller is registered in the Éco Sinopé program, you can detect when Neviweb sends the pre-heating signal for thermostats or the turn-off signal for load controllers. These attributes tell you that a peak period is coming and how it is managed:
+## Sedna valve
 
-- For thermostats:
-  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
-  - **eco_setpoint**: «off» during normal operation, turns «on» during the peak period if the device is managed by Éco Sinopé.
-  - **eco_optout**: «off» during normal operation and during the peak period, turns «on» if somebody changes the setpoint during the peak period.
-  - **eco_power_relative**: «off» during normal operation. Used to set a minimum temperature, relative to the setpoint, at which the thermostat turns on automatically for frost protection.
-  - **eco_power_absolute**: «off» during normal operation. Used to limit the pi_heating_demand level between 1 and 100% during the peak period.
-  - **eco_setpoint_status**: «off» during normal operation, turns «on» if the device setpoint is changed by Éco Sinopé.
-  - **eco_setpoint_delta**: 0 during normal operation, changes to a value between -10 and +10 during the peak period. The value is positive for pre-heating and negative for the peak period. It is a delta applied to the regular setpoint: -10 = setpoint reduced by 10°C, +2 = setpoint increased by 2°C.
+There are two ways to connect a Sedna valve to Neviweb, both supported:
+- **Wi-Fi direct connection.** Leak sensors are connected to the Sedna valve, which closes by itself when a leak is detected.
+- **Through the GT130 in Zigbee mode.** Leak sensors are connected to the GT130, and a leak is not passed to the valve. You need an automation in Neviweb or HA to close the valve when a sensor detects a leak.
 
-- For load controllers:
-  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
-  - **eco_onoff**: «off» during normal operation, turns «on» during the peak period if the device is managed by Éco Sinopé. The device is turned off during the peak period. Nothing is done during the pre-heating period.
-  - **eco_optout**: «off» during normal operation and during the peak period, turns «on» if somebody turns the device on during the peak period.
+## Daily request counter
 
-- For the MC3100ZB multi-controller:
-  - **eco_status**: «off» during normal operation, turns «on» at the beginning of the pre-heating period. This is the attribute to follow to detect a peak start.
-  - **eco_setpoint**: «off» during normal operation, no change during the peak period if the device is managed by Éco Sinopé.
-  - **eco_optout**: «off» during normal operation, turns «on» if somebody changes the on/off value during the peak period.
-  - **eco_power_relative**: «off» during normal operation. Used to set a minimum temperature, relative to the room temperature, at which the MC3100ZB turns on automatically for frost protection.
-  - **eco_power_absolute**: «off» during normal operation, usage unknown.
+Neviweb limits each account to 30000 requests per day. Above that limit, you are disconnected until midnight.
 
-You can then build an automation that prepares your HA devices for the peak period by following the eco_status change from «off» to «on».
+The `sensor.neviweb130_daily_requests` sensor counts the requests sent by Neviweb130 today. The count survives HA restarts and is reset at midnight. A notification is sent when it goes over the **request_limit** option (default 25000). Use it to check that a shorter scan_interval stays under the limit.
 
-## Energy and water statistics
-Devices that report energy in Neviweb get these sensor entities, in kWh:
-- **Total Energy** (`total_kwh_count`, total_increasing)
-- **Monthly**, **Daily** and **Hourly** energy (`monthly_kwh_count`, `daily_kwh_count`, `hourly_kwh_count`, total)
+## Updates
 
-2nd gen Sedna valves with a flow sensor get the same set for water, in liters: **Total Flow** (`total_flow_count`, total_increasing) and the monthly, daily and hourly flow counts (total).
+Neviweb130 has its own update entity. It checks GitHub every 6 hours by default (**update_check_interval** option) and shows pre-releases and breaking changes with a special icon and label. When you install an update, it:
+- makes a backup first (**backup_mode** and **backup_folders** options),
+- checks the zip file against the official SHA-256 from GitHub, and cancels on a mismatch,
+- restores the previous version if an error occurs,
+- sends a notification with the result.
 
-These sensors have the energy or water device class and can be added directly to the HA Energy dashboard. No template sensor is needed. Statistics are polled from Neviweb every `stat_interval` seconds (default 1800).
+A link on the update card opens the release notes.
 
-The `hourly_kwh`, `daily_kwh` and `monthly_kwh` attributes (kWh used during the last hour, day and month) are still exposed on climate, light and switch entities, and `hourly_flow`, `daily_flow` and `monthly_flow` on valve entities.
+<details>
+<summary>Update entity attributes</summary>
 
-## Localisation
-Neviweb130 is translated in English and French: entities, services, attributes, errors and notifications. The language follows your Home Assistant language. Other languages can be added by translating the `en.json` file in the translations folder.
+- check_interval: value of the update_check_interval option,
+- last_check and next_check: date and time of the last and next version check,
+- last_update_success: date and time of the last successful update,
+- update_status: steps performed during the update,
+- rollback_status: result of the rollback if an update failed,
+- update_percentage: progress of the update.
 
-After changing translation files, restart Home Assistant. Reloading the integration is not enough for HA to load the new translations.
+</details>
+
+<details>
+<summary>Hiding the HACS update card</summary>
+
+To avoid two update cards (one from HACS, one from Neviweb130):
+1. Go to Settings → Devices & services → HACS.
+2. On the Sinope Neviweb130 line, turn off the pre-release switch if it is on.
+3. Click the three-dot menu at the end of the line, then **2 entities**.
+4. Select the update entity, click the settings button and turn off **Visible**.
+
+You can still update or redownload Neviweb130 manually through HACS.
+
+</details>
+
+## Language
+
+Entities, actions, attributes, errors and notifications are translated in English and French, following your Home Assistant language. Other languages can be added by translating `translations/en.json`. After changing translation files, restart Home Assistant: reloading the integration is not enough.
+
+# Dashboards
+
+## Device and weather icons
+
+Neviweb130 sets the picture of thermostats, sensors and valves itself, so Custom-UI and `customize.yaml` are no longer needed. The picture is shown only if the png file exists, otherwise the default HA icon is used.
+
+To get the pictures, copy the icons from this repository into your Home Assistant `config` directory:
+- the device icons of the [www](www) folder into `config/www/neviweb130/`,
+- the weather icons of the [www/icons](www/icons) folder into `config/www/neviweb130/weather/`.
+
+File names are case sensitive. At startup, Neviweb130 sends a notification if the weather folder is missing or empty.
+
+The current picture path is also exposed in these attributes, to use in your own cards:
+- **icon_type**: heat level for thermostats, leak status for leak sensors, valve state for valves,
+- **battery_icon**: battery level for sensors, monitors and valves,
+- **leak_icon**: leak status for valves.
+
+For example, `{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}` returns a path in `/local/neviweb130/`.
+
+<details>
+<summary>Device icon file names</summary>
+
+| Device                   | Files                                                                                     |
+|--------------------------|-------------------------------------------------------------------------------------------|
+| Thermostats              | `heat-off.png`, `heat-0.png` to `heat-5.png`, `heat-auto-0.png` to `heat-auto-5.png`      |
+| Floor thermostats        | `floor-off.png`, `floor-0.png` to `floor-5.png`, `floor-auto-0.png` to `floor-auto-5.png` |
+| Leak sensors             | `drop.png`, `leak.png`                                                                    |
+| Battery level            | `battery-unknown.png`, `battery-1.png` to `battery-5.png`                                 |
+| Valves                   | `valve-open.png`, `valve-close.png`, `leak.png`                                           |
+| Propane tank (LM4110-ZB) | `propane-unknown.png`, `propane-0.png` to `propane-8.png`                                 |
+
+The thermostat level follows the heating demand: 0 below 1%, then one step every 20%. `-off` is used when the thermostat is off and `-auto-` when it is in auto mode.
+
+</details>
+
+<details>
+<summary>Weather icon file names</summary>
+
+The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
+
+| Code | File               | Code | File               | Code | File                |
+|------|--------------------|------|--------------------|------|---------------------|
+| 0    | Hide.png           | 11   | Cloudlightning.png | 22   | Cloudsnow5.png      |
+| 1    | Sun.png            | 12   | Cloudlightning2.png| 23   | Cloudrainmoon.png   |
+| 2    | Sun2.png           | 13   | Cloudsnow.png      | 24   | Cloudrainmoon2.png  |
+| 3    | Cloudsun.png       | 14   | Cloudsnow2.png     | 25   | Cloudrainmoon3.png  |
+| 4    | Cloudsun2.png      | 15   | Cloudsnow3.png     | 26   | Cloudsnow6.png      |
+| 5    | Cloud.png          | 16   | Cloudsnow4.png     | 28   | Cloudrain2.png      |
+| 6    | Cloudrainsun.png   | 17   | Cloudfog.png       | 29   | Cloudrain3.png      |
+| 7    | Cloudrainsun2.png  | 18   | Moonstar.png       | 30   | Cloudrainsun3.png   |
+| 8    | Cloud2.png         | 19   | Cloudmoon.png      | 31   | Cloudrainmoon4.png  |
+| 9    | Cloud3.png         | 20   | Cloudmoon2.png     | 32   | Cloudrainsun4.png   |
+| 10   | Cloudrain.png      | 21   | Cloudmoon3.png     | 33   | Cloudrainmoon5.png  |
+
+</details>
+
+## Card examples
+
+Since the entity picture is set, the simplest way is to add your devices to an entities or Tile card: the pictures update automatically with the heat level, battery level, etc.
+
+![icons](icon_view4.jpg)
+
+The Mushroom examples below need card-mod, Mushroom and stack-in-card from HACS. (Feel free to improve the icons and share them.)
+
+![icons](icon_view3.jpg)
+
+<details>
+<summary>Tile card</summary>
+
+```yaml
+type: tile
+entity: climate.neviweb130_climate_th1124wf
+show_entity_picture: true
+vertical: false
+grid_options:
+  columns: 12
+  rows: 1
+```
+
+</details>
+
+<details>
+<summary>Mushroom template card</summary>
+
+```yaml
+type: custom:mushroom-template-card
+entity: climate.neviweb130_climate_th1124wf
+primary: |
+  Cave ({{ state_attr(entity, 'temperature') }} °C)
+secondary: |
+  {{ states(entity) }} – ({{ state_attr(entity, 'hvac_action') }})
+  Currently: {{ state_attr(entity, 'current_temperature') }} °C
+picture: |
+  {{ state_attr(entity, 'icon_type') }}
+grid_options:
+  columns: 12
+  rows: 1
+```
+
+</details>
+
+<details>
+<summary>Mushroom climate card</summary>
+
+```yaml
+type: custom:mushroom-climate-card
+entity: climate.neviweb130_climate_th1124wf
+hvac_modes: []
+fill_container: true
+primary_info: name
+secondary_info: state
+tap_action:
+  action: more-info
+card_mod:
+  style:
+    mushroom-shape-icon$: |
+      .shape {
+        background-color: transparent !important;
+        background: url("{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}");
+        background-size: cover;
+        background-position: center;
+        border-radius: 50%;
+      }
+    .: |
+      ha-state-icon {
+        display: none !important;
+      }
+```
+
+</details>
+
+<details>
+<summary>Old style examples</summary>
+
+![icons](icon_view2.png)
+
+</details>
+
+# Help
 
 ## Troubleshooting
-If your device appears in the log but not in the entity list, its model number must be added to the code. Open an issue with the model number so it can be added.
 
-In the log, look for these lines:
-```yaml
+### Log file and debug messages
+
+Neviweb130 writes its messages to its own file, `config/neviweb130_log.txt`, not to `home-assistant.log`. The `logger:` section of `configuration.yaml` has no effect on it. By default the file is cleared at each startup, rotated at 2 MB and 2 rotated files are kept (see [Integration options](#integration-options)).
+
+To get debug messages:
+1. On the Neviweb130 integration page, click **Configure** and set **log_level** to `debug`.
+2. Reproduce the problem.
+3. Use **download_log** in the same options to get the file from your browser, or read `config/neviweb130_log.txt` directly.
+4. Put the log level back to `info` afterwards, as the debug log grows fast.
+
+Add a snippet of this file to any issue you report.
+
+### My device is not detected
+
+If your device appears in the log but not in the entity list, its model number must be added to the code. In the log, look for these lines:
+
+```
 [custom_components.neviweb130] Received gateway data: [{'id': 100225, 'identifier': '500b91400001f750', 'name': 'Chargeur auto', 'family': '2506',...
 [custom_components.neviweb130] Received signature data: {'signature': {'model': 2506, 'modelCfg': 0, 'softBuildCfg': 0, 'softVersion': {'minor': 9, 'middle': 2, 'major': 1}, 'hardRev': 2, 'protocol': 'sinopcom'}}
 ```
-'family': '2506' and 'model': 2506 give the model number of your device. Model lists are in `const.py` (CLIMATE_MODEL, LIGHT_MODEL, SWITCH_MODEL, VALVE_MODEL, SENSOR_MODEL).
 
-If you get a stack trace related to a Neviweb130 component in `neviweb130_log.txt` or `home-assistant.log`, you can file an issue in this repository.
+`'family': '2506'` and `'model': 2506` give the model number. [Open an issue](https://github.com/claudegel/sinope-130/issues/new/choose) with it.
 
-You can also ask for help in one of these threads:
-- https://community.home-assistant.io/t/sinope-line-voltage-thermostats/17157
-- https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer/38835
+### Attributes show `[not supported]`
 
-### Log file
-Neviweb130 writes all its log messages to its own file, `neviweb130_log.txt`, in your config directory, not to `home-assistant.log`. By default the file is cleared each time the integration starts (log_reset_on_start), rotated when it reaches 2 MB (log_max_bytes) and 2 rotated files are kept (log_backup_count). These settings and the log level are in the integration options.
+Neviweb sometimes drops attributes during an update, even if they are listed for the device. A notification lists them and their value becomes `[not supported]`. Known cases:
 
-To help debugging, add relevant snippet of this file to any issue you may report.
+| Device          | Missing attributes              |
+|-----------------|---------------------------------|
+| **TH1123ZB-G2** | coldLoadPickup, heatLockoutTemp |
+| **TH1124ZB-G2** | coldLoadPickup, heatLockoutTemp |
+| **TH6250WF**    | backlight                       |
 
-### Turning on Neviweb130 debug messages
+Please open an issue to report new ones.
 
-Neviweb130 writes its messages to its own file, `config/neviweb130_log.txt`, not to `home-assistant.log`. The `logger:` section of `configuration.yaml` has no effect on it.
+### Error messages from Neviweb
 
-To get debug messages:
-- Open the neviweb130 integration page, click on Configure and set **log_level** to `debug`.
-- Reproduce the problem, then use **download_log** in the same options to get the file from your browser, or read `config/neviweb130_log.txt` directly.
-- Put the log level back to `warning` afterwards, as the debug log grows fast.
+<details>
+<summary>Error codes and what to do</summary>
 
-Please provide a snippet of this file when you ask for help.
-
-### Error messages received from Neviweb
-You can get these messages from Neviweb in the log:
 - ACCDAYREQMAX: maximum daily requests reached (30000 per day). Reduce the polling frequency.
 - ACCRATELIMIT: too many login attempts. Wait a few minutes before retrying.
 - ACCSESSEXC: too many open sessions at the same time. This is common after several Home Assistant restarts or when Neviweb is also open elsewhere.
@@ -664,186 +639,143 @@ You can get these messages from Neviweb in the log:
 - ReadTimeout: the request was sent but no answer came back from the device. Network problem.
 - TimeoutError: request timeout. Retry later.
 
-### Missing attributes not returned by Neviweb during update
+</details>
 
-Neviweb sometimes drops attributes during an update, even if they are listed for the device. A notification lists those missing attributes and their value is set to `[not supported]`. Known cases are listed below. Please open an issue to report new ones.
+### Getting help
 
-| Device          | Missing attributes              |
-|-----------------|---------------------------------|
-| **TH1123ZB-G2** | coldLoadPickup, heatLockoutTemp |
-| **TH1124ZB-G2** | coldLoadPickup, heatLockoutTemp |
-| **TH6250WF**    | backlight                       |
-
-## Customization
-Custom-UI is no longer needed. Neviweb130 sets the entity picture of thermostats, sensors and valves itself, and the examples below use modern Lovelace cards.
-
-Prerequisites:
-- Copy the device icons from the [www](www) folder of this repository into `config/www/neviweb130/`, and the weather icons from [www/icons](www/icons) into `config/www/neviweb130/weather/` (served as `/local/neviweb130/` in HA). See [Device and weather icons](#device-and-weather-icons) for the file names.
-- For the Mushroom examples, install these cards with HACS: card-mod, Mushroom and stack-in-card.
-
-Neviweb130 exposes the icon path in these attributes:
-- **icon_type**: heat level for thermostats, leak status for leak sensors, valve state for valves,
-- **battery_icon**: battery level for sensors, monitors and valves,
-- **leak_icon**: leak status for valves.
-
-You can read them with a template, for example:
-
-Heat level: `{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}`
-
-Leak detection: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'icon_type') }}`
-
-Battery level: `{{ state_attr('sensor.neviweb130_sensor_wl2010', 'battery_icon') }}`
-
-These templates return a path in `/local/neviweb130/`.
-
-Old style (many examples):
-
-![icons](icon_view2.png)
-
-New style based on Mushroom and Tile cards:
-
-![icons](icon_view3.jpg)
-
-(Feel free to improve the icons and share them.)
-
-Here is the code for a Tile card, a Mushroom template card and a Mushroom climate card. Edit your dashboard, add the card, then edit its code like this:
-
-- Tile card:
-```
-type: tile
-grid_options:
-  columns: 12
-  rows: 1
-entity: climate.neviweb130_climate_th1124wf
-name:
-  - type: text
-    text: Cuisine
-  - type: text
-    text: Tile card
-show_entity_picture: true
-vertical: false
-features_position: bottom
-```
-- Mushroom template card:
-```
-type: custom:mushroom-template-card
-entity: climate.neviweb130_climate_th1124wf
-features_position: bottom
-primary: |
-  Cave (
-  {{ state_attr(entity, 'temperature') }}
-  °C)
-  Mushroom template card
-secondary: |
-  {{ states(entity) }} – ({{ state_attr(entity, 'hvac_action') }})
-  Currently: {{ state_attr(entity, 'current_temperature') }} °C
-picture: |
-  {{ state_attr(entity, 'icon_type') }}
-grid_options:
-  columns: 12
-  rows: 1
-```
-- Mushroom climate card:
-```
-type: custom:mushroom-climate-card
-entity: climate.neviweb130_climate_th1124wf
-name: th1124wf Mushroom Climate card
-hvac_modes: []
-fill_container: true
-primary_info: name
-secondary_info: state
-grid_options:
-  columns: 12
-  rows: 1
-tap_action:
-  action: more-info
-card_mod:
-  style:
-    mushroom-shape-icon$: |
-      .shape {
-        background-color: transparent !important;
-        background: url("{{ state_attr('climate.neviweb130_climate_th1124wf', 'icon_type') }}");
-        background-size: cover;
-        background-position: center;
-        border-radius: 50%;
-      }
-    .: |
-      ha-state-icon {
-        display: none !important;
-      }
-```
-You can group the cards in a vertical stack card or a stack-in-card.
-Since the entity picture is set for all thermostats, valves and sensors, you can also add the devices directly in a vertical stack card.
-Icons update automatically with the heat level, battery level, etc.
-```
-type: vertical-stack
-cards:
-  - type: entities
-    entities:
-      - entity: climate.neviweb130_climate_th1124wf
-      - entity: climate.neviweb130_climate_office
-      - entity: climate.neviweb130_climate_kitchen
-      .....
-```
-
-![icons](icon_view4.jpg) 
-
-## Customization for leak sensors, monitors and valves
-
-Same as above:
-- leak status: **icon_type** for leak sensors, **leak_icon** for valves,
-- battery level: **battery_icon**,
-- valve state: **icon_type** for valves.
-
-## Device and weather icons
-
-Neviweb130 sets the entity picture itself. Custom-UI and `customize.yaml` are no longer needed. The picture is shown only if the png file exists, otherwise the default icon is used. The current path is also exposed in the `icon_type` attribute.
-
-Copy the device icons from the [www](www) folder of this repository into `config/www/neviweb130/` (served as `/local/neviweb130/`). File names used by the code:
-
-| Device                   | Files                                                                                     |
-|--------------------------|-------------------------------------------------------------------------------------------|
-| Thermostats              | `heat-off.png`, `heat-0.png` to `heat-5.png`, `heat-auto-0.png` to `heat-auto-5.png`      |
-| Floor thermostats        | `floor-off.png`, `floor-0.png` to `floor-5.png`, `floor-auto-0.png` to `floor-auto-5.png` |
-| Leak sensors             | `drop.png`, `leak.png`                                                                    |
-| Battery level            | `battery-unknown.png`, `battery-1.png` to `battery-5.png`                                 |
-| Valves                   | `valve-open.png`, `valve-close.png`, `leak.png`                                           |
-| Propane tank (LM4110-ZB) | `propane-unknown.png`, `propane-0.png` to `propane-8.png`                                 |
-
-The thermostat level follows the heating demand: 0 below 1%, then one step every 20%. `-off` is used when the thermostat is off and `-auto-` when it is in auto mode.
-
-### Weather icons
-
-The **weather icon** sensor of supported thermostats gives a weather code from Neviweb. Its picture is taken from `config/www/neviweb130/weather/<name>.png`: copy the files of the [www/icons](www/icons) folder of this repository there. At startup, neviweb130 sends a notification if this folder is missing or empty. Code to file name (from `WEATHER_ICON_MAP` in `schema.py`):
-
-| Code | File               | Code | File               | Code | File                |
-|------|--------------------|------|--------------------|------|---------------------|
-| 0    | Hide.png           | 11   | Cloudlightning.png | 22   | Cloudsnow5.png      |
-| 1    | Sun.png            | 12   | Cloudlightning2.png| 23   | Cloudrainmoon.png   |
-| 2    | Sun2.png           | 13   | Cloudsnow.png      | 24   | Cloudrainmoon2.png  |
-| 3    | Cloudsun.png       | 14   | Cloudsnow2.png     | 25   | Cloudrainmoon3.png  |
-| 4    | Cloudsun2.png      | 15   | Cloudsnow3.png     | 26   | Cloudsnow6.png      |
-| 5    | Cloud.png          | 16   | Cloudsnow4.png     | 28   | Cloudrain2.png      |
-| 6    | Cloudrainsun.png   | 17   | Cloudfog.png       | 29   | Cloudrain3.png      |
-| 7    | Cloudrainsun2.png  | 18   | Moonstar.png       | 30   | Cloudrainsun3.png   |
-| 8    | Cloud2.png         | 19   | Cloudmoon.png      | 31   | Cloudrainmoon4.png  |
-| 9    | Cloud3.png         | 20   | Cloudmoon2.png     | 32   | Cloudrainsun4.png   |
-| 10   | Cloudrain.png      | 21   | Cloudmoon3.png     | 33   | Cloudrainmoon5.png  |
-
-File names are case sensitive.
+- [Open an issue](https://github.com/claudegel/sinope-130/issues/new/choose) for a bug, a stack trace in the log or a missing device.
+- Ask in one of these threads: [Sinopé line voltage thermostats](https://community.home-assistant.io/t/sinope-line-voltage-thermostats/17157), [Sinopé light switch and dimmer](https://community.home-assistant.io/t/adding-support-for-sinope-light-switch-and-dimmer/38835).
 
 ## Device hard reset
+
 - Thermostats:
-    - Raise the temperature until the display changes.
-    - Press both buttons until CLR appears on the screen.
-    - Press the upper button once to get YES on the display.
-    - Press both buttons at the same time and release immediately. DONE should appear on the screen.
-    - The thermostat restarts with factory settings.
-
+  1. Raise the temperature until the display changes.
+  2. Press both buttons until CLR appears on the screen.
+  3. Press the upper button once to get YES on the display.
+  4. Press both buttons at the same time and release immediately. DONE should appear on the screen.
+  5. The thermostat restarts with factory settings.
 - G2 thermostats:
-    - Raise the temperature until the display changes.
-    - Press and hold both buttons until RST appears on the screen.
-    - Wait until the device restarts.
+  1. Raise the temperature until the display changes.
+  2. Press and hold both buttons until RST appears on the screen.
+  3. Wait until the device restarts.
 
-## TO DO
-- Improve energy stat polling from Neviweb.
+## Supported devices
+
+Basically, everything that can be added in Neviweb. Wi-Fi devices don't need a GT130.
+
+<details>
+<summary>Thermostats and heat pumps</summary>
+
+- Zigbee thermostats:
+  - Sinopé TH1123ZB 3000W line voltage thermostat
+  - Sinopé TH1124ZB 4000W line voltage thermostat
+  - Sinopé TH1123ZB 3000W thermostat for public areas
+  - Sinopé TH1124ZB 4000W thermostat for public areas
+  - Sinopé TH1123ZB-G2 3000W thermostat, second generation
+  - Sinopé TH1124ZB-G2 4000W thermostat, second generation
+  - Sinopé TH1134ZB-HC for heating/cooling interlocking
+  - Sinopé TH1300ZB 3600W floor heating thermostat
+  - Sinopé TH1320ZB-04 floor heating thermostat
+  - Sinopé TH1400ZB low voltage thermostat
+  - Sinopé TH1500ZB 3600W double pole thermostat
+  - Nordik TH1420ZB-01 low voltage radiant hydronic floor thermostat
+  - Ouellet OTH3600-GA-ZB floor thermostat
+  - Ouellet OTH4000-ZB 4000W line voltage thermostat
+- Wi-Fi thermostats:
+  - Sinopé TH1123WF Wi-Fi 3000W line voltage thermostat
+  - Sinopé TH1124WF Wi-Fi 4000W line voltage thermostat
+  - Sinopé TH1133WF Wi-Fi 3000W line voltage thermostat lite
+  - Sinopé TH1133CR Sinopé Evo 3000W line voltage thermostat lite
+  - Sinopé TH1134WF Wi-Fi 4000W line voltage thermostat lite
+  - Sinopé TH1134CR Sinopé Evo 4000W line voltage thermostat lite
+  - Sinopé THEWF01 Wi-Fi thermostat lite
+  - Sinopé TH1143WF and TH1144WF Wi-Fi 3000W and 4000W thermostats, two wire connection, color screen
+  - Sinopé TH1145WF Wi-Fi 4000W thermostat, two wire connection, color screen
+  - Sinopé TH1300WF, TH1310WF, TH1315WF and TH1325WF Wi-Fi 3600W floor thermostats
+  - Sinopé TH1400WF Wi-Fi low voltage thermostat
+  - Sinopé TH1500WF Wi-Fi 3600W double pole thermostat
+  - Sinopé TH6500WF, TH6510WF, TH6250WF, TH6250WF-PRO and TH6251WF-PRO Wi-Fi heat/cool (preliminary, volunteers needed to test)
+  - Flextherm Concerto Connect FLP55 floor thermostat (the FLP55 does not provide energy stats in Neviweb)
+  - Flextherm True Comfort floor thermostat
+  - SRM40 floor thermostat
+- Heat pump controllers:
+  - Sinopé HP6000ZB-GE for Ouellet heat pump with Gree connector
+  - Sinopé HP6000ZB-GE-RS485 for Tosot heat pump with Gree connector
+  - Sinopé HP6000ZB-MA for Ouellet Convectair heat pump with Midea connector
+  - Sinopé HP6000ZB-HS for Hisense, Haxxair and Zephyr heat pump
+  - Sinopé HP6000WF-MA for Ouellet Convectair heat pump with Midea connector, Wi-Fi
+  - Sinopé HP6000WF-TCL for Runtru/Ameristar heat pump, Wi-Fi
+  - Sinopé HP6000WF-HA for Hotpoint heat pump, Wi-Fi
+
+</details>
+
+<details>
+<summary>Lighting, load controllers and plugs</summary>
+
+- Zigbee lighting:
+  - Sinopé SW2500ZB light switch
+  - Sinopé SW2500ZB-G2 light switch
+  - Sinopé DM2500ZB dimmer
+  - Sinopé DM2500ZB-G2 dimmer
+  - Sinopé DM2550ZB dimmer
+  - Sinopé DM2550ZB-G2 dimmer
+  - SW2500ZB-VA, DM2500ZB-VA and DM2550ZB-VA connected to a Sedna valve
+- Zigbee specialized control:
+  - Sinopé RM3250ZB load controller 50A
+  - Sinopé RM3500ZB Calypso load controller 20.8A for water heater
+  - Sinopé SP2610ZB in-wall outlet
+  - Sinopé SP2600ZB smart portable plug
+  - Sinopé MC3100ZB Sedna valve multi-controller for alarm system
+  - RM3250ZB-VA, SP2610ZB-VA, SP2600ZB-VA and MC3100ZB-VA connected to a Sedna valve
+- Wi-Fi specialized control:
+  - Sinopé RM3500WF Calypso load controller 20.8A for water heater
+  - Sinopé RM3510WF Calypso load controller 20.8A for water heater
+  - Sinopé RM3250WF load controller 40A
+
+</details>
+
+<details>
+<summary>Valves, leak detectors, flow sensors and tank monitors</summary>
+
+- Water leak detectors and valves:
+  - Sinopé VA4201WZ, Sedna valve 1 inch, Wi-Fi
+  - Sinopé VA4200WZ, Sedna valve 3/4 inch, Wi-Fi
+  - Sinopé VA4200ZB, Sedna valve 3/4 inch, Zigbee
+  - Sinopé VA4220WZ, Sedna 2nd gen 3/4 inch
+  - Sinopé VA4220WF, Sedna 2nd gen 3/4 inch, Wi-Fi
+  - Sinopé VA4220ZB, Sedna 2nd gen 3/4 inch, Zigbee
+  - Sinopé VA4221WZ, Sedna 2nd gen 1 inch
+  - Sinopé VA4221WF, Sedna 2nd gen 1 inch, Wi-Fi
+  - Sinopé VA4221ZB, Sedna 2nd gen 1 inch, Zigbee
+  - Sinopé WL4200, water leak detector
+  - Sinopé WL4200S, water leak detector with sensor
+  - Sinopé WL4200C, perimeter cable water leak detector
+  - Sinopé WL4200ZB, water leak detector
+  - Sinopé WL4210, water leak detector
+  - Sinopé WL4210S, water leak detector with sensor
+  - Sinopé WL4210C, perimeter cable water leak detector
+  - Sinopé WL4210ZB, water leak detector
+  - Sinopé WL4200ZB, connected to a Sedna valve
+  - Sinopé ACT4220WF-M, VA4220WF-M, Sedna multi-residential master valve 2nd gen 3/4 inch, Wi-Fi
+  - Sinopé ACT4220ZB-M, VA4220ZB-M, Sedna multi-residential slave valve 2nd gen 3/4 inch, Zigbee
+  - Sinopé ACT4221WF-M, VA4221WF-M, Sedna multi-residential master valve 2nd gen 1 inch, Wi-Fi
+  - Sinopé ACT4221ZB-M, VA4221ZB-M, Sedna multi-residential slave valve 2nd gen 1 inch, Zigbee
+- Flow sensors (through the 2nd gen Sedna valves):
+  - Sinopé FS4220, 3/4 inch flow sensor
+  - Sinopé FS4221, 1 inch flow sensor
+- Tank level monitors:
+  - Sinopé LM4110-ZB, propane tank level monitor
+  - Sinopé LM4110-LTE, propane tank level monitor, LTE, multiple tanks
+
+</details>
+
+<details>
+<summary>Gateways and power supply</summary>
+
+- Gateways:
+  - GT130
+  - GT4220WF and GT4220WF-M, mesh gateway for valves
+- Power supply:
+  - Sinopé ACUPS-01, battery backup for Sedna valve
+
+</details>
