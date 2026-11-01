@@ -658,7 +658,7 @@ async def async_setup_entry(
     discovery_info=None,
 ) -> None:
     """Set up the Neviweb sensor."""
-    data = hass.data[DOMAIN][entry.entry_id]
+    data = entry.runtime_data
     # data["scan_interval"]
     # data["notify"]
 
@@ -666,7 +666,7 @@ async def async_setup_entry(
         _LOGGER.error("Neviweb130 client initialization failed.")
         return
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = data["coordinator"]
 
     device_registry = dr.async_get(hass)
 
@@ -2202,7 +2202,7 @@ class Neviweb130DailyRequestSensor(SensorEntity):
     def extra_state_attributes(self):
         """Expose date and limit."""
         data = self._counter.data
-        limit = self.hass.data[DOMAIN][self._entry.entry_id]["request_limit"]
+        limit = self._entry.runtime_data["request_limit"]
         return {
             "date": data.get("date"),
             "Neviweb_limit": 30000,
@@ -2212,7 +2212,7 @@ class Neviweb130DailyRequestSensor(SensorEntity):
     async def async_update(self):
         """Send notification if we reach the limit."""
         count = self._counter.get_count()
-        limit = self.hass.data[DOMAIN][self._entry.entry_id]["request_limit"]
+        limit = self._entry.runtime_data["request_limit"]
 
         # Notify when above threshold
         if count > limit and not self._notified:

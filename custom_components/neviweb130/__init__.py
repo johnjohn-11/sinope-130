@@ -307,8 +307,8 @@ async def async_unload_entry(hass, entry):
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
+    if unload_ok and "coordinator" in entry.runtime_data:
+        await entry.runtime_data["coordinator"].stop()
 
     return unload_ok
 
@@ -396,8 +396,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Detect .storage path
     conf_dir = hass.config.path(".storage")
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN].setdefault(entry.entry_id, {})
     hass.data[DOMAIN]["conf_dir"] = conf_dir
+    entry_data: dict[str, Any] = {}
+    entry.runtime_data = entry_data
 
     # Load saved devices data
     device_dict = await load_devices(conf_dir)
@@ -450,10 +451,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Setting prefix to: %s", prefix)
 
     request_limit = entry.options.get(CONF_REQUEST_LIMIT, DEFAULT_REQUEST_LIMIT)
-    hass.data[DOMAIN][entry.entry_id]["request_limit"] = request_limit
+    entry_data["request_limit"] = request_limit
 
     session_manager = SessionManager()
-    hass.data[DOMAIN][entry.entry_id].update(
+    entry_data.update(
         {
             "counter": counter,
             "session": session_manager,
@@ -485,7 +486,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.info("Migrating neviweb130 unique_id...")
     await async_migrate_unique_ids(hass, entry, client)
 
-    hass.data[DOMAIN][entry.entry_id].update(
+    entry_data.update(
         {
             "coordinator": initialized_coordinator,
             "neviweb130_client": initialized_coordinator.client,

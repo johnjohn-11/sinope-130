@@ -278,7 +278,7 @@ async def async_setup_entry(
     discovery_info=None,
 ) -> None:
     """Set up the Neviweb binary sensor."""
-    data = hass.data[DOMAIN][entry.entry_id]
+    data = entry.runtime_data
 
     if "neviweb130_client" not in data:
         _LOGGER.error("Neviweb130 client initialization failed.")

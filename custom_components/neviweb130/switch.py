@@ -509,7 +509,7 @@ async def async_setup_entry(
     discovery_info=None,
 ) -> None:
     """Set up the Neviweb130 switch."""
-    data = hass.data[DOMAIN][entry.entry_id]
+    data = entry.runtime_data
 
     data["conf_dir"] = hass.data[DOMAIN]["conf_dir"]
     data["device_dict"] = hass.data[DOMAIN]["device_dict"]
@@ -518,7 +518,7 @@ async def async_setup_entry(
         _LOGGER.error("Neviweb130 client initialization failed.")
         return
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = data["coordinator"]
 
     entities: list[SwitchEntity] = []
     device_registry = dr.async_get(hass)

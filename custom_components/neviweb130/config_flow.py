@@ -315,8 +315,7 @@ class Neviweb130ConfigFlow(ConfigFlow, domain=DOMAIN):
                 # Merge validated values
                 user_input.update(info)
                 # Close active session
-                domain_data = self.hass.data.get(DOMAIN, {})
-                entry_data = domain_data.get(reconfigure_entry.entry_id, {})
+                entry_data = getattr(reconfigure_entry, "runtime_data", None) or {}
                 session_manager = entry_data.get("session")
 
             except InvalidUserEmail:
